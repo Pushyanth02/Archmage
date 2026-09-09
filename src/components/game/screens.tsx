@@ -242,6 +242,20 @@ export function MenuScreen({ chapter, chapterSubtitle, onStart }: MenuProps) {
       <MenuBackdrop />
       <div className="rune-frame absolute inset-0 pointer-events-none"><Corners /></div>
 
+      {/* GitHub repo link — top-left corner */}
+      <a
+        href="https://github.com/Pushyanth02/Archmage"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-6 left-6 z-20 btn-ghost px-3 py-2 text-[#e9e2ff] hover:text-[#ffe9ad] flex items-center gap-2 transition-colors"
+        title="View source on GitHub"
+        aria-label="Open GitHub repository"
+        onMouseEnter={hover}
+      >
+        <UiIcon name="github" size={18} />
+        <span className="hidden sm:inline text-[11px] font-bold uppercase tracking-[0.14em]">GitHub</span>
+      </a>
+
       {/* V1.1 — the top-right utility cluster: FULLSCREEN (icon, live
           state), Settings, Sound — one compact row, identical sizing and
           spacing, 44px touch targets on every device. */}
