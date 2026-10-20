@@ -150,8 +150,9 @@ interface Proj {
   dmg: number; life: number; pierce: number; hit: Set<Enemy>; homing: number;
   special?: string;          // evolution behavior key
   back?: boolean;            // Patch 9.0: hurricane blades — returning home
+  grad?: CanvasGradient | null;  // Task 2-b: cached bloom gradient (kind/r immutable)
 }
-interface EBolt { x: number; y: number; vx: number; vy: number; r: number; dmg: number; life: number; color: string }
+interface EBolt { x: number; y: number; vx: number; vy: number; r: number; dmg: number; life: number; color: string; grad?: CanvasGradient | null }
 interface Particle {
   x: number; y: number; vx: number; vy: number; life: number; maxLife: number;
   size: number; color: string; drag: number; glow: boolean; grav: number;
@@ -232,6 +233,13 @@ const SHRINE_LIFE = 14;
 /* V1.1 — world-pixel size of the pre-baked mote sprite (9px diamond + glow
    halo padding); rendered once at 2× device resolution and blitted. */
 const MOTE_SPRITE = 32;
+/* Task 2-b — free-list cap for pooled particles. The live particleCap tops
+   out at 420, so 512 pooled covers a full swap without unbounded retention. */
+const PARTICLE_POOL_MAX = 512;
+/* Task 2-b — hoisted: the border corner tuples were rebuilt every frame. */
+const WORLD_CORNERS: [number, number, number, number][] = [
+  [0, 0, 1, 1], [WORLD_W, 0, -1, 1], [0, WORLD_H, 1, -1], [WORLD_W, WORLD_H, -1, -1],
+];
 /* Patch 9.0 — flow-field pathfinding grid: 64px cells over the 2560×1600
    (Patch 10.2) world → 40×25 = 1000 cells. Tiny BFS, rebuilt only when the
    player crosses a cell boundary (or twice a second as a safety net). */
@@ -389,6 +397,10 @@ export class ArchmageEngine {
   private clouds: Cloud[] = [];
   private motes: Mote[] = [];
   private particles: Particle[] = [];
+  /* Task 2-b — free list: dead particles are recycled here instead of being
+     handed to the GC. Every spawn site overwrites ALL fields, so a reused
+     particle is indistinguishable from a fresh literal. */
+  private particlePool: Particle[] = [];
   private floaters: Floater[] = [];
   private rings: Ring[] = [];
   private beams: Beam[] = [];
@@ -459,6 +471,18 @@ export class ArchmageEngine {
     timeSec: 0, weave: 0, surge: null, mercy: null, mercyTier: 0, threat: 0,
     glyphs: 0,
   };
+  /* Task 2-b — reused mutable payloads for the nullable HUD fields. The
+     GameShell consumer reads fields synchronously and its hudRef mirror is
+     already live-read tolerant (HudData itself is reused in place), so the
+     only thing eliminated here is the per-flush object allocation. */
+  private hudAttune: { id: ElementId; frac: number } = { id: "fire", frac: 0 };
+  private hudRes: { id: ElementId; frac: number } = { id: "fire", frac: 0 };
+  private hudBoss: { name: string; frac: number } = { name: "", frac: 0 };
+  /* Task 2-b — per-slot reusable merged-icon buffers. Reused in place while
+     a slot's spell count is stable; a composition change flips the shell's
+     content-based signature, which refreshes its React state, so retention
+     of the buffer reference (setEquippedIds) stays consistent. */
+  private hudMerged: ElementId[][] = [];
 
   constructor(o: EngineOpts) {
     this.o = o;
@@ -641,7 +665,10 @@ export class ArchmageEngine {
     /* look-ahead toward the aim point */
     let tx = this.px, ty = this.py;
     const adx = this.mx - this.px, ady = this.my - this.py;
-    const al = Math.hypot(adx, ady);
+    /* perf: Math.hypot(a,b) → Math.sqrt(a²+b²) everywhere below — identical
+       result for finite game coordinates; hypot's overflow-safe scaling is
+       only needed near ±1e154 and costs ~3× the plain sqrt. */
+    const al = Math.sqrt(adx * adx + ady * ady);
     if (al > 30) {
       const k = Math.min(96, al * 0.3) / al;
       tx += adx * k; ty += ady * k;
@@ -1145,7 +1172,7 @@ export class ArchmageEngine {
       if (s < tScore) { tScore = s; target = e; }
     }
     if (!target) return;
-    const lead = Math.min(0.4, Math.hypot(target.x - this.px, target.y - this.py) / 620);
+    const lead = Math.min(0.4, Math.sqrt((target.x - this.px) ** 2 + (target.y - this.py) ** 2) / 620);
     this.mx = Math.max(8, Math.min(WORLD_W - 8, target.x + target.vx * lead));
     this.my = Math.max(8, Math.min(WORLD_H - 8, target.y + target.vy * lead));
   }
@@ -1700,7 +1727,7 @@ export class ArchmageEngine {
         sfx.castLightning();
         if (m?.special === "skyfall") {
           /* strike up to three marked foes directly, wherever they stand */
-          const alive = this.enemies.filter((e) => !e.dead);
+          const alive = this.enemies.filter(this.aliveEnemy);  // event-path; Task 2-b: reuse the hoisted predicate
           const n = Math.min(3, alive.length);
           if (n > 0) {
             for (let i = 0; i < n; i++) {
@@ -1886,7 +1913,7 @@ export class ArchmageEngine {
           if (ex * ex + ey * ey < rr * rr) {
             this.damageEnemy(e, dmg, "sonic", true);
             /* the concussive shove — flings foes off the mage */
-            const el = Math.hypot(ex, ey) || 1;
+            const el = Math.sqrt(ex * ex + ey * ey) || 1;
             const shove = (silence ? 460 : 300) * (e.type === "boss" ? 0.25 : 1);
             e.vx += (ex / el) * shove;
             e.vy += (ey / el) * shove;
@@ -2016,7 +2043,7 @@ export class ArchmageEngine {
       const ang = Math.atan2(this.my - this.py, this.mx - this.px);
       dx = Math.cos(ang); dy = Math.sin(ang);
     }
-    const n = Math.hypot(dx, dy) || 1;
+    const n = Math.sqrt(dx * dx + dy * dy) || 1;
     this.pvx = (dx / n) * 880; this.pvy = (dy / n) * 880;
     this.dashT = 0.14; this.dashCd = 2.2 * this.mods.dashCdM; this.iframes = Math.max(this.iframes, 0.3);
     this.o.sfx.castShadow();
@@ -2153,7 +2180,7 @@ export class ArchmageEngine {
     for (const e of this.enemies) {
       if (e.dead || e.type !== "boss") continue;
       const bx = e.x - px, by = e.y - py;
-      const bl = Math.hypot(bx, by) || 1;
+      const bl = Math.sqrt(bx * bx + by * by) || 1;
       /* volley due → keep kiting distance while sliding sideways */
       if (e.shootT <= 0.5) {
         sx += (bx / bl) * 0.8 - (by / bl) * this.autoStrafeDir * 1.6;
@@ -2254,7 +2281,7 @@ export class ArchmageEngine {
     sy += Math.sin(this.autoWander * 0.83) * 0.1;
 
     /* commit the steering vector (clamped to unit disc) */
-    const sl = Math.hypot(sx, sy);
+    const sl = Math.sqrt(sx * sx + sy * sy);
     if (sl > 1) { sx /= sl; sy /= sl; }
     this.moveAxisX = sl > 0.06 ? sx : 0;
     this.moveAxisY = sl > 0.06 ? sy : 0;
@@ -2278,7 +2305,7 @@ export class ArchmageEngine {
           }
         }
       }
-      const el = Math.hypot(ex, ey);
+      const el = Math.sqrt(ex * ex + ey * ey);
       if (el > 1) {
         this.moveAxisX = ex / el;
         this.moveAxisY = ey / el;
@@ -2289,7 +2316,7 @@ export class ArchmageEngine {
     /* ---------- aiming + casting ---------- */
     if (target) {
       /* lead the target so travel-time projectiles connect */
-      const lead = Math.min(0.4, Math.hypot(target.x - px, target.y - py) / 620);
+      const lead = Math.min(0.4, Math.sqrt((target.x - px) ** 2 + (target.y - py) ** 2) / 620);
       this.mx = Math.max(8, Math.min(WORLD_W - 8, target.x + target.vx * lead));
       this.my = Math.max(8, Math.min(WORLD_H - 8, target.y + target.vy * lead));
 
@@ -2302,13 +2329,13 @@ export class ArchmageEngine {
         const slot = this.autoPickSlot(target, closeCount);
         if (slot >= 0) this.castSpell(slot);
       }
-    } else if (this.shrine || this.spellDrops.some((d) => d.life > 0)) {
+    } else if (this.shrine || this.spellDrops.some(this.dropLive)) {
       /* nothing to fight — drift toward the nearest pickup */
       let gx = this.shrine?.x ?? px, gy = this.shrine?.y ?? py;
-      let gd = Math.hypot(gx - px, gy - py);
+      let gd = Math.sqrt((gx - px) ** 2 + (gy - py) ** 2);
       for (const d of this.spellDrops) {
         if (d.life <= 0) continue;
-        const dd = Math.hypot(d.x - px, d.y - py);
+        const dd = Math.sqrt((d.x - px) ** 2 + (d.y - py) ** 2);
         if (dd < gd) { gd = dd; gx = d.x; gy = d.y; }
       }
       if (gd > 30) {
@@ -2397,7 +2424,7 @@ export class ArchmageEngine {
   private autoPickSlot(target: Enemy, closeCount: number): number {
     const px = this.px, py = this.py;
     const manaFrac = this.mana / this.maxMana;
-    const td = Math.hypot(target.x - px, target.y - py);
+    const td = Math.sqrt((target.x - px) ** 2 + (target.y - py) ** 2);
 
     /* mana reserve — never cast below 12% unless something is crawling up
        the robe (panic tools may empty the well) */
@@ -2470,7 +2497,7 @@ export class ArchmageEngine {
           if (e.dead) continue;
           ex += px - e.x; ey += py - e.y;
         }
-        const el = Math.hypot(ex, ey) || 1;
+        const el = Math.sqrt(ex * ex + ey * ey) || 1;
         this.mx = Math.max(8, Math.min(WORLD_W - 8, px + (ex / el) * 170));
         this.my = Math.max(8, Math.min(WORLD_H - 8, py + (ey / el) * 170));
       }
@@ -2506,10 +2533,10 @@ export class ArchmageEngine {
   private segDist(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
     const dx = x2 - x1, dy = y2 - y1;
     const l2 = dx * dx + dy * dy;
-    if (l2 === 0) return Math.hypot(px - x1, py - y1);
+    if (l2 === 0) return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
     let t = ((px - x1) * dx + (py - y1) * dy) / l2;
     t = t < 0 ? 0 : t > 1 ? 1 : t;
-    return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+    return Math.sqrt((px - (x1 + t * dx)) ** 2 + (py - (y1 + t * dy)) ** 2);
   }
 
   private damageEnemy(e: Enemy, dmg: number, elem: ElementId, canCrit: boolean) {
@@ -2839,11 +2866,21 @@ export class ArchmageEngine {
     if (this.particles.length > this.particleCap) return;
     const a = Math.random() * TAU;
     const v = Math.random() * spd;
-    this.particles.push({
-      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
-      life: 0.4 + Math.random() * 0.45, maxLife: 0.85, size: size * (0.6 + Math.random() * 0.8),
-      color, drag: 3.2, glow: true, grav: 0,
-    });
+    const p = this.takeParticle();
+    p.x = x; p.y = y;
+    p.vx = Math.cos(a) * v; p.vy = Math.sin(a) * v;
+    p.life = 0.4 + Math.random() * 0.45; p.maxLife = 0.85;
+    p.size = size * (0.6 + Math.random() * 0.8);
+    p.color = color; p.drag = 3.2; p.glow = true; p.grav = 0;
+    this.particles.push(p);
+  }
+
+  /** Task 2-b — pop a particle from the free list (or allocate on first fill).
+      Field order in callers preserves the exact Math.random() call sequence. */
+  private takeParticle(): Particle {
+    const p = this.particlePool.pop();
+    if (p) return p;
+    return { x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, size: 0, color: "", drag: 0, glow: false, grav: 0 };
   }
 
   private ring(x: number, y: number, maxR: number, color: string, w: number) {
@@ -2916,7 +2953,7 @@ export class ArchmageEngine {
         if (this.keys.has("KeyW") || this.keys.has("ArrowUp")) ay -= 1;
         if (this.keys.has("KeyS") || this.keys.has("ArrowDown")) ay += 1;
       }
-      const n = Math.hypot(ax, ay);
+      const n = Math.sqrt(ax * ax + ay * ay);
       const mag = Math.min(1, n);  // analog magnitude preserved for touchpads
       if (n > 0.001) { ax /= n; ay /= n; }
       const spd = 252 * this.o.bonuses.moveSpeed * this.mods.speed;
@@ -2929,7 +2966,7 @@ export class ArchmageEngine {
            changes bite immediately (skid-to-turn, no sliding wide).
          • the dash keeps its low-drag glide untouched. */
       const turn = this.dashT <= 0 && (ax !== 0 || ay !== 0)
-        ? (this.pvx * ax + this.pvy * ay) / (Math.hypot(this.pvx, this.pvy) + 1e-6)
+        ? (this.pvx * ax + this.pvy * ay) / (Math.sqrt(this.pvx * this.pvx + this.pvy * this.pvy) + 1e-6)
         : 1;
       const turnBrake = turn < -0.25 ? 2.6 : 1;   // input fights velocity → brake hard
       this.pvx += ax * spd * 13 * dt * mag;
@@ -2938,7 +2975,7 @@ export class ArchmageEngine {
       this.pvx -= this.pvx * Math.min(1, drag * dt);
       this.pvy -= this.pvy * Math.min(1, drag * dt);
       const vmax = this.dashT > 0 ? 900 : spd;
-      const v = Math.hypot(this.pvx, this.pvy);
+      const v = Math.sqrt(this.pvx * this.pvx + this.pvy * this.pvy);
       if (v > vmax) { this.pvx = (this.pvx / v) * vmax; this.pvy = (this.pvy / v) * vmax; }
       this.px += this.pvx * dt; this.py += this.pvy * dt;
       /* Patch 10.0 — smoothed lean angle for the render pass (velocity tilt)
@@ -2955,13 +2992,14 @@ export class ArchmageEngine {
       this.stepDust -= dt;
       if (v > spd * 0.62 && this.stepDust <= 0 && this.particles.length < 40) {
         this.stepDust = 0.16;
-        this.particles.push({
-          x: this.px - Math.cos(this.leanA) * 10, y: this.py - Math.sin(this.leanA) * 10 + 8,
-          vx: -this.pvx * 0.06 + (Math.random() - 0.5) * 18,
-          vy: -this.pvy * 0.06 + (Math.random() - 0.5) * 18,
-          life: 0.3 + Math.random() * 0.2, maxLife: 0.5,
-          size: 2 + Math.random() * 1.6, color: "rgba(154,123,255,0.5)", drag: 2.4, glow: false, grav: 0,
-        });
+        const p = this.takeParticle();
+        p.x = this.px - Math.cos(this.leanA) * 10; p.y = this.py - Math.sin(this.leanA) * 10 + 8;
+        p.vx = -this.pvx * 0.06 + (Math.random() - 0.5) * 18;
+        p.vy = -this.pvy * 0.06 + (Math.random() - 0.5) * 18;
+        p.life = 0.3 + Math.random() * 0.2; p.maxLife = 0.5;
+        p.size = 2 + Math.random() * 1.6;
+        p.color = "rgba(154,123,255,0.5)"; p.drag = 2.4; p.glow = false; p.grav = 0;
+        this.particles.push(p);
       }
       this.px = Math.max(16, Math.min(WORLD_W - 16, this.px));
       this.py = Math.max(16, Math.min(WORLD_H - 16, this.py));
@@ -3118,7 +3156,7 @@ export class ArchmageEngine {
 
     /* --- projectiles --- */
     for (const p of this.projs) this.updateProj(p, dt);
-    this.compact(this.projs, (p) => p.life > 0);
+    this.compact(this.projs, this.aliveProj);
 
     /* enemy bolts — rewind bubbles crawl them to a tenth speed */
     for (const b of this.eBolts) {
@@ -3146,7 +3184,7 @@ export class ArchmageEngine {
         }
       }
     }
-    this.compact(this.eBolts, (b) => b.life > 0);
+    this.compact(this.eBolts, this.aliveBolt);
 
     /* rocks / bubbles — tremor wards pulse damage every second */
     const tremor = this.evoModFor("earth")?.special === "tremor";
@@ -3165,7 +3203,7 @@ export class ArchmageEngine {
       }
       if (r.life < 1 && Math.random() < dt * 6) this.puff(r.x + (Math.random() * 20 - 10), r.y + (Math.random() * 20 - 10), "#8a6f5a", 30, 2);
     }
-    this.compact(this.rocks, (r) => r.life > 0 && r.hp > 0);
+    this.compact(this.rocks, this.aliveRock);
     for (const b of this.bubbles) {
       b.life -= dt;
       for (const e of this.enemies) {
@@ -3175,7 +3213,7 @@ export class ArchmageEngine {
         if (dx * dx + dy * dy < rr * rr && Math.random() < dt * 3) this.puff(e.x, e.y, "#6bf0c2", 40, 2);
       }
     }
-    this.compact(this.bubbles, (b) => b.life > 0);
+    this.compact(this.bubbles, this.aliveBubble);
 
     /* poison clouds */
     for (const cl of this.clouds) {
@@ -3198,13 +3236,13 @@ export class ArchmageEngine {
       }
       if (Math.random() < dt * 10) this.puff(cl.x + (Math.random() * cl.r * 1.6 - cl.r * 0.8), cl.y + (Math.random() * cl.r * 1.6 - cl.r * 0.8), "#7ed957", 26, 2.2);
     }
-    this.compact(this.clouds, (c) => c.life > 0);
+    this.compact(this.clouds, this.aliveCloud);
 
     /* motes */
     for (const m of this.motes) {
       m.life -= dt;
       const dx = this.px - m.x, dy = this.py - m.y;
-      const d = Math.hypot(dx, dy);
+      const d = Math.sqrt(dx * dx + dy * dy);
       if (d < 110 && d > 0.01) { m.vx += (dx / d) * 900 * dt; m.vy += (dy / d) * 900 * dt; }
       m.vx -= m.vx * Math.min(1, 2.4 * dt); m.vy -= m.vy * Math.min(1, 2.4 * dt);
       m.x += m.vx * dt; m.y += m.vy * dt;
@@ -3218,7 +3256,7 @@ export class ArchmageEngine {
         this.floater(m.x, m.y - 10, "+" + m.val, "#ffe9ad", 12);
       }
     }
-    this.compact(this.motes, (m) => m.life > 0);
+    this.compact(this.motes, this.aliveMote);
     if (this.motes.length > 130) this.motes.splice(0, this.motes.length - 130);
 
     /* Patch 4.0 — spell-drop glyphs: float upward, bob in place, and
@@ -3247,7 +3285,7 @@ export class ArchmageEngine {
         this.puff(d.x, d.y, col, 30, 1.8);
       }
     }
-    this.compact(this.spellDrops, (d) => d.life > 0);
+    this.compact(this.spellDrops, this.aliveDrop);
     if (this.spellDrops.length > 12) this.spellDrops.splice(0, this.spellDrops.length - 12);
 
     /* fx */
@@ -3258,15 +3296,15 @@ export class ArchmageEngine {
       p.vy += p.grav * dt;
       p.x += p.vx * dt; p.y += p.vy * dt;
     }
-    this.compact(this.particles, (p) => p.life > 0);
+    this.compactParticles();
     for (const f of this.floaters) { f.life -= dt; f.y -= 34 * dt; }
-    this.compact(this.floaters, (f) => f.life > 0);
+    this.compact(this.floaters, this.aliveFloater);
     for (const r of this.rings) r.life -= dt;
-    this.compact(this.rings, (r) => r.life > 0);
+    this.compact(this.rings, this.aliveRing);
     for (const b of this.beams) b.life -= dt;
-    this.compact(this.beams, (b) => b.life > 0);
+    this.compact(this.beams, this.aliveBeam);
     for (const z of this.zaps) z.life -= dt;
-    this.compact(this.zaps, (z) => z.life > 0);
+    this.compact(this.zaps, this.aliveZap);
   }
 
   /* In-place compaction helper — keeps surviving entries, zeroes allocation. */
@@ -3279,9 +3317,47 @@ export class ArchmageEngine {
     arr.length = w;
   }
 
-  private compactAll() {
-    this.compact(this.enemies, (e) => !e.dead);
+  /* Task 2-b — particle compaction with free-list recycling: dead entries
+     return to the pool (capped) instead of leaking to the GC. Survivor order
+     is identical to the generic compact(). */
+  private compactParticles() {
+    const arr = this.particles, pool = this.particlePool;
+    let w = 0;
+    for (let i = 0; i < arr.length; i++) {
+      const p = arr[i];
+      if (p.life > 0) { arr[w++] = p; continue; }
+      if (pool.length < PARTICLE_POOL_MAX) {
+        /* reset so the pooled particle holds no stale references */
+        p.x = 0; p.y = 0; p.vx = 0; p.vy = 0; p.life = 0; p.maxLife = 0;
+        p.size = 0; p.color = ""; p.drag = 0; p.glow = false; p.grav = 0;
+        pool.push(p);
+      }
+    }
+    arr.length = w;
   }
+
+  private compactAll() {
+    this.compact(this.enemies, this.aliveEnemy);
+  }
+
+  /* Task 2-b — hoisted compaction predicates: the inline arrow at each call
+     site allocated a fresh closure every tick (12+/frame). Pure parameter
+     reads, results identical. */
+  private aliveProj(p: Proj) { return p.life > 0; }
+  private aliveBolt(b: EBolt) { return b.life > 0; }
+  private aliveRock(r: Rock) { return r.life > 0 && r.hp > 0; }
+  private aliveBubble(b: Bubble) { return b.life > 0; }
+  private aliveCloud(c: Cloud) { return c.life > 0; }
+  private aliveMote(m: Mote) { return m.life > 0; }
+  private aliveDrop(d: SpellDrop) { return d.life > 0; }
+  private aliveFloater(f: Floater) { return f.life > 0; }
+  private aliveRing(r: Ring) { return r.life > 0; }
+  private aliveBeam(b: Beam) { return b.life > 0; }
+  private aliveZap(z: Zap) { return z.life > 0; }
+  private aliveEnemy(e: Enemy) { return !e.dead; }
+  /* Task 2-b — same hoist for the autopilot's live-drop probe (was a fresh
+     closure every frame while Archmage Mode idles). */
+  private dropLive(d: SpellDrop) { return d.life > 0; }
 
   private updateEnemy(e: Enemy, dt: number, running: boolean) {
     e.hitFlash = Math.max(0, e.hitFlash - dt);
@@ -3334,7 +3410,7 @@ export class ArchmageEngine {
     if (!running) { e.vx *= 0.9; e.vy *= 0.9; return; }
 
     const dx = this.px - e.x, dy = this.py - e.y;
-    const dist = Math.hypot(dx, dy) || 1;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
     const nx = dx / dist, ny = dy / dist;
     let tvx = nx * e.speed, tvy = ny * e.speed;
 
@@ -3358,7 +3434,7 @@ export class ArchmageEngine {
          bespoke states handle walls.) */
       e.stuckT += dt;
       if (e.stuckT >= 0.6) {
-        const moved = Math.hypot(e.x - e.lastX, e.y - e.lastY);
+        const moved = Math.sqrt((e.x - e.lastX) ** 2 + (e.y - e.lastY) ** 2);
         if (moved < 14 && e.type !== "boss") {
           e.stuckN++;
           const fd = ArchmageEngine.DIR;
@@ -3863,7 +3939,7 @@ export class ArchmageEngine {
       /* gravity rift — drags the mage in while the vortex builds */
       tv.x = 0; tv.y = 0;
       const dx = e.x - this.px, dy = e.y - this.py;
-      const d = Math.hypot(dx, dy) || 1;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
       if (d < 700) {
         const pull = 230;
         this.px = Math.max(20, Math.min(WORLD_W - 20, this.px + (dx / d) * pull * dt));
@@ -3909,8 +3985,8 @@ export class ArchmageEngine {
     if (p.kind === "wind" && p.special === "hurricane" && !p.back && p.life < 0.55) {
       p.back = true;
       const dx = this.px - p.x, dy = this.py - p.y;
-      const d = Math.hypot(dx, dy) || 1;
-      const sp = Math.hypot(p.vx, p.vy) || 520;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy) || 520;
       p.vx = (dx / d) * sp;
       p.vy = (dy / d) * sp;
       p.hit.clear();
@@ -3966,7 +4042,7 @@ export class ArchmageEngine {
         while (d > Math.PI) d -= TAU;
         while (d < -Math.PI) d += TAU;
         const turn = Math.max(-p.homing * dt, Math.min(p.homing * dt, d));
-        const sp = Math.hypot(p.vx, p.vy);
+        const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         const na = cur + turn;
         p.vx = Math.cos(na) * sp; p.vy = Math.sin(na) * sp;
       }
@@ -4007,7 +4083,7 @@ export class ArchmageEngine {
         /* Patch 9.0 — wind shoves: gale cutters knock foes back along the
            blade's travel direction (bosses resist). */
         if (p.kind === "wind") {
-          const vl = Math.hypot(p.vx, p.vy) || 1;
+          const vl = Math.sqrt(p.vx * p.vx + p.vy * p.vy) || 1;
           const kb = e.type === "boss" ? 40 : 240;
           e.vx += (p.vx / vl) * kb;
           e.vy += (p.vy / vl) * kb;
@@ -4155,7 +4231,7 @@ export class ArchmageEngine {
     const tx = (gx + bx * 0.5 + 0.5) * FLOW_CELL;
     const ty = (gy + by * 0.5 + 0.5) * FLOW_CELL;
     const dx = tx - x, dy = ty - y;
-    const len = Math.hypot(dx, dy) || 1;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
     out.x = dx / len; out.y = dy / len;
     return true;
   }
@@ -4185,7 +4261,7 @@ export class ArchmageEngine {
   /** Cheap line-of-sight raycast against the (inflated) pillars — 30px steps. */
   private lineClear(x1: number, y1: number, x2: number, y2: number): boolean {
     const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.hypot(dx, dy);
+    const len = Math.sqrt(dx * dx + dy * dy);
     const steps = Math.max(1, Math.ceil(len / 30));
     for (let i = 1; i <= steps; i++) {
       const t = i / steps;
@@ -4214,7 +4290,7 @@ export class ArchmageEngine {
       const nx = Math.max(rx, Math.min(e.x, rx + rw));
       const ny = Math.max(ry, Math.min(e.y, ry + rh));
       const dx = e.x - nx, dy = e.y - ny;
-      const d = Math.hypot(dx, dy);
+      const d = Math.sqrt(dx * dx + dy * dy);
       if (d < e.r) {
         if (d > 0.01) { e.x = nx + (dx / d) * e.r; e.y = ny + (dy / d) * e.r; }
         else { e.y = ry - e.r; }
@@ -4228,7 +4304,7 @@ export class ArchmageEngine {
       const nx = Math.max(rx, Math.min(this.px, rx + rw));
       const ny = Math.max(ry, Math.min(this.py, ry + rh));
       const dx = this.px - nx, dy = this.py - ny;
-      const d = Math.hypot(dx, dy);
+      const d = Math.sqrt(dx * dx + dy * dy);
       if (d < 13) {
         if (d > 0.01) { this.px = nx + (dx / d) * 13; this.py = ny + (dy / d) * 13; }
         else { this.py = ry - 13; }
@@ -4237,6 +4313,12 @@ export class ArchmageEngine {
   }
 
   /* --------------------------------- HUD ----------------------------------- */
+
+  /* Task 2-b — view-culling test as a method (was a closure rebuilt every
+     render call; identical comparisons). */
+  private inView(x: number, y: number, pad: number): boolean {
+    return x > this.vx0 - pad && x < this.vx1 + pad && y > this.vy0 - pad && y < this.vy1 + pad;
+  }
 
   private pushHud() {
     const h = this.hud;
@@ -4252,7 +4334,14 @@ export class ArchmageEngine {
        UI can render the correct icon. Merged slots include a `merged` array
        listing every spell in the slot — the spell bar shows stacked icons. */
     if (h.spells.length !== this.equipped.length) {
-      h.spells = this.equipped.map(() => ({ cdFrac: 0, cost: 0, affordable: true, hpCost: false, evolved: false, id: "fire" as ElementId }));
+      /* Task 2-b — resize the reused array in place instead of reallocating:
+         the per-slot loop below overwrites every field (incl. merged/empty),
+         so surviving objects carry no stale state into the flush. */
+      if (h.spells.length > this.equipped.length) h.spells.length = this.equipped.length;
+      else while (h.spells.length < this.equipped.length) {
+        h.spells.push({ cdFrac: 0, cost: 0, affordable: true, hpCost: false, evolved: false, id: "fire" as ElementId });
+      }
+      this.hudMerged.length = this.equipped.length;
     }
     for (let i = 0; i < this.equipped.length; i++) {
       const slot = this.equipped[i];
@@ -4275,7 +4364,18 @@ export class ArchmageEngine {
         cost += free ? 0 : sj.manaCost;
       }
       hs.id = id;
-      hs.merged = slot.spells.length >= 2 ? slot.spells.map((j) => SPELL_ORDER[j]) : undefined;
+      /* Task 2-b — merged icon list from the per-slot reusable buffer (same
+         content, same order as the old per-flush map allocation). */
+      if (slot.spells.length >= 2) {
+        let buf = this.hudMerged[i];
+        if (!buf || buf.length !== slot.spells.length) {
+          buf = slot.spells.map((j) => SPELL_ORDER[j]);
+          this.hudMerged[i] = buf;
+        } else {
+          for (let k = 0; k < slot.spells.length; k++) buf[k] = SPELL_ORDER[slot.spells[k]];
+        }
+        hs.merged = buf;
+      } else hs.merged = undefined;
       hs.empty = false;
       hs.cdFrac = sp.cooldown > 0 ? this.cd[idx] / (sp.cooldown * this.cdMult() * (evo?.mod.cooldown ?? 1)) : 0;
       hs.cost = cost;
@@ -4285,13 +4385,23 @@ export class ArchmageEngine {
     }
     h.selected = this.selected;
     h.dashFrac = this.dashCd / (2.2 * this.mods.dashCdM);
-    h.attune = this.attune ? { id: this.attune.id, frac: this.attune.t / this.attune.total } : null;
-    h.resonance = this.lastCast && this.t - this.lastCast.t < this.mods.comboWindow
-      ? { id: this.lastCast.id, frac: 1 - (this.t - this.lastCast.t) / this.mods.comboWindow }
-      : null;
+    if (this.attune) {
+      this.hudAttune.id = this.attune.id;
+      this.hudAttune.frac = this.attune.t / this.attune.total;
+      h.attune = this.hudAttune;
+    } else h.attune = null;
+    if (this.lastCast && this.t - this.lastCast.t < this.mods.comboWindow) {
+      this.hudRes.id = this.lastCast.id;
+      this.hudRes.frac = 1 - (this.t - this.lastCast.t) / this.mods.comboWindow;
+      h.resonance = this.hudRes;
+    } else h.resonance = null;
     let boss: Enemy | null = null;
     for (const e of this.enemies) { if (!e.dead && e.type === "boss") { boss = e; break; } }
-    h.boss = boss ? { name: boss.name, frac: Math.max(0, boss.hp / boss.maxHp) } : null;
+    if (boss) {
+      this.hudBoss.name = boss.name;
+      this.hudBoss.frac = Math.max(0, boss.hp / boss.maxHp);
+      h.boss = this.hudBoss;
+    } else h.boss = null;
     h.timeSec = this.t;
     h.weave = this.weave;
     h.surge = this.surgeT > 0 ? this.surgeT / SURGE_DUR : null;
@@ -4327,10 +4437,6 @@ export class ArchmageEngine {
     c.scale(this.zoomCur, this.zoomCur);
     c.translate(-this.camX, -this.camY);
 
-    /* view-culling helper — skip anything outside the camera rect */
-    const inView = (x: number, y: number, pad: number): boolean =>
-      x > this.vx0 - pad && x < this.vx1 + pad && y > this.vy0 - pad && y < this.vy1 + pad;
-
     this.drawWorldBorder(c);
     this.drawRuneCircle(c);
     this.drawAmbient(c);
@@ -4339,24 +4445,24 @@ export class ArchmageEngine {
     this.drawShrine(c);
     this.drawPillars(c);
 
-    for (const cl of this.clouds) { if (inView(cl.x, cl.y, cl.r)) this.drawCloud(c, cl); }
-    for (const b of this.bubbles) { if (inView(b.x, b.y, b.r)) this.drawBubble(c, b); }
-    for (const r of this.rocks) { if (inView(r.x, r.y, r.r)) this.drawRock(c, r); }
-    for (const m of this.motes) { if (inView(m.x, m.y, 20)) this.drawMote(c, m); }
+    for (const cl of this.clouds) { if (this.inView(cl.x, cl.y, cl.r)) this.drawCloud(c, cl); }
+    for (const b of this.bubbles) { if (this.inView(b.x, b.y, b.r)) this.drawBubble(c, b); }
+    for (const r of this.rocks) { if (this.inView(r.x, r.y, r.r)) this.drawRock(c, r); }
+    for (const m of this.motes) { if (this.inView(m.x, m.y, 20)) this.drawMote(c, m); }
     /* Patch 4.0 — spell drops are drawn above motes / below enemies so they
        read clearly as pickup-able glyphs even during heavy combat. */
-    for (const d of this.spellDrops) { if (d.life > 0 && inView(d.x, d.y, 40)) this.drawDrop(c, d); }
-    for (const e of this.enemies) { if (!e.dead && inView(e.x, e.y, e.r + 20)) this.drawEnemy(c, e); }
+    for (const d of this.spellDrops) { if (d.life > 0 && this.inView(d.x, d.y, 40)) this.drawDrop(c, d); }
+    for (const e of this.enemies) { if (!e.dead && this.inView(e.x, e.y, e.r + 20)) this.drawEnemy(c, e); }
     this.drawPlayer(c);
-    for (const p of this.projs) { if (inView(p.x, p.y, 30)) this.drawProj(c, p); }
-    for (const b of this.eBolts) { if (inView(b.x, b.y, 20)) this.drawEBolt(c, b); }
+    for (const p of this.projs) { if (this.inView(p.x, p.y, 30)) this.drawProj(c, p); }
+    for (const b of this.eBolts) { if (this.inView(b.x, b.y, 20)) this.drawEBolt(c, b); }
     this.drawLockBracket(c);
 
     /* additive fx */
     c.globalCompositeOperation = "lighter";
     for (const z of this.zaps) this.drawZap(c, z);
     for (const b of this.beams) {
-      if (!inView((b.x1 + b.x2) / 2, (b.y1 + b.y2) / 2, Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) / 2 + 20)) continue;
+      if (!this.inView((b.x1 + b.x2) / 2, (b.y1 + b.y2) / 2, Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) / 2 + 20)) continue;
       const a = b.life / b.maxLife;
       /* Patch 11.0 — WRATHLIGHT beams: soft glow halo + bright core + an
          animated dash pass that travels down the shaft (the light MOVES). */
@@ -4371,7 +4477,7 @@ export class ArchmageEngine {
       c.setLineDash([]);
     }
     for (const r of this.rings) {
-      if (!inView(r.x, r.y, r.maxR + 20)) continue;
+      if (!this.inView(r.x, r.y, r.maxR + 20)) continue;
       /* Patch 11.0 — eased expansion: the radius grows on an ease-out curve
          and the alpha follows its square, so rings bloom fast then melt
          smoothly instead of draining at a constant rate. */
@@ -4381,7 +4487,7 @@ export class ArchmageEngine {
       c.beginPath(); c.arc(r.x, r.y, 6 + ke * r.maxR, 0, TAU); c.stroke();
     }
     for (const p of this.particles) {
-      if (!inView(p.x, p.y, 8)) continue;
+      if (!this.inView(p.x, p.y, 8)) continue;
       const a = Math.max(0, p.life / p.maxLife);
       c.globalAlpha = a * (p.glow ? 0.9 : 0.7);
       c.fillStyle = p.color;
@@ -4390,7 +4496,7 @@ export class ArchmageEngine {
     c.globalAlpha = 1;
     c.globalCompositeOperation = "source-over";
 
-    for (const f of this.floaters) { if (inView(f.x, f.y, 30)) this.drawFloater(c, f); }
+    for (const f of this.floaters) { if (this.inView(f.x, f.y, 30)) this.drawFloater(c, f); }
     c.restore();
 
     /* vignette + flashes — screen space, above the world */
@@ -4438,10 +4544,7 @@ export class ArchmageEngine {
     c.strokeStyle = `rgba(${rune},${0.35 + Math.sin(this.t * 1.6) * 0.12})`;
     c.lineWidth = 2;
     const L = 34;
-    const corners: [number, number, number, number][] = [
-      [0, 0, 1, 1], [WORLD_W, 0, -1, 1], [0, WORLD_H, 1, -1], [WORLD_W, WORLD_H, -1, -1],
-    ];
-    for (const [kx, ky, dx, dy] of corners) {
+    for (const [kx, ky, dx, dy] of WORLD_CORNERS) {
       c.beginPath();
       c.moveTo(kx + dx * L, ky + dy * 14);
       c.lineTo(kx + dx * 14, ky + dy * 14);
@@ -4809,11 +4912,16 @@ export class ArchmageEngine {
 
     if (d.kind === "heart") {
       const pulse = 1 + Math.sin(this.t * 4.6 + d.wob) * 0.1;
-      const halo = c.createRadialGradient(0, 0, 4, 0, 0, 30);
-      halo.addColorStop(0, "rgba(255,77,107,0.75)");
-      halo.addColorStop(1, "rgba(255,77,107,0)");
+      /* Task 2-b — halo gradient cached on the drop (kind/id are immutable;
+         the old path built a fresh radial gradient per drop per frame). */
+      if (!d.grad) {
+        const halo = c.createRadialGradient(0, 0, 4, 0, 0, 30);
+        halo.addColorStop(0, "rgba(255,77,107,0.75)");
+        halo.addColorStop(1, "rgba(255,77,107,0)");
+        d.grad = halo;
+      }
       c.globalAlpha = a * 0.9;
-      c.fillStyle = halo;
+      c.fillStyle = d.grad;
       c.beginPath(); c.arc(0, 0, 30, 0, TAU); c.fill();
       /* slow triquetra halo — three sweeping arcs */
       c.strokeStyle = "rgba(255,163,181,0.75)";
@@ -4847,12 +4955,15 @@ export class ArchmageEngine {
 
     if (d.kind === "resonance") {
       /* prismatic twin diamonds — gold and violet rotating against each other */
-      const halo = c.createRadialGradient(0, 0, 4, 0, 0, 32);
-      halo.addColorStop(0, "rgba(255,233,173,0.7)");
-      halo.addColorStop(0.55, "rgba(176,107,255,0.35)");
-      halo.addColorStop(1, "rgba(176,107,255,0)");
+      if (!d.grad) {
+        const halo = c.createRadialGradient(0, 0, 4, 0, 0, 32);
+        halo.addColorStop(0, "rgba(255,233,173,0.7)");
+        halo.addColorStop(0.55, "rgba(176,107,255,0.35)");
+        halo.addColorStop(1, "rgba(176,107,255,0)");
+        d.grad = halo;
+      }
       c.globalAlpha = a * 0.9;
-      c.fillStyle = halo;
+      c.fillStyle = d.grad;
       c.beginPath(); c.arc(0, 0, 32, 0, TAU); c.fill();
       /* counter-rotating sigil ticks — reads as "fusion" at a glance */
       c.strokeStyle = "#ffe9ad";
@@ -4906,11 +5017,14 @@ export class ArchmageEngine {
     /* ——— SPELL TEAR — the classic element glyph, now with an additive bloom ——— */
     const sp = SPELLS[d.id];
     const pulse = 1 + Math.sin(this.t * 4 + d.wob) * 0.08;
-    const halo = c.createRadialGradient(0, 0, 4, 0, 0, 28);
-    halo.addColorStop(0, sp.color + "cc");
-    halo.addColorStop(1, sp.color + "00");
+    if (!d.grad) {
+      const halo = c.createRadialGradient(0, 0, 4, 0, 0, 28);
+      halo.addColorStop(0, sp.color + "cc");
+      halo.addColorStop(1, sp.color + "00");
+      d.grad = halo;
+    }
     c.globalAlpha = a * 0.85;
-    c.fillStyle = halo;
+    c.fillStyle = d.grad;
     c.beginPath(); c.arc(0, 0, 28, 0, TAU); c.fill();
     /* rotating sigil ring */
     c.rotate(this.t * 1.4);
@@ -5446,7 +5560,7 @@ export class ArchmageEngine {
        travel (up to ~2.6px at full stride). The rune ring + aura stay
        centered; only the physical body carries the weight, so aim-facing
        reads unchanged while movement feels alive. */
-    const vNow = Math.hypot(this.pvx, this.pvy);
+    const vNow = Math.sqrt(this.pvx * this.pvx + this.pvy * this.pvy);
     const leanK = Math.min(1, vNow / 252);
     c.translate(Math.cos(this.leanA) * 2.6 * leanK, Math.sin(this.leanA) * 2.6 * leanK);
 
@@ -5652,9 +5766,12 @@ export class ArchmageEngine {
     c.translate(p.x, p.y);
     c.rotate(ang);
 
-    /* additive bloom pass — every bolt carries its own light */
+    /* additive bloom pass — every bolt carries its own light.
+       Task 2-b — resolve the gradient through the proj itself (kind/r are
+       immutable): skips a per-proj-per-frame key concat + Map lookup. */
     c.globalCompositeOperation = "lighter";
-    c.fillStyle = this.projGrad(p.kind, p.r);
+    if (!p.grad) p.grad = this.projGrad(p.kind, p.r);
+    c.fillStyle = p.grad;
     c.beginPath(); c.arc(0, 0, p.r * 2.4, 0, TAU); c.fill();
     c.globalCompositeOperation = "source-over";
 
@@ -5750,18 +5867,24 @@ export class ArchmageEngine {
   }
 
   private drawEBolt(c: CanvasRenderingContext2D, b: EBolt) {
-    const key = b.color + ":" + b.r;
-    let g = this.boltGrads.get(key);
-    if (!g) {
-      g = c.createRadialGradient(0, 0, 1, 0, 0, b.r * 2.2);
-      g.addColorStop(0, "#ffffff");
-      g.addColorStop(0.4, b.color);
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      this.boltGrads.set(key, g);
+    /* Task 2-b — gradient cached per bolt (color/r immutable after spawn);
+       boltGrads stays the shared store, so the key concat now runs once per
+       bolt lifetime instead of once per bolt per frame. */
+    if (!b.grad) {
+      const key = b.color + ":" + b.r;
+      let g = this.boltGrads.get(key);
+      if (!g) {
+        g = c.createRadialGradient(0, 0, 1, 0, 0, b.r * 2.2);
+        g.addColorStop(0, "#ffffff");
+        g.addColorStop(0.4, b.color);
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        this.boltGrads.set(key, g);
+      }
+      b.grad = g;
     }
     c.save();
     c.translate(b.x, b.y);
-    c.fillStyle = g;
+    c.fillStyle = b.grad;
     c.beginPath(); c.arc(0, 0, b.r * 2.2, 0, TAU); c.fill();
     c.restore();
   }

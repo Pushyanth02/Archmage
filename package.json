@@ -1,7 +1,7 @@
 {
   "name": "archmage",
-  "version": "1.1.0",
-  "description": "Archmage — a pure arcade roguelike. Thirteen elements, seventy-eight resonances, five shuffled tyrants, adaptive procedural music. Version 1.1 — True Direction.",
+  "version": "1.2.0",
+  "description": "Archmage — a pure arcade roguelike. Thirteen elements, seventy-eight resonances, five shuffled tyrants, adaptive procedural music, and the Ledger of Legends global leaderboard. Version 1.2 — The Ledger of Legends.",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
@@ -10,11 +10,15 @@
     "build:pages": "BUILD_MODE=pages next build",
     "brand": "node scripts/build-brand.mjs",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^6.11.1",
     "clsx": "^2.1.1",
     "next": "^16.1.1",
+    "prisma": "^6.11.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.34.3",

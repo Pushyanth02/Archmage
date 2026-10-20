@@ -1,5 +1,58 @@
 # Changelog
 
+## Version 1.2 — The Ledger of Legends
+
+The second patch: deeds that outlive the run. A global leaderboard
+backed by the game's own API, plus a behavior-preserving engine
+performance pass.
+
+### The Ledger of Legends — a global leaderboard
+- **Inscribe every trial.** The death screen now carries an inscription
+  row: name your archmage (2–16 characters, remembered in the meta save
+  for future runs) and the deed is recorded the moment it ends — score,
+  wave, kills, time, glyphs, triumph and endless marks, the seed, and the
+  transmutations/merges woven on the way down.
+- **THE LEDGER screen.** A new destination on the main menu (trophy
+  glyph, beside Reliquary/Arcanum): the top 20 deeds with gilded top
+  three (gold / silver / bronze ranks), triumph and endless marks per
+  entry, live refresh, and a note when the ledger holds deeper pages.
+- **Server-backed, self-hosted.** `GET/POST /api/leaderboard` (App
+  Router route handlers, no server actions) with zod validation, per-IP
+  rate limiting (one inscription per 10 s), value clamping, and a
+  pruned ledger (the 500 greatest deeds are kept, the rest fade).
+  Storage: Prisma + SQLite (`prisma/schema.prisma` → `LeaderboardEntry`).
+- **Sealed gracefully where the rift runs static.** On the GitHub Pages
+  static export the API doesn't exist — `src/lib/leaderboard.ts` treats
+  every failure as *the ledger is sealed*, the menu screen says so in
+  plain words, and the game is never blocked. Deployers who want the
+  ledger on Pages can point the same UI at any host of the API.
+
+### Engine pass — steadier 60 fps
+- **30 hot-path distance calls rebuilt on `Math.sqrt`.** `Math.hypot`
+  paid its robustness-at-±1e150 dividend in enemy pursuit, homing
+  bolts, mote attraction, camera framing, flow-field steering and
+  player movement — none of which need it. All replaced with
+  `sqrt(dx*dx + dy*dy)`; identical results at game magnitudes.
+- **Particle free-list pool.** Sparks and step-dust now reuse recycled
+  `Particle` objects (capped at 512 pooled) instead of allocating a
+  fresh literal per spawn — same caps, same lifetimes, same order,
+  far less GC churn during heavy waves.
+- **Per-entity gradient caching.** Drop halos (heart / resonance /
+  tear) and projectile/bolt blooms cache their gradients on the entity
+  itself — no more per-entity-per-frame key-string concat + Map lookups.
+- **Allocation sweep in the tick.** 13 inline compact-predicate closures
+  hoisted to methods, the autopilot's per-frame `.some()` closure
+  replaced with a precomputed flag, the render cull predicate hoisted,
+  and the world-border corner arrays frozen as a module constant.
+- **HUD payload reuse.** The 30 Hz HUD flush now updates a reused
+  `HudData` (in-place `HudSpell` array + reusable attune/resonance/boss
+  sub-objects) instead of rebuilding the payload every flush — verified
+  against the DOM-ref consumer first.
+
+### Housekeeping
+- `allowedDevOrigins` for gateway-hosted dev previews; `typecheck`
+  excludes sandbox template folders; README/CHANGELOG updated for V1.2.
+
 ## Version 1.1 — True Direction
 
 The first post-release patch: touch play rebuilt from the stick up, the

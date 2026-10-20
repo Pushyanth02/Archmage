@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
   output: isPages ? "export" : "standalone",
   trailingSlash: isPages,
   basePath,
+  /* V1.2 — the static export has no server: exclude the API route handlers
+     (all .ts files under src/app/api) from the Pages build so `next build`
+     never tries to statically render them. Pages/layouts are .tsx and stay
+     included. On GitHub Pages the Ledger of Legends reads as "sealed" —
+     src/lib/leaderboard.ts treats the missing endpoint as gracefully
+     unavailable. The standalone/server build keeps the API. */
+  pageExtensions: isPages ? ["tsx", "jsx"] : ["ts", "tsx", "js", "jsx"],
   images: { unoptimized: true },
   typescript: {
     ignoreBuildErrors: true,

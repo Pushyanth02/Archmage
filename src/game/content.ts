@@ -1026,6 +1026,9 @@ export interface MetaSave {
      setting in GameSettings. */
   mercyDeaths: number;
   mercyTierSel: number;
+  /* V1.2 — the name inscribed in the Ledger of Legends (global leaderboard).
+     Persisted so the game-over inscription only ever needs confirming. */
+  playerName: string;
 }
 
 export const DEFAULT_META: MetaSave = {
@@ -1034,6 +1037,7 @@ export const DEFAULT_META: MetaSave = {
   upgrades: { vitality: 0, power: 0, focus: 0, swiftness: 0 }, combosFound: [],
   seenEnemies: [], seenBosses: [], settings: { ...DEFAULT_SETTINGS }, victories: 0,
   mercyDeaths: 0, mercyTierSel: -1,
+  playerName: "",
 };
 
 export const META_KEY = "archmage_save_v1";
@@ -1072,6 +1076,7 @@ export function loadMeta(): MetaSave {
         victories: parsed.victories ?? 0,
         mercyDeaths: parsed.mercyDeaths ?? 0,
         mercyTierSel: parsed.mercyTierSel ?? -1,
+        playerName: parsed.playerName ?? "",
       };
     }
   } catch { /* ignore */ }

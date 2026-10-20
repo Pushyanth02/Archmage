@@ -26,7 +26,7 @@ import { Sfx } from "./audio";
 /* module singleton — one AudioContext for the whole app */
 export const sfx = new Sfx();
 
-export type ScreenId = "menu" | "sanctum" | "arcanum";
+export type ScreenId = "menu" | "sanctum" | "arcanum" | "ledger";
 
 export interface Banner { title: string; sub: string | null; color: string; key: number }
 
@@ -73,6 +73,11 @@ interface ArchmageStore {
      death), ≥ 0 = a manually chosen (lower) tier. Written by the Settings
      tier chips + GameOver screen. */
   setMercyTier: (tier: number) => void;
+
+  /* V1.2 — Ledger of Legends: the alias inscribed on the global leaderboard.
+     Sanitized here (control chars stripped, trimmed, 16-char cap) so both the
+     game-over inscription and any future callers share one canonical form. */
+  setPlayerName: (name: string) => void;
 
   /* ---------- actions ---------- */
   setScreen: (s: ScreenId) => void;
@@ -174,6 +179,15 @@ export const useArchmageStore = create<ArchmageStore>((set, get) => ({
     sfx.click();
     const prev = get().meta;
     const next: MetaSave = { ...prev, mercyTierSel: Math.max(-1, tier | 0) };
+    saveMeta(next);
+    set({ meta: next });
+  },
+
+  setPlayerName: (name) => {
+    const clean = name.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 16);
+    const prev = get().meta;
+    if (prev.playerName === clean) return;
+    const next: MetaSave = { ...prev, playerName: clean };
     saveMeta(next);
     set({ meta: next });
   },

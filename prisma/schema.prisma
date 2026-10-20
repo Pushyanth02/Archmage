@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Global leaderboard for Archmage runs. One row = one finished run.
+// evolutions / merges are stored as "|"-joined strings (SQLite has no lists)
+// and split back into string[] at the API boundary.
+model LeaderboardEntry {
+  id         String   @id @default(cuid())
+  name       String // player alias
+  score      Int
+  wave       Int
+  kills      Int
+  timeSec    Int
+  shards     Int
+  triumph    Boolean  @default(false)
+  endless    Boolean  @default(false)
+  seed       String   @default("")
+  evolutions String   @default("") // names joined with "|"
+  merges     String   @default("") // names joined with "|"
+  createdAt  DateTime @default(now())
+
+  @@index([score]) // fast top-N ordering by score
+}
