@@ -1,6 +1,91 @@
 # Changelog
 
+## Version 1.3 — The Radiant Rework
+
+The third patch: the game looks and feels reborn. A complete visual
+overhaul of every entity, spell and arena — plus the combat-feel layer
+that makes each hit land — and a deep performance pass so it all runs
+smooth on any device. The Ledger of Legends (V1.2's global leaderboard)
+has been removed entirely by design: the rift keeps its own council.
+
+### The Radiant VFX core (`src/game/vfx.ts`)
+- **Baked-glow sprite engine.** Every glow, flash, streak, wisp and smoke
+  puff is a small offscreen canvas rasterized once per color and then
+  blitted with `drawImage` — the per-frame `shadowBlur` and live radial
+  gradients are gone from every hot path.
+- **One additive pass, layered explosions.** All combat light (blast
+  cores, shockwaves, aura shells, debris, soul wisps, enemy under-glows,
+  ribbon trails) draws in a single `globalCompositeOperation = "lighter"`
+  block; smoke then returns under `source-over` to softly occlude the
+  glow edges.
+- **Zero-allocation effect pools** — blasts, shocks, streaks, wisps,
+  auras and smoke are preallocated and recycled through rolling cursors.
+- **Ribbon trails.** Every traveling bolt drags a tapered comet tail on a
+  Float32Array ring buffer — one polygon fill per trail, zero GC.
+
+### The combat feel stack
+- **Hits:** impact-axial squash-and-spring on every foe, directional
+  spark cones off the wound surface, micro hit-stop with a 150 ms
+  re-trigger guard, and crit trauma shake.
+- **Kills:** a full layered blast (chromatic core flash + double
+  shockwave + debris streaks + smoke), an expanding aura shell, rising
+  soul wisps, and a trauma + zoom-punch scaled to the foe's weight.
+- **Bosses:** slow-motion dip, warm white flash, six-wisp exodus and a
+  heavier punch when a tyrant falls; enrage now breathes with dual rings.
+- **Casting:** crisp staff-tip muzzle flash in the element's color on
+  every release; dash kicks a spark burst and snaps an aura shell open.
+- **Damage numbers** pop on an easeOutBack overshoot; floaters rise.
+- **Trauma camera:** shake = trauma², smooth dual-sine noise (never white
+  noise buzz), translational + rotational, exponential decay.
+
+### The remodel
+- **All 19 foe types + the tyrant** rebuilt in local space: rim-lit
+  bodies with under-shade chords, walk-cycle bounce for grounded foes,
+  hover sine for flyers, tracking pupils, and at least one animated
+  element each — twitching ears, nocked arrows, jointed skitter legs,
+  fluttering pennants, orbiting rune blades, a tooth-ringed maw.
+- **The Archmage** wears a two-layer cape, an element-tinted breathing
+  aura, orbiting motes, a ferruled staff with a rotating faceted crystal
+  on a baked halo (the last per-frame shadowBlur is gone).
+- **Spell silhouettes** keep their identities and gain sprite-bloom cores.
+
+### Six all-new arenas
+Each act's floor is **baked once per act** into an offscreen 2560×1600
+canvas (deterministic per seed + act; the gameplay RNG stream is never
+touched) and blitted as a single draw each frame:
+- Sunless Vestibule — starfield void, arcane circles, fog banks, twinkling stars
+- Cinder Labyrinth — jagged magma crack network, breathing ember nodes
+- Drowned Necropolis — caustic webs, sunken rune circles, silt drifts, rising bubbles
+- Silent Sepulcher — frost fracture polylines, pale ice patches, crystalline glints, falling snow
+- Heart of the Abyss — bezier vein network with pulsing nodes, rib arcs
+- Endless Dirge — spiral galaxy, dense starfall streaks
+Pillars are act-set-dressed (obsidian monoliths, seamed basalt, coral
+columns, ice shards, flesh obelisks, void crystals) and the ambient
+weather is per-act: embers rise, bubbles sway, snow falls, spores sink.
+
+### Performance pass
+- **Spatial-hash broadphase** for projectile↔enemy collisions (96 px
+  uniform grid, 3×3 neighborhood query) — the heaviest loop drops from
+  every-foe checks to a few hundred.
+- **Per-act floor cache** — one blit replaces per-frame floor work.
+- **Adaptive quality** — an EMA frame-time monitor steps effect density
+  down under sustained load and back up with hysteresis, capped per
+  device class (phone 0.7 / tablet 0.85 / desktop 1.0).
+- **Sprite-cached blooms** for projectiles and enemy bolts (the per-kind
+  Map lookups are resolved once per object lifetime).
+- Legacy ring system retired into the vfx shockwave pool (dual eased
+  stroke, segmented variant for big events).
+
+### Removals
+- **The Ledger of Legends is gone entirely** — API route, client helpers,
+  Prisma model, Ledger screen, inscription flow, player naming. The rift
+  keeps no lists.
+
+---
+
 ## Version 1.2 — The Ledger of Legends
+
+> *The Ledger was removed entirely in V1.3.*
 
 The second patch: deeds that outlive the run. A global leaderboard
 backed by the game's own API, plus a behavior-preserving engine

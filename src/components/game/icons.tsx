@@ -444,15 +444,6 @@ export function UiIcon({ name, ...p }: IconProps & { name: string }) {
           <path d="M2.5 12c1.6-4 3.2-6 4.8-6s3.2 2 4.7 6 3.1 6 4.7 6 3.2-2 4.8-6" />
         </svg>
       );
-    /* V1.2 — the trophy glyph for the Ledger of Legends (global leaderboard) */
-    case "trophy":
-      return (
-        <svg {...base(p)}>
-          <path d="M7 4h10v4.5a5 5 0 0 1-10 0z" />
-          <path d="M7 5.5H4.5c0 2.6 1.1 4.1 2.9 4.4M17 5.5h2.5c0 2.6-1.1 4.1-2.9 4.4" />
-          <path d="M12 13.5v4.5M8.5 21h7" />
-        </svg>
-      );
     /* Patch 10.1 — fullscreen toggle glyphs (four-corner arrows) */
     case "expand":
       return (

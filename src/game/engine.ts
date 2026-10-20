@@ -53,6 +53,7 @@ import {
 import { Sfx } from "./audio";
 import { EVOLUTIONS, EvolutionDef, offerEvolutions } from "./evolutions";
 import type { FateContext } from "./autopick";
+import { Vfx, Juice, Trail, easeOutBack } from "./vfx";
 
 /* --------------------------------- types --------------------------------- */
 
@@ -139,6 +140,12 @@ interface Enemy {
   affix: EliteAffix | null; resist: number; auraT: number; enraged: boolean;
   dead: boolean;                // flagged on death, compacted at frame start
   grad: CanvasGradient | null;  // cached body gradient (origin-relative)
+  /* V1.3 — HIT SQUASH: sq is a 0.18s decaying timer set on every wound; sqA
+     is the impact axis. drawEnemy squashes along that axis (preserve volume)
+     and springs back — the core "hit feel" deformation. */
+  sq: number; sqA: number;
+  /* V1.3 — cached under-glow sprite (baked per glow color, ref stored). */
+  gspr?: HTMLCanvasElement | null;
   /* Patch 9.0 — stuck detection bookkeeping (flow-field safety net).
      Patch 10.2: stuckN counts CONSECUTIVE stuck windows (escalating kicks,
      then a rift-hop relocation) so terrain can never weld a foe in place. */
@@ -151,14 +158,17 @@ interface Proj {
   special?: string;          // evolution behavior key
   back?: boolean;            // Patch 9.0: hurricane blades — returning home
   grad?: CanvasGradient | null;  // Task 2-b: cached bloom gradient (kind/r immutable)
+  /* V1.3 — ribbon trail (Float32Array ring buffer; one tapered fill per
+     frame, additive pass) + cached bloom sprite. */
+  tr?: Trail | null;
+  gspr?: HTMLCanvasElement | null;
 }
-interface EBolt { x: number; y: number; vx: number; vy: number; r: number; dmg: number; life: number; color: string; grad?: CanvasGradient | null }
+interface EBolt { x: number; y: number; vx: number; vy: number; r: number; dmg: number; life: number; color: string; grad?: CanvasGradient | null; tr?: Trail | null; gspr?: HTMLCanvasElement | null }
 interface Particle {
   x: number; y: number; vx: number; vy: number; life: number; maxLife: number;
   size: number; color: string; drag: number; glow: boolean; grav: number;
 }
 interface Floater { x: number; y: number; text: string; color: string; life: number; maxLife: number; size: number }
-interface Ring { x: number; y: number; maxR: number; life: number; maxLife: number; color: string; w: number }
 interface Beam { x1: number; y1: number; x2: number; y2: number; life: number; maxLife: number; color: string; w: number }
 interface Zap { pts: { x: number; y: number }[]; life: number; maxLife: number; color: string }
 interface Rock { x: number; y: number; r: number; hp: number; maxHp: number; life: number; maxLife: number; grad: CanvasGradient | null; tick: number }
@@ -247,6 +257,14 @@ const FLOW_CELL = 64;
 const FLOW_GW = WORLD_W / FLOW_CELL;
 const FLOW_GH = WORLD_H / FLOW_CELL;
 const FLOW_UNREACHED = 0xFFFF;
+/* V1.3 — SPATIAL HASH: uniform 96px broadphase grid over the live enemy
+   set (27×17 cells). The projectile hot-path queries its 3×3 neighborhood
+   instead of every foe — the classic horde-game collision win. Cell size
+   covers the worst interaction radius (enemy 22 + proj 12 + graze ~20 =
+   54px < 96) so 3×3 can never miss a hit. */
+const GRID_CELL = 96;
+const GRID_W = Math.ceil(WORLD_W / GRID_CELL);
+const GRID_H = Math.ceil(WORLD_H / GRID_CELL);
 
 export class ArchmageEngine {
   private o: EngineOpts;
@@ -270,7 +288,20 @@ export class ArchmageEngine {
   /* view culling rect in world coords (recomputed per render) */
   private vx0 = 0; private vy0 = 0; private vx1 = 0; private vy1 = 0;
   private arena: Arena;
-  private t = 0; private hitStop = 0; private shake = 0; private redFlash = 0;
+  private t = 0; private hitStop = 0; private redFlash = 0;
+  /* V1.3 — THE RADIANT REWORK CORE: vfx owns every combat effect pool
+     (blasts / shocks / sparks / aura shells / soul wisps / smoke) drawn
+     from pre-baked sprites inside ONE additive pass; juice is the camera +
+     time feel controller (trauma shake, kill zoom-punch, flash, slow-mo,
+     hitstop re-trigger guard). */
+  private vfx = new Vfx();
+  private juice = new Juice();
+  /* V1.3 — adaptive quality: EMA frame-time monitor steps the effect
+     density down under sustained load and back up with hysteresis. */
+  private frameEma = 16.7; private lowFrames = 0; private hiFrames = 0; private qualityAuto = 1;
+  /* V1.3 — per-element ribbon-trail fill styles + widths (precomposed
+     strings; zero per-frame allocation in the additive trail pass). */
+  private trailFills = new Map<string, string>();
 
   /* player */
   private px = 400; private py = 300; private pvx = 0; private pvy = 0;
@@ -363,6 +394,9 @@ export class ArchmageEngine {
   private flowDist: Uint16Array = new Uint16Array(FLOW_GW * FLOW_GH);
   private flowClock = 0;
   private flowCell = -1;
+  /* V1.3 — broadphase buckets (arrays reused; cleared via length=0, so the
+     steady state allocates nothing). */
+  private gridCells: Enemy[][] = [];
   /* Patch 7.0: run-scoped bestiary dedupe — onBestiary fires once per kind. */
   private seenKinds = new Set<string>();
   /* Patch 10.2 — seed-driven enemy ecology: per-type spawn weight multipliers
@@ -402,7 +436,6 @@ export class ArchmageEngine {
      particle is indistinguishable from a fresh literal. */
   private particlePool: Particle[] = [];
   private floaters: Floater[] = [];
-  private rings: Ring[] = [];
   private beams: Beam[] = [];
   private zaps: Zap[] = [];
   private ambient: { x: number; y: number; s: number; sp: number; ph: number }[] = [];
@@ -459,6 +492,17 @@ export class ArchmageEngine {
      replaces per-mote shadowBlur) and the per-size floater font strings. */
   private moteSprite: HTMLCanvasElement | null = null;
   private floaterFonts = new Map<number, string>();
+  /* V1.3 MAPS — the act's floor is baked once into this offscreen canvas
+     (2560×1600) and blitted with a single drawImage per frame. floorNodes /
+     twinkles are the runtime accent node lists baked alongside; ambientRGB
+     is the act's precomposed weather color; veinSpr is the shared ember /
+     vein glow sprite for node pulses. */
+  private floorCv: HTMLCanvasElement | null = null;
+  private floorAct = -1;
+  private floorNodes: { x: number; y: number; r: number; ph: number }[] = [];
+  private twinkles: { x: number; y: number; s: number; ph: number }[] = [];
+  private ambientRGB = "200,180,255";
+  private veinSpr: HTMLCanvasElement | null = null;
 
   /* reusable HUD payload (mutated in place, pushed at ~30 Hz) */
   private hudTick = 0;
@@ -515,6 +559,9 @@ export class ArchmageEngine {
        sees a different tyrant order through the 5 acts (e.g. Mordrax at
        wave 10 of one run, wave 50 of another). Also schedule the first
        spell drop (every 3-5 waves, strict — no per-kill % rolls). */
+    /* V1.3 — floor cache canvas (baked lazily per act on first draw). */
+    this.floorCv = document.createElement("canvas");
+
     this.reshuffleBosses();
     this.scheduleNextDrop(1);
 
@@ -626,6 +673,7 @@ export class ArchmageEngine {
     const coarse = window.matchMedia("(pointer: coarse)").matches;
     const short = Math.min(this.w, this.h);
     this.deviceClass = coarse && short <= 500 ? "phone" : coarse && short <= 1024 ? "tablet" : "desktop";
+    this.applyVfxQuality();
   }
 
   /** Patch 9.0 — FOV: guarantee a minimum visible world slice per device,
@@ -1500,9 +1548,14 @@ export class ArchmageEngine {
       wob: type === "boss" ? 0 : this.rng.range(0, TAU),
       subT: 0, armAng: this.rng.next() * TAU, count: 0,
       affix, resist, auraT: 0, enraged: false,
-      dead: false, grad: null,
+      dead: false, grad: null, sq: 0, sqA: 0, gspr: null,
       lastX: x, lastY: y, stuckT: 0, stuckN: 0,
     });
+    /* V1.3 — RIFT-IN: foes materialize behind an expanding aura shell + a
+       crisp shockwave (bosses arrive with the big ring); the spawn now
+       reads as an arrival, never a pop. */
+    this.vfx.aura(x, y, glow, type === "boss" ? 210 : def.radius * 4.4);
+    this.vfx.shock(x, y, type === "boss" ? 120 : def.radius * 3.4, color, type === "boss" ? 4 : 1.6, 0);
   }
 
   /* Seeded reward draft — the run seed governs every tribute offer.
@@ -1672,13 +1725,13 @@ export class ArchmageEngine {
     }
     this.cd[idx] = sp.cooldown * this.cdMult() * (m?.cooldown ?? 1);
 
-    /* Patch 4.0: brief cast-anticipation pulse at the player's hand —
-       a small muzzle flash in the spell's color so every cast reads cleanly. */
+    /* Patch 4.0: brief cast-anticipation pulse at the player's hand. V1.3 —
+       now a proper MUZZLE FLASH: crisp staff-tip bloom + short spark cone in
+       the spell's color (baked sprites, one call). */
     const handAng = Math.atan2(this.my - this.py, this.mx - this.px);
     const hx = this.px + Math.cos(handAng) * 16;
     const hy = this.py + Math.sin(handAng) * 16;
-    for (let i = 0; i < 4; i++) this.puff(hx, hy, sp.glow, 80, 2.2);
-    this.ring(hx, hy, 14, sp.color, 1.5);
+    this.vfx.muzzle(hx, hy, handAng, sp.color);
 
     const cursorAng = Math.atan2(this.my - this.py, this.mx - this.px);
     const dist = Math.sqrt((this.mx - this.px) ** 2 + (this.my - this.py) ** 2);
@@ -2047,6 +2100,11 @@ export class ArchmageEngine {
     this.pvx = (dx / n) * 880; this.pvy = (dy / n) * 880;
     this.dashT = 0.14; this.dashCd = 2.2 * this.mods.dashCdM; this.iframes = Math.max(this.iframes, 0.3);
     this.o.sfx.castShadow();
+    /* V1.3 — dash launch: spark burst kicks back off the launch point and a
+       soft aura shell snaps open — the dash now READS even before the ghosts. */
+    const dAng = Math.atan2(this.pvy, this.pvx);
+    this.vfx.impact(this.px, this.py, dAng + Math.PI, "#b06bff", 2);
+    this.vfx.aura(this.px, this.py, "#b06bff", 46);
     if (this.mods.dashDmg > 0) {
       for (const e of this.enemies) {
         if (e.dead) continue;
@@ -2550,13 +2608,19 @@ export class ArchmageEngine {
     this.runDamage += final;
     e.hitFlash = 0.12;
     const ang = Math.atan2(e.y - this.py, e.x - this.px);
+    const sp = SPELLS[elem];
+    /* V1.3 — THE HIT-FEEL STACK: impact-axial squash (springs back below),
+       directional spark cone off the wound surface + micro hitstop (150 ms
+       guard) + crit trauma. Replaces the old four-puff burst. */
+    e.sq = 0.18; e.sqA = ang;
     const kb = e.type === "boss" ? 14 : 110;
     e.vx += Math.cos(ang) * kb; e.vy += Math.sin(ang) * kb;
     if (elem === "ice") e.chillT = this.evoModFor("ice")?.special === "glacial" ? 3.5 : 2;
     if (elem === "fire") { e.burnT = 3; e.burnDps = 12 * this.mods.power * this.att; }
     /* Patch 4.0: blood no longer heals on hit (no healing spells). */
-    const sp = SPELLS[elem];
-    for (let i = 0; i < 4; i++) this.puff(e.x, e.y, crit ? "#ffe9ad" : sp.color, crit ? 170 : 110, crit ? 3.4 : 2.4);
+    const hx = e.x - Math.cos(ang) * e.r * 0.5;
+    const hy = e.y - Math.sin(ang) * e.r * 0.5;
+    this.vfx.impact(hx, hy, ang, crit ? "#ffe9ad" : sp.glow, crit ? 2 : 1);
     /* Patch 7.0: damage numbers are a setting (accessibility + perf — skips
        floater allocations entirely when off). V1.0: elite-marked hits read
        gold and larger — the power spike is legible at a glance. */
@@ -2564,8 +2628,14 @@ export class ArchmageEngine {
       const col = crit ? "#ffe9ad" : e.affix ? "#f5c96b" : "rgba(242,233,255,0.75)";
       this.floater(e.x + (Math.random() * 16 - 8), e.y - e.r - 6, String(Math.round(final)), col, crit ? 19 : e.affix ? 15 : 12.5);
     }
-    if (crit) { this.o.sfx.crit(); this.hitStop = Math.max(this.hitStop, 0.045); }
-    else this.o.sfx.hit();
+    if (crit) {
+      this.o.sfx.crit();
+      this.hitStop = Math.max(this.hitStop, this.juice.requestHitStop(0.045));
+    } else {
+      this.o.sfx.hit();
+      const hs = this.juice.requestHitStop(0.024);
+      if (hs > 0) this.hitStop = Math.max(this.hitStop, hs);
+    }
     /* Patch 4.0: vamp boon removed — spells no longer heal on damage. */
 
     /* boss enrage — Patch 7.0: phase 2 gains a NEW attack instead of just
@@ -2611,14 +2681,25 @@ export class ArchmageEngine {
       this.seenKinds.add(kind);
       this.o.onBestiary(kind);
     }
-    for (let i = 0; i < (e.type === "boss" ? 40 : 12); i++) this.puff(e.x, e.y, i % 3 === 0 ? e.glow : e.color, e.type === "boss" ? 340 : 190, e.type === "boss" ? 5 : 3.4);
-    this.ring(e.x, e.y, e.r * 2.4, e.color, e.type === "boss" ? 5 : 2.5);
+    const bossKill = e.type === "boss";
+    /* V1.3 — DEATH JUICE: every kill detonates a layered blast (core flash
+       + chromatic fringe + double shockwave + debris streaks + smoke),
+       bursts an aura shell and releases rising soul wisps; trauma scales
+       with the foe's weight. */
+    const blastR = bossKill ? 150 : e.affix ? 64 : 34 + e.r * 0.4;
+    this.vfx.blast(e.x, e.y, e.color, e.glow, blastR, bossKill ? 3 : e.affix ? 2 : 1);
+    this.vfx.aura(e.x, e.y, e.glow, bossKill ? 170 : e.affix ? 84 : 46);
+    const wisps = bossKill ? 6 : e.affix ? 3 : 1;
+    for (let i = 0; i < wisps; i++) this.vfx.wisp(e.x, e.y, e.glow);
+    if (!this.reducedMotion && this.o.settings.screenShake) {
+      this.juice.addTrauma(bossKill ? 0.85 : e.affix ? 0.42 : 0.22);
+    }
+    if (e.affix) this.juice.punch(0.035);
 
     /* blazing elites detonate */
     if (e.affix === "blazing") {
-      this.ring(e.x, e.y, 95, "#ff7847", 4);
-      this.shakeIt(6);
-      for (let i = 0; i < 14; i++) this.puff(e.x, e.y, i % 2 ? "#ff7847" : "#ffe86b", 240, 3.4);
+      this.vfx.blast(e.x, e.y, "#ff7847", "#ffe86b", 84, 2);
+      this.shakeIt(8);
       const dx = this.px - e.x, dy = this.py - e.y;
       if (dx * dx + dy * dy < 100 * 100) this.damagePlayer(e.damage * 1.1, e.x, e.y);
     }
@@ -2636,6 +2717,11 @@ export class ArchmageEngine {
       this.score += 250;
       this.shakeIt(22);
       this.hitStop = Math.max(this.hitStop, 0.22);
+      /* V1.3 — tyrant punctuation: slow-mo dip + warm white flash + zoom
+       punch (accessibility settings respected). */
+      this.juice.punch(0.07);
+      this.juice.slowmo(0.3, 0.35);
+      if (!this.o.settings.reduceFlash) this.juice.flash(255, 240, 214, 0.2);
       this.floater(e.x, e.y - e.r - 14, "+250", "#ffe9ad", 22);
       this.floater(this.px, this.py - 46, "TYRANT FELLED", "#ffe9ad", 18);
       /* Patch 11.0 — the boss theme collapses the instant the tyrant falls
@@ -2849,7 +2935,11 @@ export class ArchmageEngine {
        vignette alongside the OS reduced-motion preference. */
     if (!this.reducedMotion && !this.o.settings.reduceFlash) this.redFlash = 1;
     for (let i = 0; i < 50; i++) this.puff(this.px, this.py, i % 2 ? "#b06bff" : "#f5c96b", 380, 4.6);
-    this.ring(this.px, this.py, 220, "#b06bff", 5);
+    /* V1.3 — the mage's fall: layered blast + soul wisps rising from the
+       robes + a wide aura shell as the rift claims the light. */
+    this.vfx.blast(this.px, this.py, "#b06bff", "#f5c96b", 120, 2);
+    for (let i = 0; i < 5; i++) this.vfx.wisp(this.px, this.py, "#f5c96b");
+    this.vfx.aura(this.px, this.py, "#b06bff", 190);
     /* Patch 10.0 — a death inside the endless echo still counts as a triumph
        (the rift WAS sealed); stats.endless flags the deeper run on the
        game-over screen. */
@@ -2884,7 +2974,9 @@ export class ArchmageEngine {
   }
 
   private ring(x: number, y: number, maxR: number, color: string, w: number) {
-    this.rings.push({ x, y, maxR, life: 0.38, maxLife: 0.38, color, w });
+    /* V1.3 — routed through the vfx shockwave pool: dual eased stroke with
+     a segmented variant for the big ones (same call signature as always). */
+    this.vfx.shock(x, y, maxR, color, w, maxR > 44 ? 5 : 0);
   }
 
   private floater(x: number, y: number, text: string, color: string, size: number) {
@@ -2894,7 +2986,73 @@ export class ArchmageEngine {
 
   private shakeIt(n: number) {
     if (this.reducedMotion || !this.o.settings.screenShake) return;  // accessibility + settings
-    this.shake = Math.max(this.shake, n);
+    /* V1.3 — trauma shake: the old linear amplitude becomes trauma (n/26 of
+     the 0..1 range), squared inside juice → punchy start, smooth stop. */
+    this.juice.addTrauma(n / 26);
+  }
+
+  /* -------------------- V1.3 trail / sprite / quality helpers ------------------- */
+
+  /** Ribbon trail factory — every traveling bolt gets a tapered comet tail;
+   *  void rifts carry the longest, fastest-healing ribbon. */
+  private mkTrail(kind: ElementId): Trail | null {
+    switch (kind) {
+      case "fire": case "ice": case "arcane": case "blood": case "nature": case "wind":
+        return new Trail(9);
+      case "void":
+        return new Trail(12);
+      default:
+        return null;      // earth/lightning never travel as bolts
+    }
+  }
+
+  /** Precomposed trail fill (hex is a valid fillStyle — no per-frame strings). */
+  private trailFill(kind: ElementId): string {
+    let s = this.trailFills.get(kind);
+    if (!s) { s = SPELLS[kind].color; this.trailFills.set(kind, s); }
+    return s;
+  }
+
+  /** Per-element trail ribbon width (world px at the head). */
+  private trailW(kind: ElementId): number {
+    switch (kind) {
+      case "fire": return 17;
+      case "void": return 24;
+      case "blood": return 13;
+      case "nature": return 12;
+      case "arcane": return 10;
+      default: return 8;    // ice / wind read best thin
+    }
+  }
+
+  /** Cached under-glow sprite for an enemy (affix tint for elites). */
+  private enemyGlow(e: Enemy): HTMLCanvasElement {
+    if (!e.gspr) e.gspr = this.vfx.glowSpr(e.affix ? ELITE_DEFS[e.affix].color : e.glow);
+    return e.gspr;
+  }
+
+  /** V1.3 — ADAPTIVE QUALITY: EMA frame-time monitor with hysteresis.
+     >21 ms sustained (~45 frames) steps effect density down 0.2; ~4 s back
+     under 15.5 ms steps it up. The device class caps the ceiling. */
+  private adaptQuality(rawDt: number): void {
+    this.frameEma = this.frameEma * 0.92 + rawDt * 1000 * 0.08;
+    if (this.frameEma > 21) { this.lowFrames++; this.hiFrames = 0; }
+    else if (this.frameEma < 15.5) { this.hiFrames++; this.lowFrames = 0; }
+    else { this.lowFrames = Math.max(0, this.lowFrames - 1); this.hiFrames = Math.max(0, this.hiFrames - 1); }
+    if (this.lowFrames >= 45 && this.qualityAuto > 0.4) {
+      this.qualityAuto = Math.max(0.4, this.qualityAuto - 0.2);
+      this.lowFrames = 0;
+      this.applyVfxQuality();
+    } else if (this.hiFrames >= 240 && this.qualityAuto < 1) {
+      this.qualityAuto = Math.min(1, this.qualityAuto + 0.2);
+      this.hiFrames = 0;
+      this.applyVfxQuality();
+    }
+  }
+
+  private applyVfxQuality(): void {
+    const base = this.deviceClass === "phone" ? 0.7 : this.deviceClass === "tablet" ? 0.85 : 1;
+    this.vfx.quality = Math.min(base, this.qualityAuto);
   }
 
   /* --------------------------------- frame --------------------------------- */
@@ -2902,6 +3060,9 @@ export class ArchmageEngine {
   private frame(rawDt: number) {
     let dt = rawDt;
     if (this.hitStop > 0) { this.hitStop -= rawDt; dt *= 0.06; }
+    /* V1.3 — boss-kill slow motion: gameplay time dilates while the effects
+     (blasts, wisps, smoke) keep breathing at full rate. */
+    dt *= this.juice.timeScale;
     /* Patch 5.0: spelloffer + mergeoffer freeze the arena (like intermission)
        so the player isn't fighting while reading the cards. Render still
        ticks so the overlay can fade in smoothly.
@@ -2912,11 +3073,13 @@ export class ArchmageEngine {
       this.t += this.phase === "running" ? dt : dt * 0.4;
       this.update(dt);
     }
-    this.shake = Math.max(0, this.shake - rawDt * 34);
+    this.juice.update(rawDt);
+    this.vfx.update(this.phase === "running" ? dt : rawDt);
     this.redFlash = Math.max(0, this.redFlash - rawDt * 1.4);
     this.render();
     this.hudTick ^= 1;
     if (this.hudTick === 0) this.pushHud();
+    this.adaptQuality(rawDt);
   }
 
   private update(dt: number) {
@@ -3155,6 +3318,9 @@ export class ArchmageEngine {
     }
 
     /* --- projectiles --- */
+    /* V1.3 — rebuild the enemy broadphase AFTER all movement this tick so
+       the projectile loop queries live positions. */
+    this.rebuildEnemyGrid();
     for (const p of this.projs) this.updateProj(p, dt);
     this.compact(this.projs, this.aliveProj);
 
@@ -3168,6 +3334,9 @@ export class ArchmageEngine {
         if (dx * dx + dy * dy < bb.r * bb.r) { boltSlow = 0.12; break; }
       }
       b.x += b.vx * dt * boltSlow; b.y += b.vy * dt * boltSlow; b.life -= dt * boltSlow;
+      /* V1.3 — enemy bolts drag a short violet ribbon. */
+      if (!b.tr) b.tr = new Trail(7);
+      b.tr.push(b.x, b.y);
       if (b.x < -30 || b.x > WORLD_W + 30 || b.y < -30 || b.y > WORLD_H + 30) b.life = 0;
       for (const r of this.rocks) {
         const dx = b.x - r.x, dy = b.y - r.y;
@@ -3299,8 +3468,6 @@ export class ArchmageEngine {
     this.compactParticles();
     for (const f of this.floaters) { f.life -= dt; f.y -= 34 * dt; }
     this.compact(this.floaters, this.aliveFloater);
-    for (const r of this.rings) r.life -= dt;
-    this.compact(this.rings, this.aliveRing);
     for (const b of this.beams) b.life -= dt;
     this.compact(this.beams, this.aliveBeam);
     for (const z of this.zaps) z.life -= dt;
@@ -3351,7 +3518,6 @@ export class ArchmageEngine {
   private aliveMote(m: Mote) { return m.life > 0; }
   private aliveDrop(d: SpellDrop) { return d.life > 0; }
   private aliveFloater(f: Floater) { return f.life > 0; }
-  private aliveRing(r: Ring) { return r.life > 0; }
   private aliveBeam(b: Beam) { return b.life > 0; }
   private aliveZap(z: Zap) { return z.life > 0; }
   private aliveEnemy(e: Enemy) { return !e.dead; }
@@ -3361,6 +3527,9 @@ export class ArchmageEngine {
 
   private updateEnemy(e: Enemy, dt: number, running: boolean) {
     e.hitFlash = Math.max(0, e.hitFlash - dt);
+    /* V1.3 — hit-squash timer drains in the same place (drawEnemy springs
+       the body back as it decays). */
+    if (e.sq > 0) e.sq = Math.max(0, e.sq - dt);
     e.contactCd = Math.max(0, e.contactCd - dt);
     /* Patch 10.2 — the generic wobble is for rendering bobbing/flap; bosses
        are exempt because Ashgorim OWNS wob as his shockwave radius now. */
@@ -3976,8 +4145,28 @@ export class ArchmageEngine {
     for (let i = 0; i < 12; i++) this.puff(x, y, dark ? (i % 2 ? "#b06bff" : "#6e3fd9") : (i % 2 ? "#7ed957" : "#b9f29a"), 130, 3);
   }
 
+  /** V1.3 — SPATIAL HASH REBUILD: buckets every live enemy into the 96px
+   *  broadphase grid (arrays reused, cleared via length=0 — no steady-state
+   *  allocation). Runs once per tick after all enemy movement, before the
+   *  projectile pass. */
+  private rebuildEnemyGrid() {
+    const cells = this.gridCells;
+    if (cells.length === 0) { for (let i = 0; i < GRID_W * GRID_H; i++) cells.push([]); }
+    for (let i = 0; i < cells.length; i++) cells[i].length = 0;
+    for (const e of this.enemies) {
+      if (e.dead) continue;
+      const gx = Math.max(0, Math.min(GRID_W - 1, (e.x / GRID_CELL) | 0));
+      const gy = Math.max(0, Math.min(GRID_H - 1, (e.y / GRID_CELL) | 0));
+      cells[gy * GRID_W + gx].push(e);
+    }
+  }
+
   private updateProj(p: Proj, dt: number) {
     p.life -= dt;
+    /* V1.3 — ribbon trail: first frame lazily creates it, then every sim
+       step appends the position (frame-rate sampled — never gaps). */
+    if (!p.tr) p.tr = this.mkTrail(p.kind);
+    if (p.tr) p.tr.push(p.x, p.y);
 
     /* Patch 9.0 — hurricane blades boomerang home: halfway through their
        flight they swing around, re-arm their hit set, and sweep back through
@@ -4067,7 +4256,17 @@ export class ArchmageEngine {
     }
 
     const graze = this.graze();
-    for (const e of this.enemies) {
+    /* V1.3 — BROADPHASE QUERY: test only the 3×3 cell neighborhood (the
+       96px cell dwarfs the worst interaction radius, so no hit can straddle
+       the margin). With 150+ bolts × 60 foes this turns ~9,000 checks into
+       a few hundred. */
+    const gx = Math.max(0, Math.min(GRID_W - 1, (p.x / GRID_CELL) | 0));
+    const gy = Math.max(0, Math.min(GRID_H - 1, (p.y / GRID_CELL) | 0));
+    const gx0 = Math.max(0, gx - 1), gx1 = Math.min(GRID_W - 1, gx + 1);
+    const gy0 = Math.max(0, gy - 1), gy1 = Math.min(GRID_H - 1, gy + 1);
+    for (let cy = gy0; cy <= gy1; cy++) {
+      for (let cx = gx0; cx <= gx1; cx++) {
+    for (const e of this.gridCells[cy * GRID_W + cx]) {
       if (e.dead || p.hit.has(e)) continue;
       const dx = e.x - p.x, dy = e.y - p.y;
       const rr = e.r + p.r + graze;
@@ -4116,6 +4315,8 @@ export class ArchmageEngine {
         else { p.life = 0; return; }
       }
     }
+      }
+    }
 
     /* nature pod expires into a cloud at its destination */
     if (p.kind === "nature" && p.life <= 0) {
@@ -4129,13 +4330,10 @@ export class ArchmageEngine {
     const m = this.evoModFor("fire");
     const cataclysm = m?.special === "cataclysm";
     const R = (62 + this.mods.spread * 5) * (m?.radius ?? 1);
-    /* Patch 11.0 — the detonation JUICES: triple expanding ring (shock, fire
-       crown, white-hot core), a directional ember shower along the impact
-       vector, and a lingering scorch flash. All within the particle cap. */
-    this.ring(p.x, p.y, R, "#ff7847", 4);
-    this.ring(p.x, p.y, R * 0.64, "#ffe86b", 2.5);
-    this.ring(p.x, p.y, R * 0.38, "#fff6c0", 2);
-    for (let i = 0; i < 22; i++) this.puff(p.x, p.y, i % 3 === 0 ? "#fff6c0" : i % 2 ? "#ff7847" : "#ffe86b", 260, 3.6);
+    /* V1.3 — the detonation is a full LAYERED BLAST: chromatic core flash,
+       double shockwave, directional debris streaks with gravity + smoke.
+       One call replaces the triple ring + 22-puff burst. */
+    this.vfx.blast(p.x, p.y, "#ff7847", cataclysm ? "#fff6c0" : "#ffe86b", R, cataclysm ? 2.5 : 1.6);
     this.shakeIt(4);
     this.hitStop = Math.max(this.hitStop, 0.03);
     for (const e of this.enemies) {
@@ -4315,10 +4513,13 @@ export class ArchmageEngine {
   /* --------------------------------- HUD ----------------------------------- */
 
   /* Task 2-b — view-culling test as a method (was a closure rebuilt every
-     render call; identical comparisons). */
+     render call; identical comparisons). V1.3: inViewFn is the BOUND variant
+     handed to the vfx pools (drawAdditive/drawNormal receive it as a bare
+     callback — an unbound method reference would lose `this`). */
   private inView(x: number, y: number, pad: number): boolean {
     return x > this.vx0 - pad && x < this.vx1 + pad && y > this.vy0 - pad && y < this.vy1 + pad;
   }
+  private inViewFn = this.inView.bind(this);
 
   private pushHud() {
     const h = this.hud;
@@ -4426,17 +4627,23 @@ export class ArchmageEngine {
     c.fillStyle = this.bgGrad!;
     c.fillRect(0, 0, w, h);
 
-    /* shake — applied in screen space around the world transform */
-    const sx = (Math.random() * 2 - 1) * this.shake;
-    const sy = (Math.random() * 2 - 1) * this.shake;
+    /* V1.3 — TRAUMA SHAKE: translational + rotational offsets sampled from
+       the juice controller's smooth noise, applied around the world transform
+       (render-only — aim math is untouched). The kill zoom-punch rides the
+       same transform as a small render-time multiplier. */
+    const sx = this.juice.shakeX;
+    const sy = this.juice.shakeY;
+    const zEff = this.zoomCur * (1 + this.juice.punchK);
     c.save();
 
     /* Patch 9.0 — world camera transform: screen center → cam, scaled by
        the live FOV zoom. Everything inside this save/restore is world-space. */
     c.translate(w / 2 + sx, h / 2 + sy);
-    c.scale(this.zoomCur, this.zoomCur);
+    c.rotate(this.juice.shakeRot);
+    c.scale(zEff, zEff);
     c.translate(-this.camX, -this.camY);
 
+    this.drawFloor(c);
     this.drawWorldBorder(c);
     this.drawRuneCircle(c);
     this.drawAmbient(c);
@@ -4458,8 +4665,29 @@ export class ArchmageEngine {
     for (const b of this.eBolts) { if (this.inView(b.x, b.y, 20)) this.drawEBolt(c, b); }
     this.drawLockBracket(c);
 
-    /* additive fx */
+    /* additive fx — ONE lighter pass, batched: enemy under-auras → ribbon
+       trails → zaps → beams → vfx (blasts/shocks/auras/sparks/wisps) → dust */
     c.globalCompositeOperation = "lighter";
+    /* V1.3 — enemy under-glow: every foe carries its colored light on the
+       ground (baked sprite, one blit each; elites pulse brighter). */
+    for (const e of this.enemies) {
+      if (e.dead || !this.inView(e.x, e.y, e.r + 60)) continue;
+      const d = e.r * (e.affix ? 5.6 : 4.6);
+      c.globalAlpha = e.affix ? 0.26 + Math.sin(this.t * 5 + e.wob) * 0.08 : 0.16;
+      c.drawImage(this.enemyGlow(e), e.x - d / 2, e.y - d / 2, d, d);
+    }
+    /* V1.3 — projectile / bolt ribbon trails (one tapered fill each). */
+    for (const p of this.projs) {
+      if (!p.tr || !this.inView(p.x, p.y, 60)) continue;
+      c.fillStyle = this.trailFill(p.kind);
+      p.tr.draw(c, this.trailW(p.kind), 0.85);
+    }
+    for (const b of this.eBolts) {
+      if (!b.tr || !this.inView(b.x, b.y, 40)) continue;
+      c.fillStyle = "rgba(208,91,255,1)";
+      b.tr.draw(c, 9, 0.7);
+    }
+    c.globalAlpha = 1;
     for (const z of this.zaps) this.drawZap(c, z);
     for (const b of this.beams) {
       if (!this.inView((b.x1 + b.x2) / 2, (b.y1 + b.y2) / 2, Math.max(Math.abs(b.x2 - b.x1), Math.abs(b.y2 - b.y1)) / 2 + 20)) continue;
@@ -4476,16 +4704,6 @@ export class ArchmageEngine {
       c.beginPath(); c.moveTo(b.x1, b.y1); c.lineTo(b.x2, b.y2); c.stroke();
       c.setLineDash([]);
     }
-    for (const r of this.rings) {
-      if (!this.inView(r.x, r.y, r.maxR + 20)) continue;
-      /* Patch 11.0 — eased expansion: the radius grows on an ease-out curve
-         and the alpha follows its square, so rings bloom fast then melt
-         smoothly instead of draining at a constant rate. */
-      const k = 1 - r.life / r.maxLife;
-      const ke = 1 - (1 - k) * (1 - k);
-      c.strokeStyle = r.color; c.globalAlpha = (1 - ke) * (1 - ke) * 0.9; c.lineWidth = r.w * (1 - ke * 0.5);
-      c.beginPath(); c.arc(r.x, r.y, 6 + ke * r.maxR, 0, TAU); c.stroke();
-    }
     for (const p of this.particles) {
       if (!this.inView(p.x, p.y, 8)) continue;
       const a = Math.max(0, p.life / p.maxLife);
@@ -4493,8 +4711,14 @@ export class ArchmageEngine {
       c.fillStyle = p.color;
       c.beginPath(); c.arc(p.x, p.y, p.size * (0.5 + a * 0.5), 0, TAU); c.fill();
     }
+    /* V1.3 — the full combat pool: blast cores, shockwaves, aura shells,
+       debris streaks and soul wisps join the additive batch. */
+    this.vfx.drawAdditive(c, this.inViewFn);
     c.globalAlpha = 1;
     c.globalCompositeOperation = "source-over";
+    /* V1.3 — smoke AFTER the additive block: the soot softly occludes the
+       glow edges (the layered-explosion stack, not a flat pop). */
+    this.vfx.drawNormal(c, this.inViewFn);
 
     for (const f of this.floaters) { if (this.inView(f.x, f.y, 30)) this.drawFloater(c, f); }
     c.restore();
@@ -4503,6 +4727,11 @@ export class ArchmageEngine {
     c.fillStyle = this.vigGrad!;
     c.fillRect(0, 0, w, h);
 
+    /* V1.3 — the juice flash overlay (kill punctuation / boss death). */
+    if (this.juice.flashA > 0.003) {
+      c.fillStyle = `rgba(${this.juice.flashR},${this.juice.flashG},${this.juice.flashB},${this.juice.flashA})`;
+      c.fillRect(0, 0, w, h);
+    }
     if (this.redFlash > 0) {
       c.fillStyle = `rgba(255,45,80,${Math.min(0.4, this.redFlash * 0.4)})`;
       c.fillRect(0, 0, w, h);
@@ -4529,6 +4758,326 @@ export class ArchmageEngine {
 
   /** Patch 9.0 — rune-etched border walls bounding the fixed world, so the
       arena's edge reads as a real place the moment the camera approaches it. */
+  /* ================================ V1.3 MAPS ================================
+     THE RADIANT REWORK rebuilds the arena's sense of place. Every act now
+     owns a DISTINCT floor baked ONCE into an offscreen 2560×1600 canvas
+     (per-act, per-seed deterministic — the gameplay rng stream is never
+     touched): starfield void / magma veins / drowned caustics / frost
+     fractures / abyss veins / starfall spiral. Runtime adds cheap animated
+     accents (twinkles, vein pulses) and per-act ambient weather. One blit
+     per frame replaces per-frame floor work entirely. */
+
+  private drawFloor(c: CanvasRenderingContext2D) {
+    if (!this.floorCv || this.floorAct !== this.act.id) this.bakeFloor();
+    c.drawImage(this.floorCv!, 0, 0);
+    /* animated accents — per-act, node lists baked with the floor */
+    const aid = this.act.id;
+    const t = this.t;
+    if (aid === 1 || aid === 6) {
+      /* twinkling stars (void acts) */
+      for (const tw of this.twinkles) {
+        if (!this.inView(tw.x, tw.y, 8)) continue;
+        const al = 0.18 + Math.sin(t * tw.s * 2 + tw.ph) * 0.16;
+        if (al <= 0.03) continue;
+        c.fillStyle = `rgba(${this.ambientRGB},${al})`;
+        c.beginPath(); c.arc(tw.x, tw.y, tw.s, 0, TAU); c.fill();
+      }
+    } else if (aid === 2 || aid === 5) {
+      /* breathing glow at the magma / vein nodes */
+      if (!this.veinSpr) this.veinSpr = this.vfx.glowSpr(aid === 2 ? "#ff7847" : "#ff5a78");
+      const spr = this.veinSpr;
+      for (const nd of this.floorNodes) {
+        if (!this.inView(nd.x, nd.y, 40)) continue;
+        const al = 0.10 + Math.sin(t * 1.8 + nd.ph) * 0.08;
+        if (al <= 0.02) continue;
+        const d = nd.r * 2;
+        c.globalAlpha = al;
+        c.drawImage(spr, nd.x - d / 2, nd.y - d / 2, d, d);
+      }
+      c.globalAlpha = 1;
+    }
+  }
+
+  /** Bake the act's floor into the offscreen cache. Deterministic per
+   *  (seed, act) — the RNG here is a FRESH stream; the gameplay rng is
+   *  never consumed, so wave composition stays identical run-to-run. */
+  private bakeFloor() {
+    const cv = this.floorCv;
+    cv!.width = WORLD_W;
+    cv!.height = WORLD_H;
+    const c = cv!.getContext("2d")!;
+    this.floorAct = this.act.id;
+    this.floorNodes.length = 0;
+    this.twinkles.length = 0;
+    const aid = this.act.id;
+    const pal = this.act.palette;
+    const rng = mulberry32(hashSeed(this.o.seed + "|floor|" + aid));
+    this.ambientRGB = pal.mote;
+
+    /* base — deep floor under everything */
+    c.fillStyle = "#0c081a";
+    c.fillRect(0, 0, WORLD_W, WORLD_H);
+    const g = c.createRadialGradient(WORLD_W / 2, WORLD_H / 2, 180, WORLD_W / 2, WORLD_H / 2, 1480);
+    g.addColorStop(0, `rgba(${pal.sky},0.22)`);
+    g.addColorStop(0.55, `rgba(${pal.sky},0.09)`);
+    g.addColorStop(1, "rgba(5,3,12,0.55)");
+    c.fillStyle = g;
+    c.fillRect(0, 0, WORLD_W, WORLD_H);
+
+    /* shared stone tiling — act-tinted, wave-warped for organic acts */
+    c.strokeStyle = `rgba(${pal.rune},0.05)`;
+    c.lineWidth = 1;
+    const tile = aid === 3 || aid === 4 ? 128 : 160;
+    for (let ty = tile; ty < WORLD_H; ty += tile) {
+      c.beginPath();
+      for (let sx = 0; sx <= WORLD_W; sx += 64) {
+        const warp = Math.sin(sx * 0.004 + ty * 0.01) * 6;
+        if (sx === 0) c.moveTo(0, ty + warp);
+        else c.lineTo(sx, ty + warp);
+      }
+      c.stroke();
+    }
+    for (let tx = tile; tx < WORLD_W; tx += tile) {
+      c.beginPath();
+      for (let sy = 0; sy <= WORLD_H; sy += 64) {
+        const warp = Math.sin(sy * 0.005 + tx * 0.008) * 6;
+        if (sy === 0) c.moveTo(tx + warp, 0);
+        else c.lineTo(tx + warp, sy);
+      }
+      c.stroke();
+    }
+
+    if (aid === 1) {
+      /* ACT 1 — THE SUNLESS VESTIBULE: a starfield void. Dim stars, faint
+         arcane circles, scattered rune scratches, soft fog banks. */
+      for (let i = 0; i < 160; i++) {
+        const sx = rng.next() * WORLD_W, sy = rng.next() * WORLD_H;
+        const s = 0.5 + rng.next() * 1.4;
+        c.fillStyle = `rgba(200,180,255,${0.05 + rng.next() * 0.12})`;
+        c.beginPath(); c.arc(sx, sy, s, 0, TAU); c.fill();
+        if (i < 44) this.twinkles.push({ x: sx, y: sy, s: 1 + rng.next() * 1.4, ph: rng.next() * TAU });
+      }
+      c.strokeStyle = "rgba(154,123,255,0.07)";
+      c.lineWidth = 2;
+      for (const rr of [420, 700, 980]) {
+        c.beginPath(); c.arc(WORLD_W / 2, WORLD_H / 2, rr, 0, TAU); c.stroke();
+      }
+      c.strokeStyle = "rgba(154,123,255,0.1)";
+      c.lineWidth = 1.4;
+      for (let i = 0; i < 26; i++) {
+        const gx = rng.next() * WORLD_W, gy = rng.next() * WORLD_H;
+        const ga = rng.next() * TAU, gl = 4 + rng.next() * 9;
+        c.beginPath();
+        c.moveTo(gx - Math.cos(ga) * gl, gy - Math.sin(ga) * gl);
+        c.lineTo(gx + Math.cos(ga) * gl, gy + Math.sin(ga) * gl);
+        c.moveTo(gx + Math.sin(ga) * gl * 0.5, gy - Math.cos(ga) * gl * 0.5);
+        c.lineTo(gx - Math.sin(ga) * gl * 0.5, gy + Math.cos(ga) * gl * 0.5);
+        c.stroke();
+      }
+      for (let i = 0; i < 9; i++) {
+        const fx2 = rng.next() * WORLD_W, fy2 = rng.next() * WORLD_H;
+        const fg = c.createRadialGradient(fx2, fy2, 4, fx2, fy2, 260);
+        fg.addColorStop(0, "rgba(88,58,160,0.10)");
+        fg.addColorStop(1, "rgba(88,58,160,0)");
+        c.fillStyle = fg;
+        c.beginPath(); c.ellipse(fx2, fy2, 260, 140, rng.next() * TAU, 0, TAU); c.fill();
+      }
+    } else if (aid === 2) {
+      /* ACT 2 — THE CINDER LABYRINTH: magma crack network + ember glow
+         patches + ash fall soot. */
+      c.lineCap = "round";
+      for (let wkr = 0; wkr < 13; wkr++) {
+        let wx = 80 + rng.next() * (WORLD_W - 160);
+        let wy = 80 + rng.next() * (WORLD_H - 160);
+        const segs = 5 + Math.floor(rng.next() * 6);
+        c.strokeStyle = "rgba(60,22,14,0.85)";
+        c.lineWidth = 3.4;
+        c.beginPath(); c.moveTo(wx, wy);
+        const pts: number[] = [wx, wy];
+        for (let s = 0; s < segs; s++) {
+          wx += (rng.next() * 2 - 1) * 180;
+          wy += (rng.next() * 2 - 1) * 150;
+          wx = Math.max(40, Math.min(WORLD_W - 40, wx));
+          wy = Math.max(40, Math.min(WORLD_H - 40, wy));
+          c.lineTo(wx, wy);
+          pts.push(wx, wy);
+        }
+        c.stroke();
+        c.strokeStyle = "rgba(255,120,60,0.35)";
+        c.lineWidth = 1.3;
+        c.beginPath(); c.moveTo(pts[0], pts[1]);
+        for (let s = 2; s < pts.length; s += 2) c.lineTo(pts[s], pts[s + 1]);
+        c.stroke();
+        if (wkr % 2 === 0) this.floorNodes.push({ x: pts[0], y: pts[1], r: 26 + rng.next() * 22, ph: rng.next() * TAU });
+      }
+      c.lineCap = "butt";
+      for (let i = 0; i < 10; i++) {
+        const ex = rng.next() * WORLD_W, ey = rng.next() * WORLD_H;
+        const eg = c.createRadialGradient(ex, ey, 2, ex, ey, 150);
+        eg.addColorStop(0, "rgba(140,74,44,0.22)");
+        eg.addColorStop(1, "rgba(140,74,44,0)");
+        c.fillStyle = eg;
+        c.beginPath(); c.arc(ex, ey, 150, 0, TAU); c.fill();
+      }
+      c.fillStyle = "rgba(20,12,10,0.5)";
+      for (let i = 0; i < 90; i++) {
+        c.beginPath();
+        c.arc(rng.next() * WORLD_W, rng.next() * WORLD_H, 0.8 + rng.next() * 2, 0, TAU);
+        c.fill();
+      }
+    } else if (aid === 3) {
+      /* ACT 3 — THE DROWNED NECROPOLIS: sunken caustic webs, wavy tiles
+         (already shared), rune circles and silt drifts. */
+      c.lineWidth = 1.6;
+      for (let i = 0; i < 34; i++) {
+        const ax = rng.next() * WORLD_W, ay = rng.next() * WORLD_H;
+        const ar = 60 + rng.next() * 200;
+        const aa = rng.next() * TAU;
+        c.strokeStyle = `rgba(120,240,226,${0.03 + rng.next() * 0.05})`;
+        c.beginPath(); c.arc(ax, ay, ar, aa, aa + 1.2 + rng.next() * 2.2); c.stroke();
+      }
+      c.strokeStyle = "rgba(150,235,225,0.08)";
+      c.lineWidth = 2;
+      for (let i = 0; i < 8; i++) {
+        const rx = rng.next() * WORLD_W, ry = rng.next() * WORLD_H, rr = 34 + rng.next() * 60;
+        c.beginPath(); c.arc(rx, ry, rr, 0, TAU); c.stroke();
+        c.beginPath(); c.arc(rx, ry, rr * 0.66, 0, TAU); c.stroke();
+      }
+      for (let i = 0; i < 26; i++) {
+        const sx = rng.next() * WORLD_W, sy = rng.next() * WORLD_H;
+        const sg = c.createRadialGradient(sx, sy, 2, sx, sy, 90);
+        sg.addColorStop(0, "rgba(18,58,66,0.35)");
+        sg.addColorStop(1, "rgba(18,58,66,0)");
+        c.fillStyle = sg;
+        c.beginPath(); c.ellipse(sx, sy, 90, 40, rng.next() * TAU, 0, TAU); c.fill();
+      }
+    } else if (aid === 4) {
+      /* ACT 4 — THE SILENT SEPULCHER: frost fracture polylines, pale ice
+         patches, crystalline glints. */
+      c.lineCap = "round";
+      for (let root = 0; root < 14; root++) {
+        let fx2 = rng.next() * WORLD_W, fy2 = rng.next() * WORLD_H;
+        let dir = rng.next() * TAU;
+        const branches = 2 + Math.floor(rng.next() * 3);
+        for (let b = 0; b < branches; b++) {
+          let bx = fx2, by = fy2;
+          let bdir = dir + (rng.next() - 0.5) * 1.2;
+          c.strokeStyle = `rgba(200,255,235,${0.10 + rng.next() * 0.10})`;
+          c.lineWidth = 1.2;
+          c.beginPath(); c.moveTo(bx, by);
+          const segs = 3 + Math.floor(rng.next() * 4);
+          for (let s = 0; s < segs; s++) {
+            bdir += (rng.next() - 0.5) * 0.9;
+            const len = 60 + rng.next() * 130;
+            bx += Math.cos(bdir) * len;
+            by += Math.sin(bdir) * len;
+            c.lineTo(bx, by);
+          }
+          c.stroke();
+        }
+      }
+      c.lineCap = "butt";
+      for (let i = 0; i < 12; i++) {
+        const px2 = rng.next() * WORLD_W, py2 = rng.next() * WORLD_H;
+        const pg = c.createRadialGradient(px2, py2, 4, px2, py2, 170);
+        pg.addColorStop(0, "rgba(190,255,238,0.10)");
+        pg.addColorStop(1, "rgba(190,255,238,0)");
+        c.fillStyle = pg;
+        c.beginPath(); c.ellipse(px2, py2, 170, 100, rng.next() * TAU, 0, TAU); c.fill();
+      }
+      for (let i = 0; i < 30; i++) {
+        const gx = rng.next() * WORLD_W, gy = rng.next() * WORLD_H;
+        const gl2 = 3 + rng.next() * 6;
+        c.strokeStyle = `rgba(220,255,245,${0.12 + rng.next() * 0.14})`;
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(gx - gl2, gy); c.lineTo(gx + gl2, gy);
+        c.moveTo(gx, gy - gl2); c.lineTo(gx, gy + gl2);
+        c.stroke();
+      }
+    } else if (aid === 5) {
+      /* ACT 5 — THE HEART OF THE ABYSS: a pulsing vein network + rib arcs
+         + dark flesh patches. */
+      c.lineCap = "round";
+      for (let v = 0; v < 15; v++) {
+        let vx = 100 + rng.next() * (WORLD_W - 200);
+        let vy = 100 + rng.next() * (WORLD_H - 200);
+        const segs = 4 + Math.floor(rng.next() * 5);
+        this.floorNodes.push({ x: vx, y: vy, r: 30 + rng.next() * 26, ph: rng.next() * TAU });
+        for (let s = 0; s < segs; s++) {
+          const nx = Math.max(60, Math.min(WORLD_W - 60, vx + (rng.next() * 2 - 1) * 210));
+          const ny = Math.max(60, Math.min(WORLD_H - 60, vy + (rng.next() * 2 - 1) * 180));
+          const mx = (vx + nx) / 2 + (rng.next() - 0.5) * 90;
+          const my2 = (vy + ny) / 2 + (rng.next() - 0.5) * 90;
+          c.strokeStyle = "rgba(74,16,40,0.8)";
+          c.lineWidth = 5.5;
+          c.beginPath(); c.moveTo(vx, vy); c.quadraticCurveTo(mx, my2, nx, ny); c.stroke();
+          c.strokeStyle = "rgba(255,90,120,0.22)";
+          c.lineWidth = 1.6;
+          c.beginPath(); c.moveTo(vx, vy); c.quadraticCurveTo(mx, my2, nx, ny); c.stroke();
+          if (s === segs - 1 && v % 3 === 0) this.floorNodes.push({ x: nx, y: ny, r: 26 + rng.next() * 20, ph: rng.next() * TAU });
+          vx = nx; vy = ny;
+        }
+      }
+      c.lineCap = "butt";
+      c.strokeStyle = "rgba(96,40,110,0.10)";
+      c.lineWidth = 3;
+      for (let i = 0; i < 7; i++) {
+        const rx = rng.next() * WORLD_W, ry = rng.next() * WORLD_H, rr = 140 + rng.next() * 260;
+        c.beginPath(); c.arc(rx, ry, rr, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
+      }
+      for (let i = 0; i < 16; i++) {
+        const px2 = rng.next() * WORLD_W, py2 = rng.next() * WORLD_H;
+        const pg = c.createRadialGradient(px2, py2, 3, px2, py2, 120);
+        pg.addColorStop(0, "rgba(58,18,48,0.4)");
+        pg.addColorStop(1, "rgba(58,18,48,0)");
+        c.fillStyle = pg;
+        c.beginPath(); c.ellipse(px2, py2, 120, 70, rng.next() * TAU, 0, TAU); c.fill();
+      }
+    } else {
+      /* ACT 6+ — THE ENDLESS DIRGE: a slow spiral galaxy + dense starfall. */
+      for (let i = 0; i < 200; i++) {
+        const sx = rng.next() * WORLD_W, sy = rng.next() * WORLD_H;
+        const s = 0.4 + rng.next() * 1.3;
+        c.fillStyle = `rgba(190,170,255,${0.04 + rng.next() * 0.11})`;
+        c.beginPath(); c.arc(sx, sy, s, 0, TAU); c.fill();
+        if (i < 40) this.twinkles.push({ x: sx, y: sy, s: 0.8 + rng.next() * 1.3, ph: rng.next() * TAU });
+      }
+      c.save();
+      c.translate(WORLD_W / 2, WORLD_H / 2);
+      for (let arm = 0; arm < 3; arm++) {
+        c.rotate(TAU / 3);
+        for (let i = 0; i < 30; i++) {
+          const rr = 120 + i * 34;
+          const aoff = i * 0.16;
+          c.save();
+          c.translate(Math.cos(aoff) * rr, Math.sin(aoff) * rr * 0.42);
+          c.rotate(aoff + Math.PI / 2);
+          const sg = c.createRadialGradient(0, 0, 2, 0, 0, 90);
+          sg.addColorStop(0, "rgba(170,140,255,0.07)");
+          sg.addColorStop(1, "rgba(170,140,255,0)");
+          c.fillStyle = sg;
+          c.beginPath(); c.ellipse(0, 0, 90, 30, 0, 0, TAU); c.fill();
+          c.restore();
+        }
+      }
+      c.restore();
+    }
+
+    /* shared edge shading — the floor sinks into the rune walls */
+    const edges: [number, number, number, number, number, number][] = [
+      [0, 0, 0, WORLD_H, 90, 0], [WORLD_W, 0, WORLD_W, WORLD_H, -90, 0],
+      [0, 0, WORLD_W, 0, 0, 90], [0, WORLD_H, WORLD_W, WORLD_H, 0, -90],
+    ];
+    for (const [x1, y1, x2, y2, dx, dy] of edges) {
+      const eg = c.createLinearGradient(x1, y1, x1 + dx, y1 + dy);
+      eg.addColorStop(0, "rgba(4,2,10,0.7)");
+      eg.addColorStop(1, "rgba(4,2,10,0)");
+      c.fillStyle = eg;
+      c.fillRect(Math.min(x1, x1 + dx), Math.min(y1, y1 + dy), Math.abs(dx) || WORLD_W, Math.abs(dy) || WORLD_H);
+    }
+  }
+
   private drawWorldBorder(c: CanvasRenderingContext2D) {
     const rune = this.act.palette.rune;
     c.save();
@@ -4594,15 +5143,56 @@ export class ArchmageEngine {
   }
 
   private drawAmbient(c: CanvasRenderingContext2D) {
-    const mote = this.act.palette.mote;
+    /* V1.3 — PER-ACT WEATHER: each biome fields its own ambient particle
+       behavior, all stateless (derived from t — zero per-frame mutation or
+       allocation): act 1 drifting void motes, act 2 rising flickering embers,
+       act 3 swaying bubbles, act 4 falling snow, act 5 sinking spores,
+       act 6 starfall streaks. */
+    const aid = this.act.id;
+    const col = this.ambientRGB;
+    const t = this.t;
     for (const a of this.ambient) {
-      const y = ((a.y - (this.t * a.sp) / 4000) % 1 + 1) % 1;
-      const x = a.x + Math.sin(this.t * 0.4 + a.ph) * 0.01;
-      const al = 0.10 + Math.sin(this.t * 1.4 + a.ph) * 0.07;
-      c.fillStyle = `rgba(${mote},${Math.max(0.02, al)})`;
-      c.beginPath();
-      c.arc(x * WORLD_W, y * WORLD_H, a.s, 0, TAU);
-      c.fill();
+      let fx = a.x, fy = a.y, alphaMul = 1;
+      if (aid === 2) {
+        fy = ((a.y - (t * a.sp) / 1500) % 1 + 1) % 1;
+        fx = a.x + Math.sin(t * 0.8 + a.ph) * 0.012;
+        alphaMul = 0.75 + Math.sin(t * 6 + a.ph) * 0.25;
+      } else if (aid === 3) {
+        fy = ((a.y - (t * a.sp) / 2000) % 1 + 1) % 1;
+        fx = a.x + Math.sin(t * 1.1 + a.ph) * 0.008;
+      } else if (aid === 4) {
+        fy = ((a.y + (t * a.sp) / 2600) % 1 + 1) % 1;
+        fx = a.x + Math.sin(t * 0.5 + a.ph) * 0.02;
+      } else if (aid === 5) {
+        fy = ((a.y + (t * a.sp) / 3400) % 1 + 1) % 1;
+        fx = a.x + Math.sin(t * 0.4 + a.ph) * 0.015;
+      } else if (aid === 6) {
+        fy = ((a.y + (t * a.sp) / 1300) % 1 + 1) % 1;
+        fx = ((a.x + (t * a.sp) / 2600) % 1 + 1) % 1;
+      } else {
+        fy = ((a.y - (t * a.sp) / 4000) % 1 + 1) % 1;
+        fx = a.x + Math.sin(t * 0.4 + a.ph) * 0.01;
+      }
+      const wx = fx * WORLD_W, wy = fy * WORLD_H;
+      if (!this.inView(wx, wy, 14)) continue;
+      const al = (0.10 + Math.sin(t * 1.4 + a.ph) * 0.07) * alphaMul;
+      if (al <= 0.02) continue;
+      if (aid === 3) {
+        /* bubble — ring + inner dot */
+        c.strokeStyle = `rgba(${col},${al * 1.1})`;
+        c.lineWidth = 1;
+        c.beginPath(); c.arc(wx, wy, a.s * 1.7, 0, TAU); c.stroke();
+        c.fillStyle = `rgba(${col},${al * 0.5})`;
+        c.beginPath(); c.arc(wx - a.s * 0.5, wy - a.s * 0.5, a.s * 0.45, 0, TAU); c.fill();
+      } else if (aid === 6) {
+        /* starfall streak */
+        c.strokeStyle = `rgba(${col},${al})`;
+        c.lineWidth = a.s * 0.8;
+        c.beginPath(); c.moveTo(wx, wy); c.lineTo(wx - a.s * 3.2, wy - a.s * 1.6); c.stroke();
+      } else {
+        c.fillStyle = `rgba(${col},${al})`;
+        c.beginPath(); c.arc(wx, wy, aid === 2 ? a.s * 0.8 : a.s, 0, TAU); c.fill();
+      }
     }
   }
 
@@ -4720,19 +5310,21 @@ export class ArchmageEngine {
   }
 
   private drawPillars(c: CanvasRenderingContext2D) {
+    /* V1.3 — PILLARS ARE ACT-SET DRESSED. The shared body stays (cached
+       gradient + shadow) but each act carves its own architecture:
+       obsidian monoliths / basalt with magma seams / coral columns /
+       fractured ice / flesh-veined obelisks / void crystal. All accents are
+       cheap strokes drawn once per pillar per frame; gradients remain
+       cached on the pillar geometry. */
     const [pcol0, pcol1] = this.act.palette.pillar;
     const rune = this.act.palette.rune;
+    const aid = this.act.id;
     for (const p of this.arena.pillars) {
       const x = p.x, y = p.y, pw = p.w, ph = p.h;
       c.fillStyle = "rgba(0,0,0,0.4)";
       c.beginPath();
       c.ellipse(x + pw / 2 + 5, y + ph + 4, pw * 0.55, 9, 0, 0, TAU);
       c.fill();
-      /* V1.1 AUDIT FIX (perf) — the pillar body gradient is cached on the
-         pillar (static geometry); the old path rebuilt a linear gradient per
-         pillar per frame (8–14/frame). Rift Shifts regenerate the arena (fresh
-         pillar objects) and act changes clear the cache below so the palette
-         is always current. */
       if (!p.grad) {
         const g = c.createLinearGradient(x, y, x + pw, y + ph);
         g.addColorStop(0, pcol0);
@@ -4741,20 +5333,104 @@ export class ArchmageEngine {
       }
       c.fillStyle = p.grad;
       c.fillRect(x, y, pw, ph);
+      /* shared: rim light along the top-left + base contact ring */
+      c.strokeStyle = "rgba(215,225,255,0.16)";
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(x + 1.5, y + ph - 6); c.lineTo(x + 1.5, y + 5);
+      c.moveTo(x + 5, y + 1.5); c.lineTo(x + pw - 12, y + 1.5);
+      c.stroke();
+      c.strokeStyle = `rgba(${rune},0.22)`;
+      c.lineWidth = 1.4;
+      c.beginPath(); c.ellipse(x + pw / 2, y + ph + 2, pw * 0.52, 5, 0, 0, TAU); c.stroke();
+
+      if (aid === 1) {
+        /* OBSIDIAN MONOLITH — rune glyph + chipped corner */
+        c.save();
+        c.translate(x + pw / 2, y + ph / 2);
+        c.rotate(Math.PI / 4);
+        c.strokeStyle = `rgba(${rune},${0.22 + Math.sin(this.t * 2 + x) * 0.1})`;
+        c.lineWidth = 1.6;
+        c.strokeRect(-7, -7, 14, 14);
+        c.strokeRect(-3, -3, 6, 6);
+        c.restore();
+        c.fillStyle = "rgba(5,3,12,0.55)";
+        c.beginPath(); c.moveTo(x + pw, y + ph); c.lineTo(x + pw - 10, y + ph); c.lineTo(x + pw, y + ph - 12); c.closePath(); c.fill();
+      } else if (aid === 2) {
+        /* BASALT COLUMN — magma seams + soot top */
+        c.strokeStyle = `rgba(255,120,60,${0.25 + Math.sin(this.t * 2.4 + x) * 0.12})`;
+        c.lineWidth = 1.5;
+        c.beginPath();
+        c.moveTo(x + pw * 0.3, y + 8);
+        c.lineTo(x + pw * 0.42, y + ph * 0.4);
+        c.lineTo(x + pw * 0.28, y + ph * 0.66);
+        c.moveTo(x + pw * 0.7, y + ph * 0.3);
+        c.lineTo(x + pw * 0.62, y + ph * 0.62);
+        c.lineTo(x + pw * 0.78, y + ph - 10);
+        c.stroke();
+        c.fillStyle = "rgba(18,10,8,0.6)";
+        c.fillRect(x, y, pw, 5);
+      } else if (aid === 3) {
+        /* CORAL COLUMN — barnacle clusters + swaying anemone tips */
+        c.fillStyle = "rgba(150,235,225,0.35)";
+        for (let i = 0; i < 4; i++) {
+          const bx2 = x + ((i * 53) % Math.max(8, pw - 12)) + 6;
+          const by2 = y + 14 + ((i * 91) % Math.max(10, ph - 28));
+          c.beginPath(); c.arc(bx2, by2, 2.4 + (i % 2), 0, TAU); c.fill();
+        }
+        c.strokeStyle = "rgba(120,240,226,0.45)";
+        c.lineWidth = 1.6;
+        for (let i = 0; i < 3; i++) {
+          const tx2 = x + pw * (0.3 + i * 0.2);
+          const sway = Math.sin(this.t * 1.6 + i * 1.7 + x) * 2.4;
+          c.beginPath();
+          c.moveTo(tx2, y + 2);
+          c.quadraticCurveTo(tx2 + sway, y - 7, tx2 + sway * 1.4, y - 12 - i * 2);
+          c.stroke();
+        }
+      } else if (aid === 4) {
+        /* ICE SHARD — translucent sheen + inner fracture + sharp cap */
+        c.fillStyle = "rgba(200,255,238,0.10)";
+        c.fillRect(x + 3, y + 3, 6, ph - 6);
+        c.strokeStyle = "rgba(200,255,235,0.28)";
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(x + pw * 0.5, y + 6);
+        c.lineTo(x + pw * 0.34, y + ph * 0.4);
+        c.lineTo(x + pw * 0.58, y + ph * 0.68);
+        c.lineTo(x + pw * 0.44, y + ph - 8);
+        c.stroke();
+        c.fillStyle = "rgba(190,255,238,0.22)";
+        c.beginPath(); c.moveTo(x + pw * 0.2, y); c.lineTo(x + pw * 0.8, y); c.lineTo(x + pw * 0.5, y - 9); c.closePath(); c.fill();
+      } else if (aid === 5) {
+        /* FLESH OBELISK — pulsing vein + rib band */
+        c.strokeStyle = `rgba(255,90,120,${0.3 + Math.sin(this.t * 3 + x) * 0.15})`;
+        c.lineWidth = 1.6;
+        c.beginPath();
+        c.moveTo(x + pw * 0.36, y + 10);
+        c.quadraticCurveTo(x + pw * 0.6, y + ph * 0.35, x + pw * 0.4, y + ph * 0.6);
+        c.quadraticCurveTo(x + pw * 0.26, y + ph * 0.8, x + pw * 0.5, y + ph - 12);
+        c.stroke();
+        c.strokeStyle = "rgba(196,140,160,0.25)";
+        c.lineWidth = 2;
+        c.beginPath(); c.moveTo(x + 2, y + ph * 0.3); c.lineTo(x + pw - 2, y + ph * 0.3); c.stroke();
+      } else {
+        /* VOID CRYSTAL — floating rune band + crackled sheen */
+        c.strokeStyle = `rgba(170,140,255,${0.3 + Math.sin(this.t * 1.8 + y) * 0.12})`;
+        c.lineWidth = 1.4;
+        c.setLineDash([5, 7]);
+        c.lineDashOffset = -this.t * 10;
+        c.beginPath(); c.moveTo(x + 4, y + ph * 0.36); c.lineTo(x + pw - 4, y + ph * 0.36); c.stroke();
+        c.lineDashOffset = this.t * 12;
+        c.beginPath(); c.moveTo(x + 4, y + ph * 0.64); c.lineTo(x + pw - 4, y + ph * 0.64); c.stroke();
+        c.setLineDash([]);
+        c.fillStyle = "rgba(170,140,255,0.12)";
+        c.beginPath(); c.moveTo(x + pw * 0.3, y); c.lineTo(x + pw * 0.75, y); c.lineTo(x + pw * 0.5, y - 7); c.closePath(); c.fill();
+      }
+      /* shared inner frame lines + rune edge (kept from V1.2) */
       c.strokeStyle = `rgba(${rune},0.3)`;
       c.lineWidth = 1.4;
       c.strokeRect(x + 0.5, y + 0.5, pw - 1, ph - 1);
-      c.strokeStyle = "rgba(154,123,255,0.25)";
-      c.beginPath();
-      c.moveTo(x + 6, y + 12); c.lineTo(x + 6, y + ph - 12);
-      c.moveTo(x + pw - 6, y + 12); c.lineTo(x + pw - 6, y + ph - 12);
-      c.stroke();
-      c.save();
-      c.translate(x + pw / 2, y + ph / 2);
-      c.rotate(Math.PI / 4);
-      c.strokeStyle = `rgba(${rune},${0.22 + Math.sin(this.t * 2 + x) * 0.1})`;
-      c.strokeRect(-7, -7, 14, 14);
-      c.restore();
     }
   }
 
@@ -5079,49 +5755,75 @@ export class ArchmageEngine {
 
   private drawEnemy(c: CanvasRenderingContext2D, e: Enemy) {
     const ang = Math.atan2(this.py - e.y, this.px - e.x);
-    const bob = e.flying ? Math.sin(e.wob) * 3 : 0;
+    /* V1.3 — grounded foes get a stride bounce (feet-planted walk feel);
+       flyers keep their hover sine. */
+    const bob = e.flying ? Math.sin(e.wob) * 3.5 : -Math.abs(Math.sin(e.wob * 1.7)) * 2.2;
     const x = e.x, y = e.y + bob;
 
+    /* grounded shadow — unsquashed, subtly breathing with airtime */
     c.fillStyle = "rgba(0,0,0,0.35)";
     c.beginPath();
     c.ellipse(e.x, e.y + e.r * 0.85, e.r * 0.85, e.r * 0.34, 0, 0, TAU);
     c.fill();
 
-    /* elite aura ring */
+    /* V1.3 — elite aura: twin counter-rotating dashed rings + a breathing
+       outer halo; marked prey reads as REWARD from across the arena. */
     if (e.affix) {
       const col = ELITE_DEFS[e.affix].color;
       c.strokeStyle = col;
-      c.globalAlpha = 0.75;
+      c.globalAlpha = 0.85;
       c.lineWidth = 2;
-      c.setLineDash([6, 6]);
-      c.lineDashOffset = -this.t * 30;
+      c.setLineDash([7, 5]);
+      c.lineDashOffset = -this.t * 42;
       c.beginPath(); c.arc(x, y, e.r + 7, 0, TAU); c.stroke();
+      c.setLineDash([2, 11]);
+      c.lineDashOffset = this.t * 30;
+      c.globalAlpha = 0.4 + Math.sin(this.t * 5) * 0.15;
+      c.beginPath(); c.arc(x, y, e.r + 13, 0, TAU); c.stroke();
       c.setLineDash([]);
-      c.globalAlpha = 0.35 + Math.sin(this.t * 5) * 0.15;
-      c.beginPath(); c.arc(x, y, e.r + 12, 0, TAU); c.stroke();
       c.globalAlpha = 1;
     }
     if (e.enraged) {
-      c.strokeStyle = `rgba(255,77,107,${0.5 + Math.sin(this.t * 10) * 0.3})`;
+      /* V1.3 — enrage: pulsing dual ring (the outer one breathes faster) */
+      const pl = Math.sin(this.t * 10) * 0.3;
+      c.strokeStyle = `rgba(255,77,107,${0.5 + pl})`;
       c.lineWidth = 3;
       c.beginPath(); c.arc(x, y, e.r + 9, 0, TAU); c.stroke();
+      c.strokeStyle = `rgba(255,120,140,${0.25 + pl * 0.5})`;
+      c.lineWidth = 1.6;
+      c.beginPath(); c.arc(x, y, e.r + 15 + Math.sin(this.t * 10) * 2, 0, TAU); c.stroke();
+    }
+
+    c.save();
+    c.translate(x, y);
+    /* V1.3 — IMPACT SQUASH: volume-preserving squeeze along the impact axis
+       with an eased spring-back as the timer drains (crisp bite → soft
+       settle). The whole model — body, gear, eyes — deforms as one. */
+    if (e.sq > 0) {
+      const k = e.sq / 0.18;
+      const q = 1 - (1 - k) * (1 - k);
+      const s = q * q;
+      c.rotate(e.sqA);
+      c.scale(1 - 0.30 * s, 1 + 0.26 * s);
+      c.rotate(-e.sqA);
     }
 
     if (e.flying) {
-      const flap = Math.sin(e.wob * 2) * 0.5 + 0.6;
-      c.strokeStyle = e.color;
-      c.globalAlpha = 0.55;
-      c.lineWidth = 2;
+      /* V1.3 — wings beat in the glow color, brighter + faster flap */
+      const flap = Math.sin(e.wob * 2.4) * 0.55;
+      c.strokeStyle = e.glow;
+      c.globalAlpha = 0.6;
+      c.lineWidth = 2.2;
       c.beginPath();
-      c.arc(x - e.r, y - 2, e.r * 0.9, -0.9 - flap, 0.4);
-      c.arc(x + e.r, y - 2, e.r * 0.9, Math.PI - 0.4, Math.PI + 0.9 + flap);
+      c.arc(-e.r, -2, e.r * 0.95, -1.05 - flap, 0.5 + flap * 0.4);
+      c.stroke();
+      c.beginPath();
+      c.arc(e.r, -2, e.r * 0.95, Math.PI - 0.5 - flap * 0.4, Math.PI + 1.05 + flap);
       c.stroke();
       c.globalAlpha = 1;
     }
 
-    /* body — gradient cached per enemy, origin-relative, drawn via translate */
-    c.save();
-    c.translate(x, y);
+    /* body — gradient cached per enemy, origin-relative */
     if (!e.grad) {
       const g = c.createRadialGradient(-e.r * 0.3, -e.r * 0.35, e.r * 0.15, 0, 0, e.r);
       g.addColorStop(0, e.glow);
@@ -5131,13 +5833,64 @@ export class ArchmageEngine {
     }
     c.fillStyle = e.grad;
     c.beginPath(); c.arc(0, 0, e.r, 0, TAU); c.fill();
+    /* V1.3 — LIGHT MODEL: cool rim light along the top-left + an under-shade
+       chord along the bottom — every foe now reads as a lit, grounded form
+       instead of a flat disc. */
+    c.strokeStyle = "rgba(235,240,255,0.22)";
+    c.lineWidth = Math.max(1.5, e.r * 0.12);
+    c.beginPath(); c.arc(0, 0, e.r - 0.9, -2.35, -0.85); c.stroke();
+    c.fillStyle = "rgba(8,5,18,0.22)";
+    c.beginPath(); c.arc(0, 0, e.r - 0.7, 0.55, Math.PI - 0.55); c.closePath(); c.fill();
     c.strokeStyle = "rgba(10,6,20,0.8)";
     c.lineWidth = 1.6;
-    c.stroke();
+    c.beginPath(); c.arc(0, 0, e.r, 0, TAU); c.stroke();
+
+    /* per-type layered detail — drawn in the SAME local/squash space */
+    this.drawEnemyDetail(c, e, ang);
+
+    /* eyes — local space; pupils track the mage (white while dashing) */
+    const ex = Math.cos(ang) * e.r * 0.34, ey = Math.sin(ang) * e.r * 0.34;
+    const pr = Math.max(1.6, e.r * 0.11);
+    c.fillStyle = e.actState === 2 ? "#ffffff" : e.glow;
+    c.beginPath();
+    c.arc(ex - Math.sin(ang) * e.r * 0.24, ey + Math.cos(ang) * e.r * 0.24, pr, 0, TAU);
+    c.arc(ex + Math.sin(ang) * e.r * 0.24, ey - Math.cos(ang) * e.r * 0.24, pr, 0, TAU);
+    c.fill();
+    /* V1.3 — dark pupils aimed at the mage (glow-only for dash state) */
+    if (e.actState !== 2) {
+      c.fillStyle = "rgba(10,6,20,0.9)";
+      const pxp = ex + Math.cos(ang) * pr * 0.42, pyp = ey + Math.sin(ang) * pr * 0.42;
+      c.beginPath();
+      c.arc(pxp - Math.sin(ang) * e.r * 0.24, pyp + Math.cos(ang) * e.r * 0.24, pr * 0.42, 0, TAU);
+      c.arc(pxp + Math.sin(ang) * e.r * 0.24, pyp - Math.cos(ang) * e.r * 0.24, pr * 0.42, 0, TAU);
+      c.fill();
+    }
+
+    if (e.hitFlash > 0) {
+      c.globalAlpha = (e.hitFlash / 0.12) * 0.85;
+      c.fillStyle = "#ffffff";
+      c.beginPath(); c.arc(0, 0, e.r, 0, TAU); c.fill();
+      c.globalAlpha = 1;
+    }
     c.restore();
 
-    /* per-type layered detail — weapons, armor, hats, auras */
-    this.drawEnemyDetail(c, e, x, y, ang);
+    /* status overlays + readability UI stay in unsquashed world space */
+    if (e.chillT > 0) {
+      c.strokeStyle = "rgba(127,216,255,0.85)";
+      c.lineWidth = 2;
+      c.beginPath(); c.arc(x, y, e.r + 3, 0, TAU); c.stroke();
+      c.strokeStyle = "rgba(127,216,255,0.4)";
+      c.lineWidth = 1;
+      c.setLineDash([4, 6]);
+      c.lineDashOffset = this.t * 18;
+      c.beginPath(); c.arc(x, y, e.r + 7, 0, TAU); c.stroke();
+      c.setLineDash([]);
+    }
+    if (e.poisonT > 0) {
+      c.strokeStyle = "rgba(126,217,87,0.8)";
+      c.lineWidth = 2;
+      c.beginPath(); c.arc(x, y, e.r + 3.5, 0, TAU); c.stroke();
+    }
 
     /* Patch 7.0 — elite HP bar (Dead-Cells-style readability): affix bearers
        and heavyweight foes show a slim bar once damaged. Two fillRects, no
@@ -5145,7 +5898,7 @@ export class ArchmageEngine {
     if (e.hp < e.maxHp && (e.affix || e.r >= 19)) {
       const bw = Math.max(26, e.r * 2.2);
       const bx = x - bw / 2;
-      const by = y - e.r - (e.affix ? 15 : 10);
+      const by = y - e.r - (e.affix ? 16 : 10);
       const frac = Math.max(0, Math.min(1, e.hp / e.maxHp));
       c.fillStyle = "rgba(6,4,14,0.72)";
       c.fillRect(bx - 1, by - 1, bw + 2, 5);
@@ -5153,7 +5906,7 @@ export class ArchmageEngine {
       c.fillRect(bx, by, bw * frac, 3);
     }
 
-    /* shot telegraph — ranged foes glow while charging */
+    /* shot telegraph — ranged foes glow while charging (kept: it reads well) */
     if ((e.ranged || e.type === "boss") && e.shootT < 0.45 && e.shootT > 0) {
       const k = 1 - e.shootT / 0.45;
       c.strokeStyle = `rgba(255,180,110,${0.3 + k * 0.55})`;
@@ -5162,31 +5915,6 @@ export class ArchmageEngine {
       const mx = Math.cos(ang) * e.r * 0.7, my = Math.sin(ang) * e.r * 0.7;
       c.fillStyle = `rgba(255,225,170,${k * 0.85})`;
       c.beginPath(); c.arc(x + mx, y + my, 2.4 + k * 3.2, 0, TAU); c.fill();
-    }
-
-    /* eyes */
-    const ex = Math.cos(ang) * e.r * 0.34, ey = Math.sin(ang) * e.r * 0.34;
-    c.fillStyle = e.actState === 2 ? "#ffffff" : e.glow;
-    c.beginPath();
-    c.arc(x + ex - Math.sin(ang) * e.r * 0.24, y + ey + Math.cos(ang) * e.r * 0.24, Math.max(1.6, e.r * 0.11), 0, TAU);
-    c.arc(x + ex + Math.sin(ang) * e.r * 0.24, y + ey - Math.cos(ang) * e.r * 0.24, Math.max(1.6, e.r * 0.11), 0, TAU);
-    c.fill();
-
-    if (e.chillT > 0) {
-      c.strokeStyle = "rgba(127,216,255,0.85)";
-      c.lineWidth = 2;
-      c.beginPath(); c.arc(x, y, e.r + 3, 0, TAU); c.stroke();
-    }
-    if (e.poisonT > 0) {
-      c.strokeStyle = "rgba(126,217,87,0.8)";
-      c.lineWidth = 2;
-      c.beginPath(); c.arc(x, y, e.r + 3.5, 0, TAU); c.stroke();
-    }
-    if (e.hitFlash > 0) {
-      c.globalAlpha = (e.hitFlash / 0.12) * 0.85;
-      c.fillStyle = "#ffffff";
-      c.beginPath(); c.arc(x, y, e.r, 0, TAU); c.fill();
-      c.globalAlpha = 1;
     }
 
     /* hp arc */
@@ -5200,312 +5928,662 @@ export class ArchmageEngine {
     }
   }
 
-  /* Per-type model details — each enemy silhouette is distinct.
-     All cheap path work; no allocations. ang points toward the player. */
-  private drawEnemyDetail(c: CanvasRenderingContext2D, e: Enemy, x: number, y: number, ang: number) {
+  /* V1.3 — PER-TYPE MODELS, fully remodeled. Every silhouette is drawn in
+     local space (origin = body center; the caller's squash transform rides
+     along). Light sources are consistent (top-left key, cool rim, warm glow
+     accents) and each foe has at least one ANIMATED element — ears, plumes,
+     flames, blades — so the bestiary reads alive at combat speed.
+     All cheap path work; no allocations; ang points toward the mage. */
+  private drawEnemyDetail(c: CanvasRenderingContext2D, e: Enemy, ang: number) {
     const r = e.r;
     const t = this.t;
     const ca = Math.cos(ang), sa = Math.sin(ang);
-    c.save();
-    c.translate(x, y);
     switch (e.type) {
       case "goblin": {
-        /* pointy ears + cleaver */
-        c.fillStyle = e.color;
-        c.beginPath(); c.moveTo(-r * 0.7, -r * 0.3); c.lineTo(-r * 1.5, -r * 0.8); c.lineTo(-r * 0.55, -r * 0.85); c.closePath(); c.fill();
-        c.beginPath(); c.moveTo(r * 0.7, -r * 0.3); c.lineTo(r * 1.5, -r * 0.8); c.lineTo(r * 0.55, -r * 0.85); c.closePath(); c.fill();
-        c.strokeStyle = "#d8d8e8"; c.lineWidth = 2.2;
-        c.beginPath(); c.moveTo(ca * r * 0.4, sa * r * 0.4); c.lineTo(ca * r * 1.2 + 3, sa * r * 1.2 + 4); c.stroke();
+        /* GUTTER GHOUL — twitching ears, notched cleaver, belly patch */
+        const twitch = Math.sin(t * 9 + e.wob) * 0.18;
+        c.fillStyle = e.glow;
+        c.beginPath();
+        c.moveTo(-r * 0.7, -r * 0.32); c.lineTo(-r * 1.5, -r * (0.78 + twitch)); c.lineTo(-r * 0.55, -r * 0.85); c.closePath(); c.fill();
+        c.beginPath();
+        c.moveTo(r * 0.7, -r * 0.32); c.lineTo(r * 1.5, -r * (0.78 + twitch)); c.lineTo(r * 0.55, -r * 0.85); c.closePath(); c.fill();
+        /* notched cleaver aimed at the mage — steel blade + edge light */
+        const bl = r * 1.5;
+        c.save();
+        c.rotate(ang);
+        c.fillStyle = "#3a3348";
+        c.fillRect(r * 0.35, -r * 0.16, bl * 0.22, r * 0.34);
+        c.fillStyle = "#d8d8e8";
+        c.beginPath();
+        c.moveTo(r * 0.55, -r * 0.2); c.lineTo(r * 0.55 + bl * 0.55, -r * 0.34);
+        c.lineTo(r * 0.55 + bl * 0.55, r * 0.1); c.lineTo(r * 0.75 + bl * 0.4, r * 0.2);
+        c.lineTo(r * 0.55, r * 0.24); c.closePath(); c.fill();
+        c.strokeStyle = "rgba(255,255,255,0.5)";
+        c.lineWidth = 1;
+        c.beginPath(); c.moveTo(r * 0.55, -r * 0.2); c.lineTo(r * 0.55 + bl * 0.55, -r * 0.34); c.stroke();
+        c.restore();
+        /* belly patch + tuft */
+        c.fillStyle = "rgba(10,8,20,0.28)";
+        c.beginPath(); c.ellipse(0, r * 0.34, r * 0.5, r * 0.3, 0, 0, TAU); c.fill();
+        c.strokeStyle = e.glow;
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(-r * 0.15, -r * 0.95); c.lineTo(-r * 0.22, -r * 1.2);
+        c.moveTo(r * 0.05, -r * 0.98); c.lineTo(r * 0.1, -r * 1.24);
+        c.stroke();
         break;
       }
       case "archer": {
-        /* hood + strung bow facing the player */
-        c.fillStyle = "rgba(60,38,20,0.9)";
-        c.beginPath(); c.arc(0, -r * 0.45, r * 0.62, Math.PI, 0); c.fill();
-        c.strokeStyle = "#a97b45"; c.lineWidth = 2;
+        /* OSSUARY ARCHER — hood, cape, strung bow; the arrow nocks as the
+           draw charges (shootT) — the telegraph IS the weapon. */
+        c.fillStyle = "rgba(48,30,18,0.92)";
+        c.beginPath(); c.arc(0, -r * 0.42, r * 0.66, Math.PI * 0.95, Math.PI * 2.05); c.fill();
+        c.fillStyle = "rgba(30,19,11,0.85)";
+        c.beginPath();
+        c.moveTo(-r * 0.62, -r * 0.3);
+        c.quadraticCurveTo(-r * 1.05, r * 0.5, -r * 0.5, r * 0.72);
+        c.lineTo(-r * 0.3, r * 0.1); c.closePath(); c.fill();
+        c.strokeStyle = "#a97b45"; c.lineWidth = 2.2;
         const bx = ca * r * 0.6, by = sa * r * 0.6;
-        c.beginPath(); c.arc(bx, by, r * 0.9, ang - 1.1, ang + 1.1); c.stroke();
-        c.strokeStyle = "rgba(240,230,210,0.7)"; c.lineWidth = 1;
-        const s1x = bx + Math.cos(ang - 1.1) * r * 0.9, s1y = by + Math.sin(ang - 1.1) * r * 0.9;
-        const s2x = bx + Math.cos(ang + 1.1) * r * 0.9, s2y = by + Math.sin(ang + 1.1) * r * 0.9;
+        c.beginPath(); c.arc(bx, by, r * 0.92, ang - 1.15, ang + 1.15); c.stroke();
+        const s1x = bx + Math.cos(ang - 1.15) * r * 0.92, s1y = by + Math.sin(ang - 1.15) * r * 0.92;
+        const s2x = bx + Math.cos(ang + 1.15) * r * 0.92, s2y = by + Math.sin(ang + 1.15) * r * 0.92;
         const drawPull = e.shootT < 0.45 ? 1 - e.shootT / 0.45 : 0;
-        c.beginPath(); c.moveTo(s1x, s1y); c.lineTo(bx - ca * r * 0.45 * drawPull, by - sa * r * 0.45 * drawPull); c.lineTo(s2x, s2y); c.stroke();
+        c.strokeStyle = "rgba(240,230,210,0.75)"; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(s1x, s1y); c.lineTo(bx - ca * r * 0.5 * drawPull, by - sa * r * 0.5 * drawPull); c.lineTo(s2x, s2y); c.stroke();
+        if (drawPull > 0.05) {
+          /* the nocked arrow, sliding back with the draw */
+          c.strokeStyle = "#e8d9b0"; c.lineWidth = 1.6;
+          c.beginPath();
+          c.moveTo(bx - ca * r * 0.5 * drawPull, by - sa * r * 0.5 * drawPull);
+          c.lineTo(bx + ca * r * 0.85, by + sa * r * 0.85);
+          c.stroke();
+          c.fillStyle = "#f2c99a";
+          c.beginPath();
+          c.moveTo(bx + ca * r * 0.85 + Math.cos(ang) * 4, by + sa * r * 0.85 + Math.sin(ang) * 4);
+          c.lineTo(bx + ca * r * 0.85 + Math.cos(ang - 1.5) * 3.4, by + sa * r * 0.85 + Math.sin(ang - 1.5) * 3.4);
+          c.lineTo(bx + ca * r * 0.85 + Math.cos(ang + 1.5) * 3.4, by + sa * r * 0.85 + Math.sin(ang + 1.5) * 3.4);
+          c.closePath(); c.fill();
+        }
         break;
       }
       case "swarm": {
-        /* wispy trailing tail */
+        /* GRAVEMOTE — velocity ghosting: the mote drags three fading
+           afterimages of itself, plus a bright inner spark. */
         for (let i = 1; i <= 3; i++) {
-          c.globalAlpha = 0.4 - i * 0.1;
+          c.globalAlpha = 0.42 - i * 0.11;
           c.fillStyle = e.color;
-          c.beginPath(); c.arc(-e.vx * 0.03 * i, -e.vy * 0.03 * i, r * (1 - i * 0.22), 0, TAU); c.fill();
+          c.beginPath(); c.arc(-e.vx * 0.028 * i, -e.vy * 0.028 * i, r * (1 - i * 0.2), 0, TAU); c.fill();
         }
         c.globalAlpha = 1;
+        c.fillStyle = "#ffffff";
+        c.beginPath(); c.arc(0, 0, r * 0.3, 0, TAU); c.fill();
+        c.strokeStyle = e.glow;
+        c.lineWidth = 1.2;
+        c.beginPath(); c.arc(0, 0, r * 0.68, t * 3, t * 3 + 2.2); c.stroke();
         break;
       }
       case "imp": {
-        /* horns + ember heart */
-        c.strokeStyle = "#ffb36b"; c.lineWidth = 2.4;
-        c.beginPath(); c.moveTo(-r * 0.45, -r * 0.8); c.lineTo(-r * 0.75, -r * 1.4); c.stroke();
-        c.beginPath(); c.moveTo(r * 0.45, -r * 0.8); c.lineTo(r * 0.75, -r * 1.4); c.stroke();
-        const pulse = 0.6 + Math.sin(t * 8) * 0.4;
+        /* ASHFIEND — curved horns + pulsing ember heart + grin */
+        c.strokeStyle = "#ffb36b"; c.lineWidth = 2.4; c.lineCap = "round";
+        c.beginPath();
+        c.moveTo(-r * 0.42, -r * 0.78);
+        c.quadraticCurveTo(-r * 0.95, -r * 1.15, -r * 0.72, -r * 1.5);
+        c.stroke();
+        c.beginPath();
+        c.moveTo(r * 0.42, -r * 0.78);
+        c.quadraticCurveTo(r * 0.95, -r * 1.15, r * 0.72, -r * 1.5);
+        c.stroke();
+        c.lineCap = "butt";
+        const pulse = 0.55 + Math.sin(t * 8 + e.wob) * 0.45;
         c.fillStyle = `rgba(255,150,80,${pulse})`;
-        c.beginPath(); c.arc(0, 0, r * 0.32, 0, TAU); c.fill();
+        c.beginPath(); c.arc(0, r * 0.05, r * 0.34, 0, TAU); c.fill();
+        c.strokeStyle = `rgba(255,220,140,${pulse})`;
+        c.lineWidth = 1.4;
+        c.beginPath(); c.arc(0, r * 0.05, r * (0.46 + pulse * 0.06), 0, TAU); c.stroke();
+        /* grin */
+        c.strokeStyle = "rgba(20,10,8,0.75)";
+        c.lineWidth = 1.4;
+        c.beginPath(); c.arc(0, r * 0.42, r * 0.32, 0.35, Math.PI - 0.35); c.stroke();
         break;
       }
-      /* ---- Patch 9.0 — the five new silhouettes ---- */
       case "skitter": {
-        /* six twitchy legs + tail spike */
-        c.strokeStyle = e.glow; c.lineWidth = 1.6;
+        /* GLOOM SKITTER — six jointed legs with knee articulation,
+           antennae + barbed tail (all in full twitch). */
+        c.strokeStyle = e.glow; c.lineWidth = 1.7; c.lineCap = "round";
         for (let i = 0; i < 3; i++) {
           const lx = -r * 0.5 + i * r * 0.5;
-          const kick = Math.sin(t * 16 + i * 2.1) * r * 0.35;
-          c.beginPath(); c.moveTo(lx, -r * 0.4); c.lineTo(lx - r * 0.45, -r * 1.15 + kick); c.stroke();
-          c.beginPath(); c.moveTo(lx, r * 0.4); c.lineTo(lx - r * 0.45, r * 1.15 - kick); c.stroke();
+          const kick = Math.sin(t * 17 + i * 2.1 + e.wob) * r * 0.3;
+          /* upper leg → knee → foot */
+          c.beginPath();
+          c.moveTo(lx, -r * 0.35);
+          c.lineTo(lx - r * 0.42, -r * 0.95 + kick);
+          c.lineTo(lx - r * 0.68, -r * 1.15 + kick * 1.4);
+          c.stroke();
+          c.beginPath();
+          c.moveTo(lx, r * 0.35);
+          c.lineTo(lx - r * 0.42, r * 0.95 - kick);
+          c.lineTo(lx - r * 0.68, r * 1.15 - kick * 1.4);
+          c.stroke();
         }
+        c.lineCap = "butt";
+        /* antennae with glowing tips */
+        c.strokeStyle = e.color; c.lineWidth = 1.3;
+        for (const s2 of [-1, 1]) {
+          c.beginPath();
+          c.moveTo(s2 * r * 0.3, -r * 0.7);
+          c.quadraticCurveTo(s2 * r * 0.6, -r * 1.35, s2 * r * 0.95 + Math.sin(t * 11) * r * 0.12, -r * 1.5);
+          c.stroke();
+          c.fillStyle = e.glow;
+          c.beginPath(); c.arc(s2 * r * 0.95 + Math.sin(t * 11) * r * 0.12, -r * 1.5, 1.6, 0, TAU); c.fill();
+        }
+        /* barbed tail */
         c.strokeStyle = e.color; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(-r * 0.2, 0); c.lineTo(-r * 1.5, Math.sin(t * 9) * r * 0.4); c.stroke();
+        c.beginPath(); c.moveTo(-r * 0.25, 0); c.lineTo(-r * 1.45, Math.sin(t * 9 + e.wob) * r * 0.35); c.stroke();
+        c.fillStyle = e.glow;
+        c.beginPath();
+        c.moveTo(-r * 1.45, Math.sin(t * 9 + e.wob) * r * 0.35);
+        c.lineTo(-r * 1.75, Math.sin(t * 9 + e.wob) * r * 0.35 - r * 0.14);
+        c.lineTo(-r * 1.75, Math.sin(t * 9 + e.wob) * r * 0.35 + r * 0.14);
+        c.closePath(); c.fill();
         break;
       }
       case "bomber": {
-        /* keg body + burning fuse; the fuse ring flashes when armed */
-        c.strokeStyle = "#ffd9a8"; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(-r * 0.7, -r * 0.6); c.lineTo(-r * 1.05, -r * 1.35); c.stroke();
+        /* PYREHUSK — keg with iron bands + skull mark; the fuse spits and
+           the whole body flashes crimson as it primes. */
+        c.strokeStyle = "rgba(255,217,168,0.95)"; c.lineWidth = 2; c.lineCap = "round";
+        c.beginPath(); c.moveTo(-r * 0.7, -r * 0.6); c.quadraticCurveTo(-r * 1.0, -r * 1.1, -r * 1.05, -r * 1.35); c.stroke();
+        c.lineCap = "butt";
         const spark = 0.5 + Math.sin(t * 22) * 0.5;
         c.fillStyle = `rgba(255,232,107,${spark})`;
-        c.beginPath(); c.arc(-r * 1.08, -r * 1.42, 2.2 + spark * 1.6, 0, TAU); c.fill();
-        c.strokeStyle = "rgba(255,120,60,0.85)"; c.lineWidth = 1.6;
-        c.beginPath(); c.moveTo(-r * 0.5, -r * 0.35); c.lineTo(r * 0.5, -r * 0.35); c.stroke();
-        c.beginPath(); c.moveTo(-r * 0.5, r * 0.35); c.lineTo(r * 0.5, r * 0.35); c.stroke();
+        c.beginPath(); c.arc(-r * 1.05, -r * 1.42, 2.2 + spark * 1.8, 0, TAU); c.fill();
+        /* iron bands */
+        c.strokeStyle = "rgba(90,70,60,0.9)"; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(-r * 0.62, -r * 0.3); c.lineTo(r * 0.62, -r * 0.3); c.stroke();
+        c.beginPath(); c.moveTo(-r * 0.55, r * 0.42); c.lineTo(r * 0.55, r * 0.42); c.stroke();
+        /* skull mark */
+        c.fillStyle = "rgba(245,240,225,0.85)";
+        c.beginPath(); c.arc(0, r * 0.02, r * 0.3, 0, TAU); c.fill();
+        c.fillStyle = "rgba(20,14,10,0.9)";
+        c.beginPath();
+        c.arc(-r * 0.11, r * -0.03, r * 0.075, 0, TAU);
+        c.arc(r * 0.11, r * -0.03, r * 0.075, 0, TAU);
+        c.fill();
+        c.fillRect(-r * 0.05, r * 0.12, r * 0.1, r * 0.1);
         if (e.actState === 1) {
           const k = 1 - Math.max(0, Math.min(1, e.actT / 0.75));
           c.strokeStyle = `rgba(255,77,107,${0.4 + k * 0.6})`;
           c.lineWidth = 2.5;
-          c.beginPath(); c.arc(0, 0, r + 6 + k * 16, 0, TAU); c.stroke();
+          c.setLineDash([10, 7]);
+          c.lineDashOffset = -t * 60;
+          c.beginPath(); c.arc(0, 0, r + 6 + k * 18, 0, TAU); c.stroke();
+          c.setLineDash([]);
         }
         break;
       }
       case "lancer": {
-        /* elongated knight with a great lance toward the player */
+        /* ABYSSAL LANCER — great lance with a fluttering pennant, crest
+           plume, crossguard; charge lane telegraph kept. */
         c.save();
         c.rotate(ang);
-        c.strokeStyle = "#aef2ea"; c.lineWidth = 2.2;
-        c.beginPath(); c.moveTo(r * 0.5, 0); c.lineTo(r * 2.3, 0); c.stroke();
+        c.strokeStyle = "#8fe8dc"; c.lineWidth = 2.4;
+        c.beginPath(); c.moveTo(r * 0.5, 0); c.lineTo(r * 2.35, 0); c.stroke();
         c.fillStyle = e.glow;
-        c.beginPath(); c.moveTo(r * 2.3, 0); c.lineTo(r * 1.8, -r * 0.3); c.lineTo(r * 1.8, r * 0.3); c.closePath(); c.fill();
-        c.strokeStyle = "rgba(67,232,216,0.8)"; c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(r * 2.35, 0); c.lineTo(r * 1.85, -r * 0.32); c.lineTo(r * 1.85, r * 0.32); c.closePath(); c.fill();
+        c.strokeStyle = "rgba(67,232,216,0.85)"; c.lineWidth = 1.6;
         c.beginPath(); c.moveTo(r * 0.6, -r * 0.55); c.lineTo(r * 0.6, r * 0.55); c.stroke();
+        /* pennant ribbon streaming behind the tip */
+        const fl = Math.sin(t * 10 + e.wob) * r * 0.22;
+        c.fillStyle = "rgba(67,232,216,0.75)";
+        c.beginPath();
+        c.moveTo(r * 1.78, 0);
+        c.quadraticCurveTo(r * 1.4, -r * 0.4 + fl, r * 1.05, -r * 0.18 + fl);
+        c.quadraticCurveTo(r * 1.4, r * 0.12 - fl * 0.6, r * 1.78, 0);
+        c.closePath(); c.fill();
         c.restore();
+        /* crest plume */
+        c.strokeStyle = e.glow; c.lineWidth = 2;
+        c.beginPath();
+        c.moveTo(0, -r * 0.85);
+        c.quadraticCurveTo(Math.sin(t * 7) * r * 0.3 - r * 0.2, -r * 1.5, Math.sin(t * 7) * r * 0.4 - r * 0.35, -r * 1.7);
+        c.stroke();
         if (e.actState === 1) {
-          /* charge telegraph — the lane it will skewer down */
           c.strokeStyle = `rgba(255,77,107,${0.35 + Math.sin(t * 18) * 0.25})`;
           c.lineWidth = 3;
           c.setLineDash([12, 8]);
+          c.lineDashOffset = -t * 90;
           c.beginPath(); c.moveTo(0, 0); c.lineTo(ca * 620, sa * 620); c.stroke();
           c.setLineDash([]);
         }
         break;
       }
       case "warden": {
-        /* rotating tri-orbit rings + storm core */
-        c.strokeStyle = "rgba(127,178,255,0.8)"; c.lineWidth = 1.6;
+        /* TEMPEST HERALD — halo + tri-orbit rings + twin storm orbs with
+           crackling arcs between them. */
+        c.strokeStyle = "rgba(127,178,255,0.9)"; c.lineWidth = 1.6;
         for (let i = 0; i < 3; i++) {
           const a2 = t * 1.8 + (i / 3) * TAU;
           c.beginPath(); c.arc(0, 0, r * 1.35, a2, a2 + 1.5); c.stroke();
         }
+        c.strokeStyle = `rgba(201,224,255,${0.6 + Math.sin(t * 4) * 0.25})`;
+        c.lineWidth = 1.8;
+        c.beginPath(); c.ellipse(0, -r * 1.25, r * 0.55, r * 0.16, 0, 0, TAU); c.stroke();
+        /* twin storm orbs + arc between */
+        const oa = t * 2.6;
+        const o1x = Math.cos(oa) * r * 0.85, o1y = Math.sin(oa) * r * 0.5;
+        const o2x = -o1x, o2y = -o1y;
+        c.fillStyle = "#c9e0ff";
+        c.beginPath(); c.arc(o1x, o1y, r * 0.14, 0, TAU); c.fill();
+        c.beginPath(); c.arc(o2x, o2y, r * 0.14, 0, TAU); c.fill();
+        c.strokeStyle = `rgba(170,210,255,${0.35 + Math.sin(t * 16) * 0.25})`;
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(o1x, o1y);
+        c.quadraticCurveTo(Math.sin(t * 19) * r * 0.4, Math.cos(t * 17) * r * 0.4, o2x, o2y);
+        c.stroke();
         c.fillStyle = `rgba(201,224,255,${0.55 + Math.sin(t * 6) * 0.3})`;
         c.beginPath(); c.arc(0, 0, r * 0.3, 0, TAU); c.fill();
         break;
       }
       case "mender": {
-        /* healer's cross halo + stitching beam focus */
+        /* CORPSEWEAVER — healer's cross halo + web-thread focus +
+           spider-leg feelers at the hem. */
         c.strokeStyle = e.glow; c.lineWidth = 2;
+        c.setLineDash([3, 4]);
+        c.lineDashOffset = -t * 22;
         c.beginPath(); c.arc(0, 0, r * 1.3, 0, TAU); c.stroke();
-        c.strokeStyle = `rgba(242,166,255,${0.6 + Math.sin(t * 5) * 0.3})`;
-        c.beginPath(); c.moveTo(0, -r * 0.7); c.lineTo(0, r * 0.7); c.moveTo(-r * 0.7, 0); c.lineTo(r * 0.7, 0); c.stroke();
-        break;
-      }
-      case "knight": {
-        /* helm slit + pauldrons + shield */
-        c.fillStyle = "rgba(15,12,30,0.85)";
-        c.fillRect(-r * 0.55, -r * 0.28, r * 1.1, r * 0.2);
-        c.strokeStyle = "#d4ddf2"; c.lineWidth = 2.4;
-        c.beginPath(); c.arc(-r * 0.55, -r * 0.25, r * 0.38, Math.PI * 0.9, Math.PI * 1.9); c.stroke();
-        c.beginPath(); c.arc(r * 0.55, -r * 0.25, r * 0.38, Math.PI * 1.1, Math.PI * 2.1); c.stroke();
-        c.fillStyle = "rgba(154,167,201,0.9)";
-        c.save();
-        c.rotate(-0.5);
-        c.fillRect(-r * 1.05, -r * 0.5, r * 0.5, r * 1.05);
-        c.strokeStyle = "#f2c99a"; c.lineWidth = 1.2;
-        c.strokeRect(-r * 1.05, -r * 0.5, r * 0.5, r * 1.05);
-        c.restore();
-        break;
-      }
-      case "assassin": {
-        /* hood shadow + twin dagger glints */
-        c.fillStyle = "rgba(10,25,22,0.8)";
-        c.beginPath(); c.arc(0, -r * 0.35, r * 0.7, Math.PI, 0); c.fill();
-        c.strokeStyle = "#eafffa"; c.lineWidth = 1.8;
-        const glint = 0.5 + Math.sin(t * 10) * 0.5;
-        c.globalAlpha = glint;
-        c.beginPath(); c.moveTo(-r * 0.9, r * 0.1); c.lineTo(-r * 1.25, r * 0.45); c.stroke();
-        c.beginPath(); c.moveTo(r * 0.9, r * 0.1); c.lineTo(r * 1.25, r * 0.45); c.stroke();
-        c.globalAlpha = 1;
-        break;
-      }
-      case "mage": {
-        /* crooked hat + rune staff */
-        c.fillStyle = "#4a3585";
-        c.beginPath();
-        c.moveTo(-r * 0.85, -r * 0.55);
-        c.lineTo(-r * 0.1, -r * 1.6);
-        c.lineTo(r * 0.3, -r * 1.45);
-        c.lineTo(r * 0.85, -r * 0.55);
-        c.closePath(); c.fill();
-        c.strokeStyle = "rgba(198,186,255,0.8)"; c.lineWidth = 1.4;
-        c.beginPath(); c.moveTo(-r * 0.85, -r * 0.55); c.lineTo(r * 0.85, -r * 0.55); c.stroke();
-        c.strokeStyle = "#8a6f5a"; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(ca * r * 0.5, sa * r * 0.5); c.lineTo(ca * r * 1.5, sa * r * 1.5); c.stroke();
-        c.fillStyle = e.glow;
-        c.beginPath(); c.arc(ca * r * 1.5, sa * r * 1.5, 3 + Math.sin(t * 6) * 1, 0, TAU); c.fill();
-        break;
-      }
-      case "tank": {
-        /* armor plates + rivets */
-        c.strokeStyle = "rgba(20,14,10,0.75)"; c.lineWidth = 2.4;
-        c.beginPath(); c.arc(0, 0, r * 0.8, -2.6, -0.5); c.stroke();
-        c.beginPath(); c.arc(0, 0, r * 0.55, -2.9, -0.2); c.stroke();
-        c.fillStyle = "rgba(196,169,141,0.9)";
-        for (let i = 0; i < 4; i++) {
-          const a2 = -2.35 + i * 0.6;
-          c.beginPath(); c.arc(Math.cos(a2) * r * 0.68, Math.sin(a2) * r * 0.68, 1.6, 0, TAU); c.fill();
-        }
-        break;
-      }
-      case "elemental": {
-        /* orbiting shards + molten core */
-        c.fillStyle = e.glow;
-        for (let i = 0; i < 3; i++) {
-          const a2 = t * 2.2 + (i / 3) * TAU;
-          const sx2 = Math.cos(a2) * r * 1.15, sy2 = Math.sin(a2) * r * 1.15;
-          c.save();
-          c.translate(sx2, sy2);
-          c.rotate(a2 * 2);
-          c.beginPath(); c.moveTo(0, -4); c.lineTo(3, 2); c.lineTo(-3, 2); c.closePath(); c.fill();
-          c.restore();
-        }
-        c.fillStyle = `rgba(255,255,255,${0.5 + Math.sin(t * 5) * 0.3})`;
-        c.beginPath(); c.arc(0, 0, r * 0.3, 0, TAU); c.fill();
-        break;
-      }
-      case "necromancer": {
-        /* skull face + bone staff */
-        c.fillStyle = "rgba(240,235,215,0.9)";
-        c.beginPath(); c.arc(0, -r * 0.15, r * 0.55, 0, TAU); c.fill();
-        c.fillStyle = "rgba(20,16,10,0.95)";
-        c.beginPath(); c.arc(-r * 0.22, -r * 0.25, r * 0.14, 0, TAU); c.arc(r * 0.22, -r * 0.25, r * 0.14, 0, TAU); c.fill();
-        c.beginPath(); c.moveTo(0, -r * 0.05); c.lineTo(r * 0.1, r * 0.12); c.lineTo(-r * 0.1, r * 0.12); c.closePath(); c.fill();
-        c.strokeStyle = "#ddd6c0"; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(ca * r * 0.6, sa * r * 0.6); c.lineTo(ca * r * 1.55, sa * r * 1.55); c.stroke();
-        c.fillStyle = "rgba(185,242,154,0.9)";
-        c.beginPath(); c.arc(ca * r * 1.55, sa * r * 1.55, 2.6 + Math.sin(t * 7) * 1.2, 0, TAU); c.fill();
-        break;
-      }
-      case "shadow": {
-        /* jagged dissolving hem + extra eyes */
-        c.strokeStyle = e.glow; c.lineWidth = 1.4;
-        c.globalAlpha = 0.8;
-        for (let i = 0; i < 4; i++) {
-          const a2 = t * 3 + i * 1.57;
-          const ox = Math.cos(a2) * r * 1.5, oy = Math.sin(a2) * r * 1.5;
-          c.beginPath(); c.moveTo(ox * 0.8, oy * 0.8); c.lineTo(ox, oy); c.stroke();
-        }
-        c.globalAlpha = 1;
-        break;
-      }
-      case "timewalker": {
-        /* clock ring with spinning hands */
-        c.strokeStyle = "rgba(107,240,194,0.7)"; c.lineWidth = 1.6;
-        c.setLineDash([3, 5]);
-        c.beginPath(); c.arc(0, 0, r * 1.25, 0, TAU); c.stroke();
         c.setLineDash([]);
-        c.strokeStyle = "#c0ffe6"; c.lineWidth = 1.8;
-        const ha = t * 2.4;
-        c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(ha) * r * 0.9, Math.sin(ha) * r * 0.9); c.stroke();
-        c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(ha * 0.25 - 1.2) * r * 0.55, Math.sin(ha * 0.25 - 1.2) * r * 0.55); c.stroke();
-        break;
-      }
-      case "golem": {
-        /* crystal facets + inner glow */
-        c.strokeStyle = "rgba(213,244,255,0.75)"; c.lineWidth = 1.4;
-        c.beginPath();
-        c.moveTo(-r * 0.7, -r * 0.5); c.lineTo(0, -r * 0.95); c.lineTo(r * 0.7, -r * 0.5);
-        c.lineTo(r * 0.55, r * 0.7); c.lineTo(-r * 0.55, r * 0.7);
-        c.closePath(); c.stroke();
-        c.beginPath(); c.moveTo(0, -r * 0.95); c.lineTo(0, r * 0.7); c.moveTo(-r * 0.7, -r * 0.5); c.lineTo(r * 0.55, r * 0.7); c.stroke();
-        const glow = 0.45 + Math.sin(t * 4) * 0.25;
-        c.fillStyle = `rgba(127,216,255,${glow})`;
-        c.beginPath(); c.arc(0, 0, r * 0.34, 0, TAU); c.fill();
-        break;
-      }
-      case "voidbeast": {
-        /* maw toward player + grasping tendrils */
-        c.strokeStyle = "rgba(236,179,255,0.8)"; c.lineWidth = 2;
-        const mo = 0.35 + Math.sin(t * 6) * 0.15;
-        c.beginPath();
-        c.arc(ca * r * 0.35, sa * r * 0.35, r * 0.5, ang - 0.9 - mo, ang + 0.9 + mo); c.stroke();
+        c.strokeStyle = `rgba(242,166,255,${0.6 + Math.sin(t * 5) * 0.3})`;
+        c.lineWidth = 2.2;
+        c.beginPath(); c.moveTo(0, -r * 0.7); c.lineTo(0, r * 0.7); c.moveTo(-r * 0.7, 0); c.lineTo(r * 0.7, 0); c.stroke();
+        /* feelers */
+        c.strokeStyle = "rgba(242,166,255,0.55)"; c.lineWidth = 1.3;
         for (let i = 0; i < 4; i++) {
-          const a2 = -t * 2 + i * 1.57 + 0.4;
-          const tx = Math.cos(a2) * r * 1.4, ty = Math.sin(a2) * r * 1.4;
+          const fa = -Math.PI * 0.15 - i * 0.5 + Math.sin(t * 6 + i) * 0.15;
           c.beginPath();
-          c.moveTo(Math.cos(a2) * r * 0.6, Math.sin(a2) * r * 0.6);
-          c.quadraticCurveTo(Math.cos(a2 + 0.5) * r * 1.1, Math.sin(a2 + 0.5) * r * 1.1, tx, ty);
+          c.moveTo(Math.cos(fa) * r * 0.6, Math.sin(fa) * r * 0.6);
+          c.lineTo(Math.cos(fa) * r * 1.45, Math.sin(fa) * r * 1.45);
           c.stroke();
         }
         break;
       }
+      case "knight": {
+        /* RUSTBOUND KNIGHT — full helm with a glowing T-visor, riveted
+           pauldrons, tower shield with boss + rust scratches. */
+        c.fillStyle = "rgba(15,12,30,0.9)";
+        c.beginPath(); c.arc(0, -r * 0.18, r * 0.62, Math.PI * 0.9, Math.PI * 2.1); c.fill();
+        c.strokeStyle = "#d4ddf2"; c.lineWidth = 2.6;
+        c.beginPath(); c.arc(-r * 0.55, -r * 0.25, r * 0.4, Math.PI * 0.85, Math.PI * 1.95); c.stroke();
+        c.beginPath(); c.arc(r * 0.55, -r * 0.25, r * 0.4, Math.PI * 1.05, Math.PI * 2.15); c.stroke();
+        c.fillStyle = "rgba(242,201,154,0.9)";
+        for (let i = 0; i < 2; i++) {
+          const pa = Math.PI * (1.1 + i * 0.8);
+          c.beginPath(); c.arc(Math.cos(pa) * r * 0.62, -r * 0.25 + Math.sin(pa) * r * 0.36, 1.5, 0, TAU); c.fill();
+        }
+        /* visor slit aimed at the mage */
+        c.save();
+        c.rotate(ang);
+        c.strokeStyle = `rgba(212,221,242,${0.65 + Math.sin(t * 3) * 0.2})`;
+        c.lineWidth = 2;
+        c.beginPath(); c.moveTo(r * 0.2, -r * 0.16); c.lineTo(r * 0.62, -r * 0.16); c.stroke();
+        c.beginPath(); c.moveTo(r * 0.41, -r * 0.16); c.lineTo(r * 0.41, r * 0.2); c.stroke();
+        c.restore();
+        /* tower shield */
+        c.fillStyle = "rgba(154,167,201,0.92)";
+        c.save();
+        c.rotate(-0.5);
+        c.beginPath();
+        c.moveTo(-r * 1.05, -r * 0.52);
+        c.lineTo(-r * 0.55, -r * 0.52);
+        c.lineTo(-r * 0.55, r * 0.52);
+        c.lineTo(-r * 1.05, r * 0.32);
+        c.closePath(); c.fill();
+        c.strokeStyle = "#f2c99a"; c.lineWidth = 1.4;
+        c.stroke();
+        c.fillStyle = "#f2c99a";
+        c.beginPath(); c.arc(-r * 0.8, -r * 0.05, r * 0.12, 0, TAU); c.fill();
+        c.strokeStyle = "rgba(120,80,50,0.5)";
+        c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-r * 0.95, r * 0.1); c.lineTo(-r * 0.68, r * 0.3); c.stroke();
+        c.restore();
+        break;
+      }
+      case "assassin": {
+        /* SHROUD STALKER — hood shadow, twin karambit daggers with a
+           sweeping glint, scarf tail trailing opposite the mage. */
+        c.fillStyle = "rgba(6,22,18,0.85)";
+        c.beginPath(); c.arc(0, -r * 0.32, r * 0.72, Math.PI * 0.95, Math.PI * 2.05); c.fill();
+        /* scarf */
+        const sw = Math.sin(t * 8 + e.wob) * r * 0.3;
+        c.strokeStyle = "rgba(110,231,200,0.8)";
+        c.lineWidth = 2.4; c.lineCap = "round";
+        c.beginPath();
+        c.moveTo(-ca * r * 0.4, -sa * r * 0.4 - r * 0.2);
+        c.quadraticCurveTo(-ca * r * 1.1 + sw * 0.4, -sa * r * 1.1 - r * 0.5, -ca * r * 1.6 + sw, -sa * r * 1.6 - r * 0.3);
+        c.stroke();
+        c.lineCap = "butt";
+        /* twin curved daggers, glinting on a slow sweep */
+        const glint = Math.max(0, Math.sin(t * 5 + e.wob));
+        c.strokeStyle = "#eafffa"; c.lineWidth = 2;
+        for (const side of [-1, 1]) {
+          c.globalAlpha = 0.75 + glint * 0.25;
+          c.beginPath();
+          c.moveTo(side * r * 0.85, r * 0.15);
+          c.quadraticCurveTo(side * r * 1.3, r * 0.3, side * r * 1.2, r * 0.7);
+          c.stroke();
+        }
+        c.globalAlpha = 1;
+        break;
+      }
+      case "mage": {
+        /* UMBRA CULTIST — crooked wide-brim hat with rune band, staff with
+           a breathing orb, rope belt with dangling charm. */
+        c.fillStyle = "#3a2a6e";
+        c.beginPath();
+        c.moveTo(-r * 0.95, -r * 0.5);
+        c.quadraticCurveTo(-r * 0.2, -r * 1.75, r * 0.28, -r * 1.55);
+        c.lineTo(r * 0.95, -r * 0.5);
+        c.closePath(); c.fill();
+        c.strokeStyle = "rgba(198,186,255,0.85)"; c.lineWidth = 1.6;
+        c.beginPath();
+        c.moveTo(-r * 0.98, -r * 0.5);
+        c.quadraticCurveTo(0, -r * 0.36, r * 0.98, -r * 0.55);
+        c.stroke();
+        /* rune band */
+        c.fillStyle = e.glow;
+        for (let i = 0; i < 3; i++) {
+          const rx = -r * 0.55 + i * r * 0.55;
+          c.fillRect(rx, -r * 0.56, 3, 3.4);
+        }
+        /* staff + orb */
+        c.strokeStyle = "#8a6f5a"; c.lineWidth = 2.2;
+        c.beginPath(); c.moveTo(ca * r * 0.5, sa * r * 0.5); c.lineTo(ca * r * 1.55, sa * r * 1.55); c.stroke();
+        const op = 0.6 + Math.sin(t * 6 + e.wob) * 0.4;
+        c.fillStyle = `rgba(198,186,255,${op})`;
+        c.beginPath(); c.arc(ca * r * 1.55, sa * r * 1.55, 3.2 + op * 1.4, 0, TAU); c.fill();
+        /* belt charm */
+        c.strokeStyle = "rgba(198,186,255,0.5)"; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-r * 0.3, r * 0.55); c.lineTo(-r * 0.34, r * 0.95 + Math.sin(t * 5) * 2); c.stroke();
+        break;
+      }
+      case "tank": {
+        /* BONE COLOSSUS — layered plate arcs with rivets + curving tusks +
+           a cracked seam that glows when enraged. */
+        c.strokeStyle = "rgba(20,14,10,0.8)"; c.lineWidth = 3;
+        c.beginPath(); c.arc(0, 0, r * 0.8, -2.65, -0.45); c.stroke();
+        c.beginPath(); c.arc(0, 0, r * 0.52, -2.95, -0.15); c.stroke();
+        c.fillStyle = "rgba(196,169,141,0.95)";
+        for (let i = 0; i < 4; i++) {
+          const a2 = -2.4 + i * 0.6;
+          c.beginPath(); c.arc(Math.cos(a2) * r * 0.66, Math.sin(a2) * r * 0.66, 1.8, 0, TAU); c.fill();
+        }
+        /* tusks */
+        c.strokeStyle = "#e8dcc0"; c.lineWidth = 2.6; c.lineCap = "round";
+        for (const side of [-1, 1]) {
+          c.beginPath();
+          c.moveTo(side * r * 0.55, r * 0.5);
+          c.quadraticCurveTo(side * r * 0.95, r * 0.35, side * r * 0.85, -r * 0.15);
+          c.stroke();
+        }
+        c.lineCap = "butt";
+        /* crack seam — glows with fury */
+        c.strokeStyle = e.enraged ? `rgba(255,120,90,${0.55 + Math.sin(t * 9) * 0.3})` : "rgba(90,60,45,0.7)";
+        c.lineWidth = 1.6;
+        c.beginPath();
+        c.moveTo(-r * 0.1, r * 0.1); c.lineTo(r * 0.12, r * 0.05); c.lineTo(-r * 0.05, r * 0.3);
+        c.stroke();
+        break;
+      }
+      case "elemental": {
+        /* ERRANT WRAITH — flame-tongue crown + wispy skirt hem + four
+           orbiting embers (the wraith has no legs; it drifts). */
+        c.strokeStyle = e.glow; c.lineWidth = 1.8; c.lineCap = "round";
+        for (let i = 0; i < 4; i++) {
+          const fa = -Math.PI / 2 + (i - 1.5) * 0.42;
+          const fs = Math.sin(t * 7 + i * 1.9) * r * 0.22;
+          c.beginPath();
+          c.moveTo(Math.cos(fa) * r * 0.55, Math.sin(fa) * r * 0.55);
+          c.quadraticCurveTo(Math.cos(fa) * r * 1.1, Math.sin(fa) * r * 1.1 - r * 0.2, Math.cos(fa) * r * 1.3 + fs * 0.4, Math.sin(fa) * r * 1.3 - r * 0.45 + fs);
+          c.stroke();
+        }
+        c.lineCap = "butt";
+        /* hem — three wavy scallops */
+        c.strokeStyle = e.color; c.lineWidth = 1.4;
+        c.beginPath();
+        for (let i = 0; i <= 6; i++) {
+          const hx = -r * 0.85 + (i / 6) * r * 1.7;
+          const hy = r * (0.85 + Math.sin(t * 5 + i * 1.3) * 0.12);
+          if (i === 0) c.moveTo(hx, hy); else c.lineTo(hx, hy);
+        }
+        c.stroke();
+        /* molten core + orbiting embers */
+        c.fillStyle = `rgba(255,255,255,${0.5 + Math.sin(t * 5) * 0.3})`;
+        c.beginPath(); c.arc(0, 0, r * 0.3, 0, TAU); c.fill();
+        c.fillStyle = e.glow;
+        for (let i = 0; i < 4; i++) {
+          const a2 = t * 2.2 + (i / 4) * TAU;
+          const sx2 = Math.cos(a2) * r * 1.15, sy2 = Math.sin(a2) * r * 1.15;
+          c.save(); c.translate(sx2, sy2); c.rotate(a2 * 2);
+          c.beginPath(); c.moveTo(0, -4.5); c.lineTo(3.2, 2.4); c.lineTo(-3.2, 2.4); c.closePath(); c.fill();
+          c.restore();
+        }
+        break;
+      }
+      case "necromancer": {
+        /* BONESPEAKER — skull face with a glowing gaze + jaw, bone staff
+           crowned by a two-tone green flame. */
+        c.fillStyle = "rgba(240,235,215,0.92)";
+        c.beginPath(); c.arc(0, -r * 0.16, r * 0.56, 0, TAU); c.fill();
+        c.fillStyle = "rgba(240,235,215,0.8)";
+        c.fillRect(-r * 0.22, r * 0.28, r * 0.44, r * 0.2);
+        c.fillStyle = `rgba(185,242,154,${0.75 + Math.sin(t * 5) * 0.25})`;
+        c.beginPath(); c.arc(-r * 0.22, -r * 0.24, r * 0.15, 0, TAU); c.fill();
+        c.beginPath(); c.arc(r * 0.22, -r * 0.24, r * 0.15, 0, TAU); c.fill();
+        c.fillStyle = "rgba(20,16,10,0.9)";
+        c.beginPath(); c.moveTo(0, -r * 0.02); c.lineTo(r * 0.12, r * 0.14); c.lineTo(-r * 0.12, r * 0.14); c.closePath(); c.fill();
+        /* staff + brazier flame */
+        c.strokeStyle = "#ddd6c0"; c.lineWidth = 2.2;
+        c.beginPath(); c.moveTo(ca * r * 0.6, sa * r * 0.6); c.lineTo(ca * r * 1.6, sa * r * 1.6); c.stroke();
+        const fx2 = ca * r * 1.6, fy2 = sa * r * 1.6;
+        const flick = Math.sin(t * 9 + e.wob) * 2;
+        c.fillStyle = "rgba(126,217,87,0.9)";
+        c.beginPath();
+        c.moveTo(fx2, fy2 - 7 - flick);
+        c.quadraticCurveTo(fx2 + 4, fy2 - 2, fx2, fy2 + 2.5);
+        c.quadraticCurveTo(fx2 - 4, fy2 - 2, fx2, fy2 - 7 - flick);
+        c.fill();
+        c.fillStyle = "rgba(221,242,154,0.9)";
+        c.beginPath(); c.arc(fx2, fy2 - 1, 1.8, 0, TAU); c.fill();
+        break;
+      }
+      case "shadow": {
+        /* NIGHTMARE SHADE — jagged dissolving hem + curved grasping tendrils
+           + a colder, darker core. */
+        c.strokeStyle = e.glow; c.lineWidth = 1.5;
+        for (let i = 0; i < 4; i++) {
+          const a2 = t * 2.6 + i * 1.57;
+          const ox = Math.cos(a2) * r * 1.55, oy = Math.sin(a2) * r * 1.55;
+          const midx = Math.cos(a2 + 0.45) * r * 1.15, midy = Math.sin(a2 + 0.45) * r * 1.15;
+          c.beginPath();
+          c.moveTo(Math.cos(a2) * r * 0.75, Math.sin(a2) * r * 0.75);
+          c.quadraticCurveTo(midx, midy, ox, oy);
+          c.stroke();
+        }
+        /* jagged hem */
+        c.fillStyle = "rgba(6,3,14,0.85)";
+        c.beginPath();
+        c.moveTo(-r * 0.9, r * 0.3);
+        for (let i = 0; i <= 6; i++) {
+          const hx = -r * 0.9 + (i / 6) * r * 1.8;
+          const hy = r * (0.55 + (i % 2 === 0 ? 0.35 : 0) + Math.sin(t * 6 + i * 2) * 0.1);
+          c.lineTo(hx, hy);
+        }
+        c.lineTo(r * 0.9, r * 0.3);
+        c.closePath(); c.fill();
+        /* cold core */
+        c.fillStyle = "rgba(30,16,52,0.95)";
+        c.beginPath(); c.arc(0, -r * 0.05, r * 0.42, 0, TAU); c.fill();
+        break;
+      }
+      case "timewalker": {
+        /* CHRONOWRAITH — clock ring with hands + an afterimage echo ring
+           running backwards + hourglass pendant. */
+        c.strokeStyle = "rgba(107,240,194,0.5)";
+        c.lineWidth = 1.4;
+        c.beginPath(); c.arc(0, 0, r * 1.55, -t * 1.2, -t * 1.2 + 4.4); c.stroke();
+        c.strokeStyle = "rgba(107,240,194,0.75)"; c.lineWidth = 1.7;
+        c.setLineDash([3, 5]);
+        c.lineDashOffset = t * 14;
+        c.beginPath(); c.arc(0, 0, r * 1.25, 0, TAU); c.stroke();
+        c.setLineDash([]);
+        c.strokeStyle = "#c0ffe6"; c.lineWidth = 1.9; c.lineCap = "round";
+        const ha = t * 2.4;
+        c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(ha) * r * 0.95, Math.sin(ha) * r * 0.95); c.stroke();
+        c.beginPath(); c.moveTo(0, 0); c.lineTo(Math.cos(ha * 0.25 - 1.2) * r * 0.55, Math.sin(ha * 0.25 - 1.2) * r * 0.55); c.stroke();
+        c.lineCap = "butt";
+        /* hourglass pendant */
+        c.strokeStyle = "rgba(192,255,230,0.9)"; c.lineWidth = 1.3;
+        c.strokeRect(-r * 0.16, r * 0.35, r * 0.32, r * 0.42);
+        c.beginPath();
+        c.moveTo(-r * 0.14, r * 0.38); c.lineTo(r * 0.14, r * 0.38);
+        c.moveTo(-r * 0.14, r * 0.74); c.lineTo(r * 0.14, r * 0.74);
+        c.moveTo(-r * 0.12, r * 0.4); c.lineTo(r * 0.12, r * 0.72);
+        c.moveTo(r * 0.12, r * 0.4); c.lineTo(-r * 0.12, r * 0.72);
+        c.stroke();
+        break;
+      }
+      case "golem": {
+        /* VOIDCAGE GOLEM — faceted cage shell with a breathing captive
+           light + orbiting rune plates. */
+        c.strokeStyle = "rgba(213,244,255,0.8)"; c.lineWidth = 1.6;
+        c.beginPath();
+        c.moveTo(-r * 0.75, -r * 0.5); c.lineTo(0, -r * 0.98); c.lineTo(r * 0.75, -r * 0.5);
+        c.lineTo(r * 0.6, r * 0.72); c.lineTo(-r * 0.6, r * 0.72);
+        c.closePath(); c.stroke();
+        c.beginPath();
+        c.moveTo(0, -r * 0.98); c.lineTo(0, r * 0.72);
+        c.moveTo(-r * 0.75, -r * 0.5); c.lineTo(r * 0.6, r * 0.72);
+        c.moveTo(r * 0.75, -r * 0.5); c.lineTo(-r * 0.6, r * 0.72);
+        c.stroke();
+        const glow = 0.45 + Math.sin(t * 4 + e.wob) * 0.25;
+        c.fillStyle = `rgba(127,216,255,${glow})`;
+        c.beginPath(); c.arc(0, 0, r * 0.36, 0, TAU); c.fill();
+        c.fillStyle = "rgba(213,244,255,0.95)";
+        for (let i = 0; i < 3; i++) {
+          const a2 = t * 1.5 + (i / 3) * TAU;
+          c.save();
+          c.translate(Math.cos(a2) * r * 1.35, Math.sin(a2) * r * 1.35);
+          c.rotate(a2 * 1.5);
+          c.fillRect(-2.6, -2.6, 5.2, 5.2);
+          c.restore();
+        }
+        break;
+      }
+      case "voidbeast": {
+        /* NULLMAW BEAST — a ring of teeth yawns toward the mage, tendrils
+         * grasp outward, and a true void darkens the gullet. */
+        const mo = 0.35 + Math.sin(t * 6 + e.wob) * 0.18;
+        /* gullet — darker than the body */
+        c.fillStyle = "#0a0410";
+        c.beginPath(); c.arc(ca * r * 0.32, sa * r * 0.32, r * 0.52, ang - 1.05 - mo, ang + 1.05 + mo); c.closePath(); c.fill();
+        /* teeth ring */
+        c.fillStyle = "rgba(236,179,255,0.95)";
+        for (let i = 0; i < 7; i++) {
+          const ta = ang - 0.95 - mo + (i / 6) * (1.9 + mo * 2);
+          const tx = ca * r * 0.32 + Math.cos(ta) * r * 0.52;
+          const ty = sa * r * 0.32 + Math.sin(ta) * r * 0.52;
+          c.beginPath();
+          c.moveTo(tx + Math.cos(ta + 1.7) * 3, ty + Math.sin(ta + 1.7) * 3);
+          c.lineTo(tx + Math.cos(ta) * r * 0.3, ty + Math.sin(ta) * r * 0.3);
+          c.lineTo(tx + Math.cos(ta - 1.7) * 3, ty + Math.sin(ta - 1.7) * 3);
+          c.closePath(); c.fill();
+        }
+        /* grasping tendrils */
+        c.strokeStyle = "rgba(236,179,255,0.8)"; c.lineWidth = 2;
+        for (let i = 0; i < 4; i++) {
+          const a2 = -t * 2 + i * 1.57 + 0.4;
+          const wig = Math.sin(t * 5 + i * 2) * 0.35;
+          c.beginPath();
+          c.moveTo(Math.cos(a2) * r * 0.6, Math.sin(a2) * r * 0.6);
+          c.quadraticCurveTo(Math.cos(a2 + wig) * r * 1.05, Math.sin(a2 + wig) * r * 1.05, Math.cos(a2) * r * 1.45, Math.sin(a2) * r * 1.45);
+          c.stroke();
+        }
+        /* inner void spark */
+        c.fillStyle = "rgba(208,91,255,0.8)";
+        c.beginPath(); c.arc(ca * r * 0.32, sa * r * 0.32, 2.2, 0, TAU); c.fill();
+        break;
+      }
       case "boss": {
-        /* obsidian crown + horns + seething core + charge telegraph */
+        /* UMBRAL TYRANT — obsidian crown with gem points, curved horns, a
+           seething core, orbiting rune blades with motion arcs, and (when
+           enraged) flame roots at the crown's base. Charge lane telegraph
+           tracks the LIVE aim (V1.1 audit fix, kept). */
         c.fillStyle = "#2a0d18";
         for (let i = 0; i < 5; i++) {
           const a = -Math.PI / 2 + (i - 2) * 0.5;
+          const gem = (i === 2) ? 1.52 : 1.38;
           c.beginPath();
           c.moveTo(Math.cos(a - 0.16) * r * 0.9, Math.sin(a - 0.16) * r * 0.9);
-          c.lineTo(Math.cos(a) * r * 1.38, Math.sin(a) * r * 1.38);
+          c.lineTo(Math.cos(a) * r * gem, Math.sin(a) * r * gem);
           c.lineTo(Math.cos(a + 0.16) * r * 0.9, Math.sin(a + 0.16) * r * 0.9);
           c.closePath(); c.fill();
         }
-        c.strokeStyle = "#ff4d6b"; c.lineWidth = 3;
-        c.beginPath(); c.moveTo(-r * 0.75, -r * 0.6); c.quadraticCurveTo(-r * 1.3, -r * 1.1, -r * 1.05, -r * 1.5); c.stroke();
-        c.beginPath(); c.moveTo(r * 0.75, -r * 0.6); c.quadraticCurveTo(r * 1.3, -r * 1.1, r * 1.05, -r * 1.5); c.stroke();
+        /* center gem catches light */
+        c.fillStyle = `rgba(255,139,160,${0.5 + Math.sin(t * 3) * 0.2})`;
+        c.beginPath(); c.arc(0, -r * 1.38, 4, 0, TAU); c.fill();
+        /* horns — curved, tipped brighter */
+        c.strokeStyle = "#ff4d6b"; c.lineWidth = 3.4; c.lineCap = "round";
+        c.beginPath(); c.moveTo(-r * 0.75, -r * 0.6); c.quadraticCurveTo(-r * 1.35, -r * 1.1, -r * 1.05, -r * 1.55); c.stroke();
+        c.beginPath(); c.moveTo(r * 0.75, -r * 0.6); c.quadraticCurveTo(r * 1.35, -r * 1.1, r * 1.05, -r * 1.55); c.stroke();
+        c.lineCap = "butt";
+        /* seething core — enraged beats twice as fast */
         const core = 0.55 + Math.sin(t * (e.enraged ? 14 : 6)) * 0.3;
         c.fillStyle = `rgba(255,120,140,${core})`;
-        c.beginPath(); c.arc(0, 0, r * 0.28, 0, TAU); c.fill();
-        /* orbiting runes */
-        c.fillStyle = "rgba(255,139,160,0.85)";
+        c.beginPath(); c.arc(0, 0, r * 0.3, 0, TAU); c.fill();
+        c.strokeStyle = `rgba(255,180,190,${core * 0.7})`;
+        c.lineWidth = 1.6;
+        c.beginPath(); c.arc(0, 0, r * 0.44, 0, TAU); c.stroke();
+        /* orbiting rune blades + motion arcs */
+        c.strokeStyle = "rgba(255,139,160,0.35)";
+        c.lineWidth = 2.4;
         for (let i = 0; i < 4; i++) {
           const a2 = t * 1.4 + (i / 4) * TAU;
+          const orx = Math.cos(a2) * (r + 16), ory = Math.sin(a2) * (r + 16);
+          c.beginPath(); c.arc(0, 0, r + 16, a2 - 0.5, a2 - 0.08); c.stroke();
           c.save();
-          c.translate(Math.cos(a2) * (r + 16), Math.sin(a2) * (r + 16));
+          c.translate(orx, ory);
           c.rotate(a2);
-          c.fillRect(-3, -3, 6, 6);
+          c.fillStyle = "rgba(255,139,160,0.9)";
+          c.fillRect(-3.2, -3.2, 6.4, 6.4);
           c.restore();
         }
+        if (e.enraged) {
+          /* fury flames licking the crown base */
+          c.strokeStyle = `rgba(255,110,120,${0.5 + Math.sin(t * 11) * 0.25})`;
+          c.lineWidth = 2;
+          for (let i = 0; i < 5; i++) {
+            const fa = -Math.PI / 2 + (i - 2) * 0.5;
+            const fl = Math.sin(t * 9 + i * 2) * r * 0.1;
+            c.beginPath();
+            c.moveTo(Math.cos(fa - 0.3) * r * 0.8, Math.sin(fa - 0.3) * r * 0.8);
+            c.quadraticCurveTo(Math.cos(fa) * r * 1.1, Math.sin(fa) * r * 1.1, Math.cos(fa) * (r * 0.95 + fl), Math.sin(fa) * (r * 0.95 + fl));
+            c.stroke();
+          }
+        }
         if (e.actState === 1) {
-          /* V1.1 AUDIT FIX — the charge lane now tracks the LIVE aim (toward
-             the mage) exactly like the lancer's telegraph. The old draw used
-             the stale e.cx/cy locked at the PREVIOUS dash's end, so the lane
-             pointed down the last charge's direction (or nowhere on the
-             first) — players dodged the wrong lane. */
           c.strokeStyle = `rgba(255,77,107,${0.3 + Math.sin(t * 20) * 0.25})`;
           c.lineWidth = 3;
+          c.setLineDash([14, 9]);
+          c.lineDashOffset = -t * 120;
           c.beginPath(); c.moveTo(0, 0); c.lineTo(ca * 600, sa * 600); c.stroke();
+          c.setLineDash([]);
         }
         break;
       }
       default: break;
     }
-    c.restore();
   }
+
 
   private drawPlayer(c: CanvasRenderingContext2D) {
     if (this.hp <= 0 && this.phase === "gameover") return;
@@ -5521,9 +6599,11 @@ export class ArchmageEngine {
     const surging = this.surgeT > 0;
 
     for (const g of this.ghosts) {
-      c.globalAlpha = g.life * 1.6;
-      c.fillStyle = "#b06bff";
-      c.beginPath(); c.arc(g.x, g.y, 12, 0, TAU); c.fill();
+      /* V1.3 — dash ghosts are baked glow sprites (soft luminous afterimages
+         instead of hard violet discs). */
+      const ga = g.life * 1.6;
+      c.globalAlpha = ga;
+      c.drawImage(this.vfx.glowSpr("#9a7bff"), g.x - 21, g.y - 21, 42, 42);
     }
     c.globalAlpha = 1;
 
@@ -5536,11 +6616,19 @@ export class ArchmageEngine {
     c.save();
     c.translate(this.px, this.py);
 
-    /* aura */
+    /* aura — V1.3: the selected element now TINTS the mage's light: a baked
+       glow sprite breathes under the violet aura (surge keeps its gold). */
+    if (!surging) {
+      const breath = 62 + Math.sin(this.t * 2.2) * 7;
+      c.globalAlpha = (blink ? 0.4 : 0.3) * (this.iframes > 0 ? 0.6 : 1);
+      c.drawImage(this.vfx.glowSpr(sel.color), -breath / 2, -breath / 2, breath, breath);
+      c.globalAlpha = blink ? 0.45 : 1;
+    }
     c.fillStyle = surging ? this.playerAuraSurge! : this.playerAura!;
     c.beginPath(); c.arc(0, 0, surging ? 46 : 34, 0, TAU); c.fill();
 
-    /* orbiting rune ring — gold when the spell is evolved */
+    /* orbiting rune ring — gold when the spell is evolved. V1.3: three
+       element motes orbit at a second, slower radius. */
     const ringR = 22 + Math.sin(this.t * 2) * 1.5;
     c.strokeStyle = evo ? "rgba(255,233,173,0.8)" : "rgba(245,201,107,0.45)";
     c.lineWidth = 1.4;
@@ -5555,6 +6643,17 @@ export class ArchmageEngine {
       c.fillRect(ringR - 2, -1.4, 4, 2.8);
     }
     c.restore();
+    if (!this.reducedMotion) {
+      const motes = this.o.settings.dmgNumbers ? 3 : 2;   // gentle density tie-in
+      for (let i = 0; i < motes; i++) {
+        const ma = this.t * -1.6 + (i / motes) * TAU;
+        const mr = 30 + Math.sin(this.t * 1.3 + i * 2) * 2.5;
+        c.fillStyle = sel.color;
+        c.globalAlpha = 0.75;
+        c.beginPath(); c.arc(Math.cos(ma) * mr, Math.sin(ma) * mr, 1.7, 0, TAU); c.fill();
+        c.globalAlpha = blink ? 0.45 : 1;
+      }
+    }
 
     /* Patch 10.0 — FLUID LEAN: the mage's body leans into the direction of
        travel (up to ~2.6px at full stride). The rune ring + aura stay
@@ -5564,9 +6663,16 @@ export class ArchmageEngine {
     const leanK = Math.min(1, vNow / 252);
     c.translate(Math.cos(this.leanA) * 2.6 * leanK, Math.sin(this.leanA) * 2.6 * leanK);
 
-    /* cape — flutters away from the aim */
+    /* cape — V1.3: TWO-LAYER flutter (a dark inner fold under the violet
+       outer sweep) so the cloth reads as depth, not a cutout. */
     const ca = ang + Math.PI;
     const flap = Math.sin(this.t * 7) * 3 + leanK * 2;
+    c.fillStyle = "rgba(38,26,72,0.9)";
+    c.beginPath();
+    c.moveTo(Math.cos(ca - 1.5) * 6, Math.sin(ca - 1.5) * 6 - 3);
+    c.quadraticCurveTo(Math.cos(ca) * 20 + flap * 0.6, Math.sin(ca) * 20, Math.cos(ca + 1.5) * 6, Math.sin(ca + 1.5) * 6 + 3);
+    c.closePath();
+    c.fill();
     c.fillStyle = surging ? "rgba(245,201,107,0.45)" : "rgba(74,53,133,0.88)";
     c.beginPath();
     c.moveTo(Math.cos(ca - 1.9) * 6, Math.sin(ca - 1.9) * 6 - 4);
@@ -5625,7 +6731,9 @@ export class ArchmageEngine {
     }
     c.restore();
 
-    /* staff — wooden shaft toward aim, crystal at the tip */
+    /* staff — V1.3: the crystal sits on a baked glow sprite (the per-frame
+       shadowBlur is GONE — that was the single most expensive draw in the
+       whole render loop) and gains a fine gold ferrule. */
     const stx = Math.cos(ang) * 24, sty = Math.sin(ang) * 24;
     c.strokeStyle = "#c9955a";
     c.lineWidth = 3;
@@ -5639,20 +6747,28 @@ export class ArchmageEngine {
     c.moveTo(Math.cos(ang) * 6, Math.sin(ang) * 6 - 1.4);
     c.lineTo(stx, sty - 1.4);
     c.stroke();
+    /* ferrule band near the tip */
+    c.strokeStyle = "#f5c96b";
+    c.lineWidth = 1.4;
+    c.beginPath();
+    c.moveTo(Math.cos(ang) * 19 - Math.sin(ang) * 3, Math.sin(ang) * 19 + Math.cos(ang) * 3);
+    c.lineTo(Math.cos(ang) * 19 + Math.sin(ang) * 3, Math.sin(ang) * 19 - Math.cos(ang) * 3);
+    c.stroke();
     c.save();
     c.translate(stx, sty);
+    const orbR = surging ? 8 : 6.5;
+    const haloD = orbR * 6.4;
+    c.drawImage(this.vfx.glowSpr(sel.color), -haloD / 2, -haloD / 2, haloD, haloD);
     c.rotate(this.t * 2);
     c.fillStyle = sel.color;
-    c.shadowColor = sel.color;
-    c.shadowBlur = 14;
-    const orbR = surging ? 8 : 6.5;
     c.beginPath();
     c.moveTo(0, -orbR); c.lineTo(4, 0); c.lineTo(0, orbR); c.lineTo(-4, 0);
     c.closePath(); c.fill();
-    c.shadowBlur = 0;
     c.strokeStyle = "rgba(255,255,255,0.65)";
     c.lineWidth = 1;
     c.stroke();
+    c.fillStyle = "rgba(255,255,255,0.85)";
+    c.beginPath(); c.moveTo(0, -orbR); c.lineTo(2, -orbR * 0.3); c.lineTo(0, 0); c.closePath(); c.fill();
     if (evo) {
       c.strokeStyle = "rgba(255,233,173,0.9)";
       c.beginPath();
@@ -5766,13 +6882,15 @@ export class ArchmageEngine {
     c.translate(p.x, p.y);
     c.rotate(ang);
 
-    /* additive bloom pass — every bolt carries its own light.
-       Task 2-b — resolve the gradient through the proj itself (kind/r are
-       immutable): skips a per-proj-per-frame key concat + Map lookup. */
+    /* V1.3 — additive bloom pass: baked glow sprite blit (replaces the
+       per-projection gradient fill; the sprite's white-hot core reads hotter
+       AND costs one drawImage instead of a gradient fill + arc path). */
     c.globalCompositeOperation = "lighter";
-    if (!p.grad) p.grad = this.projGrad(p.kind, p.r);
-    c.fillStyle = p.grad;
-    c.beginPath(); c.arc(0, 0, p.r * 2.4, 0, TAU); c.fill();
+    if (!p.gspr) p.gspr = this.vfx.glowSpr(SPELLS[p.kind].color);
+    const bd = p.r * 5.2;
+    c.globalAlpha = 0.85;
+    c.drawImage(p.gspr, -bd / 2, -bd / 2, bd, bd);
+    c.globalAlpha = 1;
     c.globalCompositeOperation = "source-over";
 
     if (p.kind === "fire") {
@@ -5867,25 +6985,20 @@ export class ArchmageEngine {
   }
 
   private drawEBolt(c: CanvasRenderingContext2D, b: EBolt) {
-    /* Task 2-b — gradient cached per bolt (color/r immutable after spawn);
-       boltGrads stays the shared store, so the key concat now runs once per
-       bolt lifetime instead of once per bolt per frame. */
-    if (!b.grad) {
-      const key = b.color + ":" + b.r;
-      let g = this.boltGrads.get(key);
-      if (!g) {
-        g = c.createRadialGradient(0, 0, 1, 0, 0, b.r * 2.2);
-        g.addColorStop(0, "#ffffff");
-        g.addColorStop(0.4, b.color);
-        g.addColorStop(1, "rgba(0,0,0,0)");
-        this.boltGrads.set(key, g);
-      }
-      b.grad = g;
-    }
+    /* V1.3 — baked glow sprite (cached on the bolt; color/r immutable after
+       spawn). One additive blit, no gradient work. */
     c.save();
     c.translate(b.x, b.y);
-    c.fillStyle = b.grad;
-    c.beginPath(); c.arc(0, 0, b.r * 2.2, 0, TAU); c.fill();
+    if (!b.gspr) b.gspr = this.vfx.glowSpr(b.color);
+    const d = b.r * 4.6;
+    c.globalCompositeOperation = "lighter";
+    c.globalAlpha = 0.95;
+    c.drawImage(b.gspr, -d / 2, -d / 2, d, d);
+    /* razor core over the glow */
+    c.globalCompositeOperation = "source-over";
+    c.globalAlpha = 1;
+    c.fillStyle = "#ffffff";
+    c.beginPath(); c.arc(0, 0, b.r * 0.42, 0, TAU); c.fill();
     c.restore();
   }
 
@@ -5911,18 +7024,28 @@ export class ArchmageEngine {
   }
 
   private drawFloater(c: CanvasRenderingContext2D, f: Floater) {
+    /* V1.3 — DAMAGE-NUMBER POP: the first 30% of the number's life rides an
+       easeOutBack overshoot (1 → 1.32 → 1) while it rises; the font cache
+       stays untouched (the scale rides a transform, not a font size). */
     const k = f.life / f.maxLife;
+    const age = 1 - k;
+    let scale = 1;
+    if (age < 0.3) scale = 1 + easeOutBack(age / 0.3) * 0.32;
     c.globalAlpha = Math.min(1, k * 1.6);
     /* V1.1 AUDIT FIX (perf) — font strings cached per size (floaters use a
        handful of fixed sizes); the old path rebuilt a template string per
        floater per frame (up to 70/frame with damage numbers on). */
+    c.save();
+    c.translate(f.x, f.y);
+    c.scale(scale, scale);
     c.font = this.floaterFont(f.size);
     c.textAlign = "center";
     c.lineWidth = 3;
     c.strokeStyle = "rgba(10,6,20,0.85)";
-    c.strokeText(f.text, f.x, f.y);
+    c.strokeText(f.text, 0, 0);
     c.fillStyle = f.color;
-    c.fillText(f.text, f.x, f.y);
+    c.fillText(f.text, 0, 0);
+    c.restore();
     c.globalAlpha = 1;
   }
 

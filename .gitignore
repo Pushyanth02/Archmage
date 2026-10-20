@@ -52,7 +52,7 @@ server.log
 tool-results/
 upload/
 
-# local database (the game persists to localStorage; prisma stays optional)
+# local database artifacts (the game persists to localStorage)
 db/
 
 # sandbox / editor workspace (not part of the shipped game)

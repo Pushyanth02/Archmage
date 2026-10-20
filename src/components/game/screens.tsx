@@ -6,7 +6,6 @@ import {
 } from "@/game/content";
 import { RunStats } from "@/game/engine";
 import { useArchmageStore, sfx } from "@/game/store";
-import { fetchTop, submitRun, type LeaderboardEntry } from "@/lib/leaderboard";
 import { BoonIcon, SpellIcon, UiIcon } from "./icons";
 import { BossSigil } from "./overlays";
 import { useIsTouchDevice } from "./useIsTouchDevice";
@@ -306,13 +305,13 @@ export function MenuScreen({ chapter, chapterSubtitle, onStart }: MenuProps) {
           ARCHMAGE
         </h1>
 
-        {/* V1.2 — prominent release badge: the version branding reads
+        {/* V1.3 — prominent release badge: the version branding reads
             at a glance on every device, right under the title. */}
-        <div className="anim-fade-up-2 mt-3 flex items-center gap-2.5" aria-label="Version 1.2 patch — The Ledger of Legends">
+        <div className="anim-fade-up-2 mt-3 flex items-center gap-2.5" aria-label="Version 1.3 patch — The Radiant Rework">
           <span className="px-3.5 py-1 border border-[rgba(245,201,107,0.65)] bg-[rgba(245,201,107,0.1)] text-[#f5c96b] text-[11px] font-black uppercase tracking-[0.26em]">
-            Version 1.2
+            Version 1.3
           </span>
-          <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a7bff]">The Ledger of Legends · Live Patch</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a7bff]">The Radiant Rework</span>
         </div>
 
         <p className="anim-fade-up-2 mt-3 max-w-xl text-[15px] leading-relaxed text-[#b9aee0] italic">
@@ -371,11 +370,6 @@ export function MenuScreen({ chapter, chapterSubtitle, onStart }: MenuProps) {
             <UiIcon name="book" size={16} />
             Arcanum
             <span className="text-[#ffe9ad] font-black">{meta.combosFound.length}/{COMBO_COUNT}</span>
-          </button>
-          {/* V1.2 — the Ledger of Legends: global leaderboard of recorded deeds */}
-          <button onClick={() => setScreen("ledger")} onMouseEnter={hover} className="btn-ghost px-5 py-2.5 text-sm flex items-center gap-2" title="The Ledger — deeds of archmages across the rift">
-            <UiIcon name="trophy" size={16} />
-            Ledger
           </button>
           <button onClick={openSettings} onMouseEnter={hover} className="btn-ghost px-5 py-2.5 text-sm flex items-center gap-2">
             <UiIcon name="settings" size={16} />
@@ -457,22 +451,28 @@ export function MenuScreen({ chapter, chapterSubtitle, onStart }: MenuProps) {
           </div>
         </div>
 
-        {/* V1.2 — THE PATCH LEDGER: the live patch's release notes on top
-            (mirrors CHANGELOG.md "Version 1.2 — The Ledger of Legends"), with
-            the V1.1 and V1.0 notes preserved beneath. */}
+        {/* V1.3 patch notes: the live patch's release notes on top, with
+            the older patches preserved beneath. */}
         <div className="anim-fade-up-3 mt-4 w-full max-w-2xl border border-[rgba(154,123,255,0.28)] bg-[rgba(18,11,36,0.75)] px-6 py-3 text-left">
           <div className="flex items-center justify-between">
-            <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#6bf0c2]">Version 1.2 — The Ledger of Legends</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#6bf0c2]">Version 1.3 — The Radiant Rework</div>
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#f5c96b]">latest patch</div>
           </div>
           <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-[12.5px] text-[#c9bdf0] list-none">
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> The Ledger of Legends — a global leaderboard, inscribed at every trial&apos;s ending</li>
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Inscribe under any name — the ledger remembers it for your next deeds</li>
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Gilded top three, triumph &amp; endless marks, refresh and deep pages</li>
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Engine pass — sqrt hot paths, pooled particles, cached gradients, reused HUD payloads</li>
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> One inscription per 10 seconds — the ledger keeps the 500 greatest deeds</li>
-            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Sealed gracefully where the rift runs static — the game never blocks</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Total visual rework — every foe, the mage and all 13 spell arts remodeled with layered light</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Combat feel stack — hit squash, spark cones, blast shockwaves, soul wisps, kill zoom-punch</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Trauma screen-shake with rotation, crit hit-stop and boss-kill slow-motion</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Ribbon trails — every bolt drags a tapered comet tail</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Six acts, six all-new arenas — starfield void, magma veins, drowned caustics, frost fractures, abyss heart, starfall</li>
+            <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Baked-glow sprite engine + per-act cached floors + spatial-hash collisions + adaptive quality — runs smooth everywhere</li>
           </ul>
+          {/* V1.2 patch */}
+          <div className="mt-2.5 border-t border-[rgba(154,123,255,0.25)] pt-2">
+            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#8f7bff] mb-1">V1.2 — The Umbral Requiem</div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-[12px] text-[#b9aee0] list-none">
+              <li className="flex gap-2"><span className="text-[#f5c96b]">◆</span> Engine pass — sqrt hot paths, pooled particles, cached gradients, reused HUD payloads</li>
+            </ul>
+          </div>
           {/* V1.1 patch */}
           <div className="mt-2.5 border-t border-[rgba(154,123,255,0.25)] pt-2">
             <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#8f7bff] mb-1">V1.1 — True Direction</div>
@@ -929,155 +929,6 @@ export function ArcanumScreen() {
 
         <div className="mt-4 flex justify-center shrink-0">
           <button onClick={onBack} onMouseEnter={() => sfx.uiHover()} className="btn-ghost px-8 py-3">Return to the Gate</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------------------------------- ledger ---------------------------------- */
-
-/* V1.2 — THE LEDGER OF LEGENDS: the global leaderboard of recorded deeds.
-   Backed by the game's own API (GET /api/leaderboard) on server/standalone
-   builds. On static exports (GitHub Pages) the endpoint doesn't exist;
-   fetchTop() returns null and the panel reports the ledger as sealed —
-   the game is never blocked, degraded gracefully instead. */
-export function LedgerScreen() {
-  const setScreen = useArchmageStore((s) => s.setScreen);
-  const [rows, setRows] = useState<LeaderboardEntry[] | null>(null);
-  const [total, setTotal] = useState(0);
-  const [sealed, setSealed] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [nonce, setNonce] = useState(0);
-
-  useEffect(() => {
-    let alive = true;
-    /* state is only set from the async continuation — the loading/sealed
-       resets happen in refresh() (a user event) so the effect never triggers
-       a synchronous re-render pass */
-    fetchTop(20, 0).then((res) => {
-      if (!alive) return;
-      if (res) { setRows(res.entries); setTotal(res.total); setSealed(false); }
-      else { setRows(null); setSealed(true); }
-      setLoading(false);
-    });
-    return () => { alive = false; };
-  }, [nonce]);
-
-  const refresh = () => {
-    sfx.click();
-    setLoading(true);
-    setSealed(false);
-    setNonce((n) => n + 1);
-  };
-  const onBack = () => setScreen("menu");
-
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <MenuBackdrop />
-      <div className="rune-frame absolute inset-0 pointer-events-none"><Corners /></div>
-      <div className="relative z-10 w-full max-w-3xl px-4 sm:px-6 max-h-full flex flex-col py-6 sm:py-8">
-
-        {/* header */}
-        <div className="anim-fade-up shrink-0 text-center">
-          <div className="text-[11px] font-bold uppercase tracking-[0.34em] text-[#9a7bff]">Deeds recorded across the rift</div>
-          <h2 className="font-display text-4xl md:text-5xl font-black text-[#f5e3b3] tracking-wide mt-1 flex items-center justify-center gap-3">
-            <UiIcon name="trophy" size={30} className="text-[#f5c96b]" /> THE LEDGER
-          </h2>
-          <p className="mt-1 text-[13px] text-[#b9aee0] italic">
-            Every trial inscribed at the moment of its ending — score, wave and time, witnessed by the rift itself.
-          </p>
-        </div>
-
-        {/* standings */}
-        <div className="arc-content mt-5 overflow-y-auto pr-1 pb-2 flex-1 min-h-0 arc-scroll">
-          {loading && (
-            <div className="rune-panel p-10 text-center">
-              <div className="text-[#f5c96b] flex justify-center mb-3 animate-pulse"><UiIcon name="book" size={30} /></div>
-              <div className="text-[13px] text-[#b9aee0] italic">Consulting the ledger…</div>
-            </div>
-          )}
-          {!loading && sealed && (
-            <div className="rune-panel p-10 text-center">
-              <div className="text-[#f5c96b] flex justify-center mb-3"><UiIcon name="book" size={30} /></div>
-              <div className="font-display text-xl text-[#f0e8ff] font-bold">The ledger is sealed in this realm</div>
-              <p className="mt-2 text-[13px] text-[#b9aee0] italic max-w-md mx-auto">
-                Deeds are recorded only where the rift keeps a living ledger. Enter from the full game to read and inscribe names.
-              </p>
-            </div>
-          )}
-          {!loading && !sealed && rows && rows.length === 0 && (
-            <div className="rune-panel p-10 text-center">
-              <div className="text-[#f5c96b] flex justify-center mb-3"><UiIcon name="trophy" size={30} /></div>
-              <div className="font-display text-xl text-[#f0e8ff] font-bold">No deeds recorded yet</div>
-              <p className="mt-2 text-[13px] text-[#b9aee0] italic">
-                Be the first name in the ledger — inscribe your trial at its ending.
-              </p>
-            </div>
-          )}
-          {!loading && !sealed && rows && rows.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              {rows.map((r, i) => (
-                <div
-                  key={r.id}
-                  className={`arc-entry-hover anim-fade-up-${Math.min(4, (i % 4) + 1)} flex items-center gap-3 sm:gap-4 px-3 py-2.5 border ${
-                    r.rank <= 3
-                      ? "border-[rgba(245,201,107,0.55)] bg-[rgba(245,201,107,0.08)]"
-                      : "border-[rgba(154,123,255,0.28)] bg-[rgba(18,11,36,0.7)]"
-                  }`}
-                >
-                  <div
-                    className={`w-9 shrink-0 text-center font-display font-black text-lg ${
-                      r.rank === 1 ? "text-[#ffe9ad]" : r.rank === 2 ? "text-[#d8e0ff]" : r.rank === 3 ? "text-[#ffb08a]" : "text-[#8f7bff]"
-                    }`}
-                  >
-                    {r.rank}
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#f0e8ff] truncate">{r.name}</span>
-                      {r.triumph && (
-                        <span className="shrink-0 text-[#f5c96b]" title="Sealed the rift — all five tyrants fell">
-                          <UiIcon name="gate" size={13} />
-                        </span>
-                      )}
-                      {r.endless && (
-                        <span className="shrink-0 text-[#43e8d8]" title="Fell in the Endless Dirge">
-                          <UiIcon name="wave" size={13} />
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-[0.14em] text-[#8f7bff]">
-                      wave {r.wave} · {r.kills.toLocaleString()} felled · {formatTime(r.timeSec)}
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="font-display font-black text-lg text-[#ffe9ad]">{r.score.toLocaleString()}</div>
-                    <div className="text-[9px] uppercase tracking-[0.18em] text-[#8f7bff]">score</div>
-                  </div>
-                </div>
-              ))}
-              {total > rows.length && (
-                <div className="text-center text-[11px] text-[#8f7bff] italic pt-2">
-                  … {total - rows.length} more deeds held in the ledger&apos;s deep pages
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* footer */}
-        <div className="mt-4 flex justify-center gap-3 shrink-0">
-          <button
-            onClick={refresh}
-            onMouseEnter={() => sfx.uiHover()}
-            disabled={loading}
-            className="btn-ghost px-6 py-3 flex items-center gap-2"
-            title="Re-read the ledger"
-          >
-            <UiIcon name="refresh" size={16} /> {loading ? "Consulting…" : "Refresh"}
-          </button>
-          <button onClick={onBack} onMouseEnter={() => sfx.uiHover()} className="btn-gold px-8 py-3">Return to the Gate</button>
         </div>
       </div>
     </div>
@@ -1576,50 +1427,7 @@ export function PauseOverlay({ onResume, onRestart, onAbandon, onSettings }: {
 export function GameOverScreen({ stats, onRetry, onMenu }: { stats: RunStats; onRetry: () => void; onMenu: () => void }) {
   const seed = useArchmageStore((s) => s.seed);
   const meta = useArchmageStore((s) => s.meta);
-  const setPlayerName = useArchmageStore((s) => s.setPlayerName);
   const [copied, setCopied] = useState(false);
-  /* V1.2 — Ledger of Legends inscription: one submission per death screen.
-     The name persists in the meta save so future runs pre-fill it; failures
-     (offline static export, rate limit) explain themselves inline and never
-     block the rest of the eulogy. */
-  const [insName, setInsName] = useState(() => meta.playerName);
-  const [insState, setInsState] = useState<"idle" | "sending" | "done" | "error">("idle");
-  const [insRank, setInsRank] = useState(0);
-  const [insMsg, setInsMsg] = useState<string | null>(null);
-  const insClean = insName.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 16);
-
-  const inscribe = async () => {
-    if (insClean.length < 2 || insState === "sending" || insState === "done") return;
-    setInsName(insClean);
-    setPlayerName(insClean);
-    setInsState("sending");
-    setInsMsg(null);
-    const res = await submitRun({
-      name: insClean,
-      score: Math.max(0, Math.round(stats.score)),
-      wave: Math.max(0, Math.round(stats.wave)),
-      kills: Math.max(0, Math.round(stats.kills)),
-      timeSec: Math.max(0, Math.round(stats.timeSec)),
-      shards: Math.max(0, Math.round(stats.shards)),
-      triumph: !!stats.triumph,
-      endless: !!stats.endless,
-      seed,
-      evolutions: stats.evolutions.slice(0, 24).map((n) => n.slice(0, 64)),
-      merges: stats.merges.slice(0, 24).map((n) => n.slice(0, 64)),
-    });
-    if (res.ok) {
-      sfx.click();
-      setInsRank(res.entry.rank);
-      setInsState("done");
-    } else {
-      setInsState("error");
-      setInsMsg(
-        res.error === "unreachable"
-          ? "The ledger cannot be reached from this realm"
-          : res.error,
-      );
-    }
-  };
   const mm = Math.floor(stats.timeSec / 60);
   const ss = Math.floor(stats.timeSec % 60).toString().padStart(2, "0");
   const triumph = !!stats.triumph;
@@ -1735,51 +1543,6 @@ export function GameOverScreen({ stats, onRetry, onMenu }: { stats: RunStats; on
             </div>
           </div>
         )}
-
-        {/* V1.2 — inscribe the deed in the Ledger of Legends (global leaderboard) */}
-        <div className="mt-4 border border-[rgba(154,123,255,0.32)] bg-[rgba(18,11,36,0.7)] px-4 py-3">
-          {insState === "done" ? (
-            <div className="flex items-center justify-center gap-2.5 flex-wrap">
-              <span className="text-[#f5c96b]"><UiIcon name="trophy" size={18} /></span>
-              <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[#6bf0c2]">
-                Deed inscribed — the Ledger bears your name at Rank #{insRank}
-              </span>
-            </div>
-          ) : (
-            <>
-              <label
-                htmlFor="ledger-inscribe"
-                className="flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[#f5c96b] mb-2.5"
-              >
-                <UiIcon name="trophy" size={14} /> Inscribe your deed in the Ledger of Legends
-              </label>
-              <div className="flex items-center gap-2 max-w-md mx-auto">
-                <input
-                  id="ledger-inscribe"
-                  value={insName}
-                  onChange={(e) => setInsName(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") void inscribe(); }}
-                  maxLength={16}
-                  placeholder="Your name (2–16)"
-                  autoComplete="off"
-                  spellCheck={false}
-                  className="flex-1 min-w-0 bg-[#120b24] border border-[rgba(154,123,255,0.32)] px-3 py-2 text-sm text-[#ffe9ad] font-bold tracking-wide text-center outline-none focus:border-[#f5c96b] transition-colors"
-                />
-                <button
-                  onClick={() => void inscribe()}
-                  onMouseEnter={() => sfx.uiHover()}
-                  disabled={insState === "sending" || insClean.length < 2}
-                  className="btn-gold px-5 py-2 text-xs shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {insState === "sending" ? "Inscribing…" : "Inscribe"}
-                </button>
-              </div>
-              {insState === "error" && insMsg && (
-                <div className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#ff8ba0] text-center">{insMsg}</div>
-              )}
-            </>
-          )}
-        </div>
 
         <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center items-center">
           <button onClick={onRetry} onMouseEnter={() => sfx.uiHover()} className="btn-gold px-8 py-3 flex items-center justify-center gap-2">

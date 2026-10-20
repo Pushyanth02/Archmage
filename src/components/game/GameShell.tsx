@@ -12,7 +12,7 @@ import {
 import { useArchmageStore, sfx } from "@/game/store";
 import { RotateIcon, SpellIcon, UiIcon } from "./icons";
 import {
-  Corners, GameOverScreen, LedgerScreen, MenuScreen, PauseOverlay, RewardOverlay, ReliquaryScreen, SettingsScreen, ArcanumScreen,
+  Corners, GameOverScreen, MenuScreen, PauseOverlay, RewardOverlay, ReliquaryScreen, SettingsScreen, ArcanumScreen,
 } from "./screens";
 import { EndCreditsOverlay, EvolutionOverlay, MergeOverlay, SpellOfferOverlay } from "./overlays";
 import { TouchControls } from "./TouchControls";
@@ -960,9 +960,6 @@ export default function GameShell() {
       )}
       {phase === "menu" && screen === "arcanum" && (
         <ArcanumScreen />
-      )}
-      {phase === "menu" && screen === "ledger" && (
-        <LedgerScreen />
       )}
 
       {/* decorative frame while in run */}
