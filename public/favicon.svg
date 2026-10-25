@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- ARCHMAGE: RIFTBOUND sigil — a gold rift-diamond over the dark gate.
+       Vector, ~1 KB (replaces the 651 KB base64-raster wrapper of v2.1.1). -->
+  <rect width="64" height="64" rx="14" fill="#0a0812"/>
+  <rect x="4" y="4" width="56" height="56" rx="11" fill="none" stroke="#f5c96b" stroke-opacity="0.35" stroke-width="1.5"/>
+  <path d="M32 9 L50 32 L32 55 L14 32 Z" fill="none" stroke="#f5c96b" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M32 18 L43 32 L32 46 L21 32 Z" fill="#f5c96b" fill-opacity="0.9"/>
+  <path d="M32 25 L37.5 32 L32 39 L26.5 32 Z" fill="#0a0812"/>
+  <circle cx="32" cy="32" r="2.2" fill="#f5e3b3"/>
+  <path d="M32 55 L32 61 M32 3 L32 9" stroke="#9a7bff" stroke-width="2" stroke-linecap="round"/>
+</svg>

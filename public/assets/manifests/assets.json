@@ -1,0 +1,1053 @@
+{
+ "generator": "ARCHMAGE: RIFT 3D asset pipeline (task 6-a; supersedes public/assets/manifest.json)",
+ "version": "1.0.0",
+ "packs": [
+  {
+   "id": "kaykit-adventurers",
+   "pack": "KayKit \u2013 Character Pack: Adventurers 2.0",
+   "author": "Kay Lousberg",
+   "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-page",
+   "licenseReviewer": "8-c agent",
+   "reviewedAt": "2026-10-21",
+   "files": [
+    "models/mage.glb",
+    "models/staff.glb",
+    "models/anims.glb"
+   ]
+  },
+  {
+   "id": "kaykit-skeletons",
+   "pack": "KayKit \u2013 Character Pack: Skeletons",
+   "author": "Kay Lousberg",
+   "sourceUrl": "https://kaylousberg.itch.io/kaykit-skeletons",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-page",
+   "licenseReviewer": "8-c agent",
+   "reviewedAt": "2026-10-21",
+   "files": [
+    "models/skeleton.glb",
+    "models/skeletonmage.glb"
+   ]
+  },
+  {
+   "id": "quaternius-bestiary",
+   "pack": "Bestiary \u2013 Dungeon Monsters Kit",
+   "author": "Quaternius",
+   "sourceUrl": "https://quaternius.itch.io/bestiary-dungeon-monsters-kit",
+   "licenseId": "QAL-1.0 (Quaternius Asset License, free commercial)",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://quaternius.com/license.html",
+   "licenseEvidenceType": "license-file",
+   "licenseReviewer": "main-agent (Z.ai Code)",
+   "reviewedAt": "2026-10-21",
+   "files": [
+    "models/imp.glb",
+    "models/puglin.glb"
+   ]
+  },
+  {
+   "id": "quaternius-animated-monsters",
+   "pack": "LowPoly Animated Monsters",
+   "author": "Quaternius",
+   "sourceUrl": "https://quaternius.itch.io/lowpoly-animated-monsters",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-page",
+   "licenseReviewer": "main-agent (Z.ai Code)",
+   "reviewedAt": "2026-10-21",
+   "files": [
+    "models/slime.glb"
+   ]
+  },
+  {
+   "id": "augusto-faria-monsters",
+   "pack": "Low Poly Monsters Pack",
+   "author": "Augusto Faria",
+   "sourceUrl": "https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant",
+   "licenseId": "No explicit license (free PWYW download; commercial use pending author confirmation)",
+   "attributionRequired": true,
+   "commercialUseVerified": false,
+   "licenseStatus": "permission-pending (live page re-verified 2026-10-23: free PWYW, no explicit license text, AI-assisted disclosure)",
+   "licenseEvidenceUrl": "https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant",
+   "licenseEvidenceType": "pending",
+   "licenseReviewer": "main-agent (Z.ai Code)",
+   "reviewedAt": "2026-10-23",
+   "files": [
+    "models/ghost.glb",
+    "models/plant.glb"
+   ],
+   "note": "Live page check 2026-10-23: https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant \u2014 \"Download Now / Name your own price\"; page text grants game use implicitly but grants no explicit commercial terms. Models ship in this free browser build under attribution; commercial distribution stays blocked pending author confirmation."
+  },
+  {
+   "id": "kronbits-particles",
+   "pack": "1000 Free Game Assets (Particles)",
+   "author": "Kronbits",
+   "sourceUrl": "https://kronbits.itch.io/particle-pack",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-page",
+   "licenseReviewer": "8-c agent",
+   "reviewedAt": "2026-10-21",
+   "files": [
+    "particles/glow.png",
+    "particles/glow-soft.png",
+    "particles/flare.png",
+    "particles/ring.png",
+    "particles/streak.png",
+    "particles/muzzle.png",
+    "particles/lightrays.png",
+    "particles/smoke.png",
+    "particles/star.png",
+    "particles/star-hard.png",
+    "particles/spiral.png"
+   ]
+  },
+  {
+   "id": "kenney-graveyard",
+   "pack": "Graveyard Kit",
+   "author": "Kenney",
+   "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-file",
+   "licenseReviewer": "10-c asset agent (Z.ai Code)",
+   "reviewedAt": "2026-10-24",
+   "files": [
+    "models/terrain-tomb.glb",
+    "models/terrain-tomb-round.glb",
+    "models/terrain-tomb-broken.glb",
+    "models/terrain-cross.glb",
+    "models/terrain-tree.glb",
+    "models/terrain-fence.glb",
+    "models/terrain-crypt.glb",
+    "models/terrain-sarcophagus.glb",
+    "models/terrain-pillar.glb",
+    "models/terrain-lantern.glb"
+   ]
+  },
+  {
+   "id": "kenney-particles",
+   "pack": "Particle Pack",
+   "author": "Kenney",
+   "sourceUrl": "https://kenney.nl/assets/particle-pack",
+   "licenseId": "CC0",
+   "attributionRequired": false,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/zero/1.0",
+   "licenseEvidenceType": "license-file",
+   "licenseReviewer": "10-c asset agent (Z.ai Code)",
+   "reviewedAt": "2026-10-24",
+   "files": [
+    "particles/kenney-ripple.png",
+    "particles/kenney-crescent.png"
+   ]
+  },
+  {
+   "id": "dunpixel-skill-icons",
+   "pack": "30 Free Pixel Art Skill Icons",
+   "author": "Dani Melich (dunpixel)",
+   "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+   "licenseId": "Free commercial",
+   "attributionRequired": true,
+   "commercialUseVerified": true,
+   "licenseStatus": "verified",
+   "licenseEvidenceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+   "licenseEvidenceType": "item-page-terms",
+   "licenseReviewer": "main-agent (Z.ai Code)",
+   "reviewedAt": "2026-10-23",
+   "files": [
+    "icons/element-fire.png",
+    "icons/element-ice.png",
+    "icons/element-lightning.png",
+    "icons/element-earth.png",
+    "icons/element-shadow.png",
+    "icons/element-light.png",
+    "icons/element-time.png",
+    "icons/element-void.png",
+    "icons/element-arcane.png",
+    "icons/element-blood.png",
+    "icons/element-nature.png",
+    "icons/element-wind.png",
+    "icons/element-sonic.png"
+   ],
+   "note": "Live verification 2026-10-23: page grants \"Free to use in commercial projects.\" \u2014 no attribution demanded; attributionRequired kept true as the conservative choice since the credits screen lists the author."
+  }
+ ],
+ "assets": [
+  {
+   "id": "model.mage",
+   "kind": "model",
+   "uri": "models/mage.glb",
+   "format": "glb",
+   "byteSize": 352472,
+   "license": {
+    "author": "Kay Lousberg",
+    "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": [
+    "Idle_A",
+    "Idle_B",
+    "Walking_A",
+    "Walking_B",
+    "Running_A",
+    "Running_B",
+    "Hit_A",
+    "Hit_B",
+    "Death_A",
+    "Death_B",
+    "Spawn_Ground",
+    "Throw",
+    "Use_Item",
+    "PickUp",
+    "Interact"
+   ]
+  },
+  {
+   "id": "model.staff",
+   "kind": "model",
+   "uri": "models/staff.glb",
+   "format": "glb",
+   "byteSize": 34696,
+   "license": {
+    "author": "Kay Lousberg",
+    "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "model.imp",
+   "kind": "model",
+   "uri": "models/imp.glb",
+   "format": "glb",
+   "byteSize": 2766204,
+   "license": {
+    "author": "Quaternius",
+    "sourceUrl": "https://quaternius.itch.io/bestiary-dungeon-monsters-kit",
+    "licenseId": "QAL-1.0 (Quaternius Asset License, free commercial)",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": [
+    "Idle_Loop",
+    "Walk_Loop",
+    "Jog_Fwd_Loop",
+    "Sprint_Loop",
+    "Sword_Attack",
+    "Punch_Cross",
+    "Hit_Chest",
+    "Death01",
+    "Sword_Regular_A",
+    "Sword_Regular_B",
+    "Sword_Regular_C",
+    "Melee_Hook"
+   ]
+  },
+  {
+   "id": "model.puglin",
+   "kind": "model",
+   "uri": "models/puglin.glb",
+   "format": "glb",
+   "byteSize": 1852892,
+   "license": {
+    "author": "Quaternius",
+    "sourceUrl": "https://quaternius.itch.io/bestiary-dungeon-monsters-kit",
+    "licenseId": "QAL-1.0 (Quaternius Asset License, free commercial)",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": [
+    "Idle_Loop",
+    "Walk_Loop",
+    "Jog_Fwd_Loop",
+    "Sprint_Loop",
+    "Sword_Attack",
+    "Punch_Cross",
+    "Hit_Chest",
+    "Death01",
+    "Sword_Regular_A",
+    "Sword_Regular_B",
+    "Sword_Regular_C",
+    "Melee_Hook"
+   ]
+  },
+  {
+   "id": "model.slime",
+   "kind": "model",
+   "uri": "models/slime.glb",
+   "format": "glb",
+   "byteSize": 114604,
+   "license": {
+    "author": "Quaternius",
+    "sourceUrl": "https://quaternius.itch.io/lowpoly-animated-monsters",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "model.ghost",
+   "kind": "model",
+   "uri": "models/ghost.glb",
+   "format": "glb",
+   "byteSize": 26884,
+   "license": {
+    "author": "Augusto Faria",
+    "sourceUrl": "https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant",
+    "licenseId": "No explicit license (free PWYW download; commercial use pending author confirmation)",
+    "attributionRequired": true,
+    "commercialUseVerified": false,
+    "reviewedAt": "2026-10-23",
+    "note": "Live re-verification 2026-10-23: item page reads \"Name your own price\" (free), describes the pack as enemies \"ideais para projetos em Unity, Unreal ou qualquer engine 3D\", carries an AI Assisted (Graphics) disclosure, and contains NO explicit license text. Commercial use remains uncleared; attribution kept."
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "model.plant",
+   "kind": "model",
+   "uri": "models/plant.glb",
+   "format": "glb",
+   "byteSize": 122428,
+   "license": {
+    "author": "Augusto Faria",
+    "sourceUrl": "https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant",
+    "licenseId": "No explicit license (free PWYW download; commercial use pending author confirmation)",
+    "attributionRequired": true,
+    "commercialUseVerified": false,
+    "reviewedAt": "2026-10-23",
+    "note": "Live re-verification 2026-10-23: item page reads \"Name your own price\" (free), describes the pack as enemies \"ideais para projetos em Unity, Unreal ou qualquer engine 3D\", carries an AI Assisted (Graphics) disclosure, and contains NO explicit license text. Commercial use remains uncleared; attribution kept."
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "model.skeleton",
+   "kind": "model",
+   "uri": "models/skeleton.glb",
+   "format": "glb",
+   "byteSize": 410996,
+   "license": {
+    "author": "Kay Lousberg",
+    "sourceUrl": "https://kaylousberg.itch.io/kaykit-skeletons",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "model.skeletonmage",
+   "kind": "model",
+   "uri": "models/skeletonmage.glb",
+   "format": "glb",
+   "byteSize": 335796,
+   "license": {
+    "author": "Kay Lousberg",
+    "sourceUrl": "https://kaylousberg.itch.io/kaykit-skeletons",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   }
+  },
+  {
+   "id": "clipbank.anims",
+   "kind": "clipbank",
+   "uri": "models/anims.glb",
+   "format": "glb",
+   "byteSize": 452376,
+   "license": {
+    "author": "Kay Lousberg",
+    "sourceUrl": "https://kaylousberg.itch.io/kaykit-adventurers",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   },
+   "animations": [
+    "Idle_A",
+    "Idle_B",
+    "Walking_A",
+    "Walking_B",
+    "Running_A",
+    "Running_B",
+    "Hit_A",
+    "Hit_B",
+    "Death_A",
+    "Death_B",
+    "Spawn_Ground",
+    "Throw",
+    "Use_Item",
+    "PickUp",
+    "Interact"
+   ]
+  },
+  {
+   "id": "sprite.glow",
+   "kind": "sprite",
+   "uri": "particles/glow.png",
+   "format": "png",
+   "byteSize": 14756,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.glow-soft",
+   "kind": "sprite",
+   "uri": "particles/glow-soft.png",
+   "format": "png",
+   "byteSize": 20247,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.flare",
+   "kind": "sprite",
+   "uri": "particles/flare.png",
+   "format": "png",
+   "byteSize": 23128,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.ring",
+   "kind": "sprite",
+   "uri": "particles/ring.png",
+   "format": "png",
+   "byteSize": 52476,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.streak",
+   "kind": "sprite",
+   "uri": "particles/streak.png",
+   "format": "png",
+   "byteSize": 9643,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.muzzle",
+   "kind": "sprite",
+   "uri": "particles/muzzle.png",
+   "format": "png",
+   "byteSize": 12012,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.lightrays",
+   "kind": "sprite",
+   "uri": "particles/lightrays.png",
+   "format": "png",
+   "byteSize": 35503,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.smoke",
+   "kind": "sprite",
+   "uri": "particles/smoke.png",
+   "format": "png",
+   "byteSize": 17888,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.star",
+   "kind": "sprite",
+   "uri": "particles/star.png",
+   "format": "png",
+   "byteSize": 16131,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.star-hard",
+   "kind": "sprite",
+   "uri": "particles/star-hard.png",
+   "format": "png",
+   "byteSize": 2705,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "sprite.spiral",
+   "kind": "sprite",
+   "uri": "particles/spiral.png",
+   "format": "png",
+   "byteSize": 23119,
+   "license": {
+    "author": "Kronbits",
+    "sourceUrl": "https://kronbits.itch.io/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-21"
+   }
+  },
+  {
+   "id": "icon.fire",
+   "kind": "icon",
+   "uri": "icons/element-fire.png",
+   "format": "png",
+   "byteSize": 873,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.ice",
+   "kind": "icon",
+   "uri": "icons/element-ice.png",
+   "format": "png",
+   "byteSize": 1433,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.lightning",
+   "kind": "icon",
+   "uri": "icons/element-lightning.png",
+   "format": "png",
+   "byteSize": 1577,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.earth",
+   "kind": "icon",
+   "uri": "icons/element-earth.png",
+   "format": "png",
+   "byteSize": 1338,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.shadow",
+   "kind": "icon",
+   "uri": "icons/element-shadow.png",
+   "format": "png",
+   "byteSize": 1188,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.light",
+   "kind": "icon",
+   "uri": "icons/element-light.png",
+   "format": "png",
+   "byteSize": 842,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.time",
+   "kind": "icon",
+   "uri": "icons/element-time.png",
+   "format": "png",
+   "byteSize": 1346,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.void",
+   "kind": "icon",
+   "uri": "icons/element-void.png",
+   "format": "png",
+   "byteSize": 1223,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.arcane",
+   "kind": "icon",
+   "uri": "icons/element-arcane.png",
+   "format": "png",
+   "byteSize": 1412,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.blood",
+   "kind": "icon",
+   "uri": "icons/element-blood.png",
+   "format": "png",
+   "byteSize": 1479,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.nature",
+   "kind": "icon",
+   "uri": "icons/element-nature.png",
+   "format": "png",
+   "byteSize": 1406,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.wind",
+   "kind": "icon",
+   "uri": "icons/element-wind.png",
+   "format": "png",
+   "byteSize": 957,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "icon.sonic",
+   "kind": "icon",
+   "uri": "icons/element-sonic.png",
+   "format": "png",
+   "byteSize": 1718,
+   "license": {
+    "author": "Dani Melich (dunpixel)",
+    "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
+    "licenseId": "Free commercial",
+    "attributionRequired": true,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-23",
+    "note": "Live verification 2026-10-23: item page states \"Free to use in commercial projects.\" \u2014 explicit commercial grant. Attribution kept on by conservative choice (credits screen credits the author)."
+   }
+  },
+  {
+   "id": "model.terrain-tomb",
+   "kind": "model",
+   "uri": "models/terrain-tomb.glb",
+   "format": "glb",
+   "byteSize": 26900,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-tomb-round",
+   "kind": "model",
+   "uri": "models/terrain-tomb-round.glb",
+   "format": "glb",
+   "byteSize": 27880,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-tomb-broken",
+   "kind": "model",
+   "uri": "models/terrain-tomb-broken.glb",
+   "format": "glb",
+   "byteSize": 23968,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-cross",
+   "kind": "model",
+   "uri": "models/terrain-cross.glb",
+   "format": "glb",
+   "byteSize": 31632,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-tree",
+   "kind": "model",
+   "uri": "models/terrain-tree.glb",
+   "format": "glb",
+   "byteSize": 41872,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-fence",
+   "kind": "model",
+   "uri": "models/terrain-fence.glb",
+   "format": "glb",
+   "byteSize": 49624,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-crypt",
+   "kind": "model",
+   "uri": "models/terrain-crypt.glb",
+   "format": "glb",
+   "byteSize": 47916,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-sarcophagus",
+   "kind": "model",
+   "uri": "models/terrain-sarcophagus.glb",
+   "format": "glb",
+   "byteSize": 21948,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-pillar",
+   "kind": "model",
+   "uri": "models/terrain-pillar.glb",
+   "format": "glb",
+   "byteSize": 19600,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "model.terrain-lantern",
+   "kind": "model",
+   "uri": "models/terrain-lantern.glb",
+   "format": "glb",
+   "byteSize": 45488,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/graveyard-kit",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   },
+   "budget": {
+    "maxMaterials": 1,
+    "lodsRequired": false
+   },
+   "animations": []
+  },
+  {
+   "id": "sprite.kenney-ripple",
+   "kind": "sprite",
+   "uri": "particles/kenney-ripple.png",
+   "format": "png",
+   "byteSize": 51186,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   }
+  },
+  {
+   "id": "sprite.kenney-crescent",
+   "kind": "sprite",
+   "uri": "particles/kenney-crescent.png",
+   "format": "png",
+   "byteSize": 33547,
+   "license": {
+    "author": "Kenney",
+    "sourceUrl": "https://kenney.nl/assets/particle-pack",
+    "licenseId": "CC0",
+    "attributionRequired": false,
+    "commercialUseVerified": true,
+    "reviewedAt": "2026-10-24"
+   }
+  }
+ ]
+}

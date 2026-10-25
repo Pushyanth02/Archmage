@@ -1,0 +1,24 @@
+# ARCHMAGE: RIFTBOUND — robots.txt (v2.1.1)
+#
+# The whole game is one fully crawlable page: nothing is disallowed and no
+# AI crawler is blocked. Served from the repository subpath because GitHub
+# Pages project sites live under /<repository>/ — crawlers that only read
+# the domain root will not see this file, so the sitemap is additionally
+# referenced from the page HTML and can be submitted via Search Console.
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://pushyanth02.github.io/Archmage/sitemap.xml

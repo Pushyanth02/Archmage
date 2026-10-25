@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Archmage — Chrome (localhost:3000)",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${webRoot}/*"
+      },
+      "userDataDir": "${workspaceFolder}/.vscode/.chrome-profile"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to a running Archmage tab",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}

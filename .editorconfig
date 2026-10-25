@@ -1,0 +1,24 @@
+# Editor configuration (R-10, v2.0) — consistent basics for every editor.
+# This file states what the project already does; it does not configure a
+# formatter (none is installed — see .vscode/extensions.json notes).
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+# Two trailing spaces are meaningful line breaks in some existing notes;
+# keep trailing whitespace handling relaxed for Markdown only.
+trim_trailing_whitespace = false
+
+[*.{ts,tsx,js,jsx,mjs,cjs,json,yml,yaml,css}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab

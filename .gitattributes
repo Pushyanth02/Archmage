@@ -1,0 +1,47 @@
+# Archmage — repository text/binary hygiene.
+# Everyone gets LF in the working tree and the blobs; CRLF checkouts opt-in
+# per-platform below. Keeps canvas math, shaders of text and YAML CI files
+# byte-stable across macOS / Linux / Windows contributors.
+
+* text=auto eol=lf
+
+# Sources
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.json   text eol=lf
+*.css    text eol=lf
+*.svg    text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.prisma text eol=lf
+
+# Windows-only scripts keep their native endings
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+*.ps1    text eol=crlf
+
+# Binaries — never diff/merge them
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.mp3    binary
+*.wav    binary
+*.zip    binary
+*.tar    binary
+*.db     binary
+*.lock   linguist-generated=true -diff
+
+# Linguist: keep the repo's language graph honest
+*.svg -diff
+package-lock.json linguist-generated=true -diff
+bun.lock linguist-generated=true -diff

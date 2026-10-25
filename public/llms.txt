@@ -1,0 +1,29 @@
+# ARCHMAGE: RIFTBOUND
+
+> Free 3D roguelike that runs entirely in the browser. Fifty waves, five act bands drawn from ten terrains, five tyrants, 13 elements, 78 resonances and 22 spell evolutions. Deterministic per seed, no installs, no accounts, no ads, no tracking. Current version: 2.2.0 "The Reforged Update".
+
+The game is a single-page application at the URL below. Playing it requires JavaScript and WebGL2. All progress and settings are stored locally in the player's browser (localStorage). The game sends no player data to any server; every spell, wave and save lives on the player's device.
+
+Play: https://pushyanth02.github.io/Archmage/
+
+## Facts
+- Price: free. No in-app purchases, no accounts, no ads, no analytics, no cookies.
+- Version: 2.2.0 — The Reforged Update. First published 2026-10-21.
+- Platform: any modern browser with WebGL2: desktop, tablet and phone.
+- Input: keyboard + mouse, touch (left-hand mirror and one-thumb modes) and gamepad.
+- Scope of a run: 50 waves, 5 act bands drawn from 10 terrains, 5 tyrants, 13 elements, 78 pair resonances, 22 spell evolutions.
+- Determinism: every run is derived from a visible, shareable seed: the same seed walks the same ground.
+- Saves: browser localStorage only. A crash snapshot copies diagnostics to the clipboard and uploads nothing.
+
+## How to play
+- Pick or reroll a seed on the main menu, then "Enter the Rift".
+- Move to survive; casting a new element binds it to a slot. Casting two elements within a breath discovers a resonance.
+- After wave 12, a long-bound spell may be offered an evolution: a permanent trade-off, never a strict upgrade.
+- Fell a tyrant, or touch a rift shrine, to transmute a spell forever.
+- Between runs, the Vault spends aether glyphs on permanent upgrades.
+
+## Where things are
+- Play the game: https://pushyanth02.github.io/Archmage/
+- Source code: https://github.com/Pushyanth02/Archmage
+- XML sitemap: https://pushyanth02.github.io/Archmage/sitemap.xml
+- In-game Codex: controls, changelog and full art credits (open "Codex" on the main menu).

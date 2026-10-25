@@ -1,0 +1,90 @@
+# Deploy the static export to GitHub Pages (R-08, v2.0)
+#
+# Builds the game with BUILD_MODE=pages (output:"export", images.unoptimized)
+# under the repository subpath — the site is then served from
+# https://<owner>.github.io/<repository>/.
+#
+# Setup (one time): repository → Settings → Pages → Source: "GitHub Actions".
+#
+# Least privilege: contents:read to check out, pages:write + id-token:write
+# are the minimum the official Pages actions require. No secrets are needed.
+# Only main + manual dispatch deploy; the concurrency group cancels superseded
+# runs so at most one deploy is in flight.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install (frozen lockfile)
+        run: bun install --frozen-lockfile
+
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type check
+        run: bunx tsc --noEmit
+
+      - name: Static export under the repository subpath
+        run: bun run build:pages
+        env:
+          BUILD_MODE: pages
+          BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Smoke-gate the export
+        run: |
+          test -f out/index.html
+          test -f out/.nojekyll
+          test -d out/_next
+          test -f out/assets/manifests/assets.json
+          # chunk URLs must carry the repository base path
+          grep -q "/${{ github.event.repository.name }}/_next/" out/index.html
+          # v2.2: the brand suite must export too (favicon ladder + one shared OG JPEG; the duplicate twitter card and unreferenced art are gone)
+          for f in favicon.ico favicon.svg apple-touch-icon.png icon-192.png icon-512.png maskable-icon.png manifest.webmanifest art/og-image.jpg art/keyart.jpg art/cover.png llms.txt robots.txt sitemap.xml 404.html; do
+            test -f "out/$f" || { echo "::error::out/$f missing"; exit 1; }
+          done
+          # v2.1.1: no production source maps in the artifact. The only
+          # emitted one is the legacy-polyfill map (no project source in
+          # it) — deleted anyway so the guarantee is absolute.
+          find out -name "*.map" -type f -delete
+          test -z "$(find out -name "*.map" -type f)" || { echo "::error::source maps present in export"; exit 1; }
+          echo "✓ static export complete — brand + web-identity suite present"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

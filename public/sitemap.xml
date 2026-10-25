@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v2.1.1: the game is a single route. Static on purpose (a .ts route is
+     excluded by the pages-mode pageExtensions guard, and this file must
+     exist identically in dev, standalone and pages builds). Bump lastmod
+     with every release — pinned to the release date of SITE_VERSION.
+     Machine-checked by scripts/validate-web.ts. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemaps/0.9">
+  <url>
+    <loc>https://pushyanth02.github.io/Archmage/</loc>
+    <lastmod>2026-10-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
