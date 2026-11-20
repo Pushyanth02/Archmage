@@ -108,10 +108,9 @@ export interface Enemy {
   stallSide: number;
   recoverT: number;
   group: THREE.Group;
-  bodyMat: THREE.MeshStandardMaterial;
-  glowMat: THREE.MeshBasicMaterial;
   baseColor: THREE.Color;
-  baseEmissive: number;
+  /** v3.0: the pixel-billboard visual (null in headless tests). */
+  sprite: import("./pixelsprites").BillboardSprite | null;
   boss: BossState | null;
 }
 

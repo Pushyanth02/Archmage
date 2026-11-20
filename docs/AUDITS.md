@@ -39,3 +39,17 @@ Five audit waves (V1 design fidelity, V2 baseline + remediation, V3 repository, 
 The free build ships these with attribution; commercial distribution is blocked by the validator on purpose. CI runs the step with `continue-on-error: true` so only those rows stay non-blocking, and any new asset regression still fails the build (the exit code reflects the failure count).
 
 Cleared packs: KayKit Adventurers + Skeletons (CC0; mage, staff, skeletons), Quaternius Bestiary (QAL; imp, puglin, slime), Kronbits particle pack (CC0; 11 sprites curated from 1028), dunpixel skill icons (free commercial; 30 icons at 32px), Kenney graveyard kit (CC0 dressing). Procedural fallbacks exist for every asset class, so the game stays playable with zero binary assets. Per-pack provenance (author, source URL, license, used files) lives in `public/assets/manifests/assets.json` and renders in the Codex credits.
+
+
+---
+
+## v3.0 — The Pixel Reforging asset audit (2026-11-20)
+
+The GLTF bestiary (KayKit adventurers/skeletons, Quaternius bestiary/animated
+monsters, Augusto Faria monsters) and the shared `anims.glb` clip bank are
+**retired from the deploy** — replaced by the in-engine chibi pixel sprites
+(`src/game3d/pixelsprites.ts`) and the reference-sheet player witch
+(`public/assets/sprites/player.png`, project-made, MIT). Remaining third-party
+packs, all CC0 and unchanged: Kenney Graveyard Kit (terrain decor), Kronbits +
+Kenney particle sprites, dunpixel skill icons. The v3 background vistas
+(`public/art/v3/*.jpg`, keyart, og-image) are AI-conjured key art.

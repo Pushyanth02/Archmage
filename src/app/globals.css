@@ -158,7 +158,7 @@ body {
 /* thin arcane scrollbars for the Arcanum codex panes */
 .rift-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(154, 123, 255, 0.35) transparent;
+  scrollbar-color: rgba(217, 164, 65, 0.45) transparent;
 }
 .rift-scroll::-webkit-scrollbar {
   width: 8px;
@@ -168,11 +168,11 @@ body {
   border-radius: 8px;
 }
 .rift-scroll::-webkit-scrollbar-thumb {
-  background: rgba(154, 123, 255, 0.35);
+  background: rgba(217, 164, 65, 0.45);
   border-radius: 8px;
 }
 .rift-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(154, 123, 255, 0.55);
+  background: rgba(217, 164, 65, 0.7);
 }
 
 /* damage-number pool entries (created by vfx.ts) */
@@ -641,5 +641,313 @@ body {
   [data-hud-density="compact"] [data-hud-root],
   [data-hud-density="expanded"] [data-hud-root] {
     zoom: 0.72;
+  }
+}
+
+/* ================================================================== */
+/*  v3.0 — THE PIXEL REFORGED DESIGN SYSTEM                             */
+/*  Art direction: dark-purple enchanted panels, antique-gold filigree, */
+/*  diamond ornaments, notched hex plaques, keycap chips, gem finials.  */
+/*  Palette distilled from the v3 concept boards:                      */
+/*   panels #1E1430/#241A3A · gold #D9A441/#F0C060/#FFD97A             */
+/*   violet #8A4FE0/#A66BF0/#C9A0FF · cream #F2E8C9 · lavender #D8CFE8 */
+/* ================================================================== */
+
+:root {
+  --px-panel: 30 20 48; /* #1E1430 */
+  --px-panel-2: 36 26 58; /* #241A3A */
+  --px-panel-3: 44 33 72; /* #2C2148 */
+  --px-ink: 10 7 18; /* #0A0712 */
+  --px-gold: 217 164 65; /* #D9A441 */
+  --px-gold-hi: 240 192 96; /* #F0C060 */
+  --px-gold-glow: 255 217 122; /* #FFD97A */
+  --px-gold-dk: 184 130 46; /* #B8822E */
+  --px-violet: 138 79 224; /* #8A4FE0 */
+  --px-violet-hi: 166 107 240; /* #A66BF0 */
+  --px-violet-glow: 201 160 255; /* #C9A0FF */
+  --px-cream: 242 232 201; /* #F2E8C9 */
+  --px-lav: 216 207 232; /* #D8CFE8 */
+  --px-mut: 154 143 181; /* #9A8FB5 */
+  --px-crimson: 224 32 64; /* #E02040 */
+  --px-mana: 42 111 240; /* #2A6FF0 */
+  --px-amber: 245 166 35; /* #F5A623 */
+  --px-teal: 88 214 194; /* #58D6C2 */
+}
+
+/* ---- enchanted panel ---- */
+.px-panel {
+  position: relative;
+  background: linear-gradient(180deg, rgb(var(--px-panel-2) / 0.92), rgb(var(--px-panel) / 0.96));
+  border: 2px solid rgb(var(--px-gold) / 0.85);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--px-gold) / 0.16),
+    inset 0 0 24px rgb(var(--px-ink) / 0.55),
+    0 8px 28px rgb(var(--px-ink) / 0.55);
+}
+.px-panel--violet {
+  border-color: rgb(var(--px-violet-hi) / 0.8);
+}
+.px-panel--crimson {
+  border-color: rgb(var(--px-crimson) / 0.75);
+}
+/* ornate L-shaped corner brackets (double-line filigree caps) */
+.px-corners::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  pointer-events: none;
+  --c: rgb(var(--px-gold) / 0.9);
+  background:
+    linear-gradient(var(--c), var(--c)) left 0 top 0 / 16px 2px,
+    linear-gradient(var(--c), var(--c)) left 0 top 0 / 2px 16px,
+    linear-gradient(var(--c), var(--c)) left 0 top 4px / 8px 1px,
+    linear-gradient(var(--c), var(--c)) left 4px top 0 / 1px 8px,
+    linear-gradient(var(--c), var(--c)) right 0 top 0 / 16px 2px,
+    linear-gradient(var(--c), var(--c)) right 0 top 0 / 2px 16px,
+    linear-gradient(var(--c), var(--c)) right 0 top 4px / 8px 1px,
+    linear-gradient(var(--c), var(--c)) right 4px top 0 / 1px 8px,
+    linear-gradient(var(--c), var(--c)) left 0 bottom 0 / 16px 2px,
+    linear-gradient(var(--c), var(--c)) left 0 bottom 0 / 2px 16px,
+    linear-gradient(var(--c), var(--c)) left 0 bottom 4px / 8px 1px,
+    linear-gradient(var(--c), var(--c)) left 4px bottom 0 / 1px 8px,
+    linear-gradient(var(--c), var(--c)) right 0 bottom 0 / 16px 2px,
+    linear-gradient(var(--c), var(--c)) right 0 bottom 0 / 2px 16px,
+    linear-gradient(var(--c), var(--c)) right 0 bottom 4px / 8px 1px,
+    linear-gradient(var(--c), var(--c)) right 4px bottom 0 / 1px 8px;
+  background-repeat: no-repeat;
+}
+
+/* ---- gold gradient display text ---- */
+.px-gold-text {
+  background: linear-gradient(180deg, #ffe9ad 4%, #f5c96b 38%, #d9a441 68%, #9a6a1c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgb(var(--px-ink))) drop-shadow(0 0 3px rgb(var(--px-ink))) drop-shadow(0 0 26px rgb(var(--px-gold) / 0.55));
+}
+.px-crimson-text {
+  background: linear-gradient(180deg, #ffd9b0 10%, #ff8a5c 48%, #e87050 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 rgb(var(--px-ink))) drop-shadow(0 0 26px rgba(255, 64, 64, 0.55));
+}
+
+/* ---- notched hex plaque (menu CTA) ---- */
+.px-hex {
+  clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 22px 100%, 0 50%);
+}
+.px-hex-shell {
+  padding: 2px;
+  clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 22px 100%, 0 50%);
+}
+.px-hex-frame {
+  position: relative;
+  filter: drop-shadow(0 6px 18px rgb(var(--px-ink) / 0.6));
+}
+
+/* ---- keycap chip ---- */
+.px-keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 7px;
+  border: 1px solid rgb(var(--px-gold) / 0.55);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #3a2c58 0%, #241a3a 100%);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgb(var(--px-cream));
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 0 rgb(var(--px-ink));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+/* ---- banner tab (plaque overlapping a card's top edge) ---- */
+.px-tab {
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 100%, 0 100%);
+}
+
+/* ---- buttons ---- */
+.px-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.55rem 1.4rem;
+  border-radius: 8px;
+  border: 2px solid rgb(var(--px-gold) / 0.75);
+  background: linear-gradient(180deg, rgb(var(--px-panel-3) / 0.95), rgb(var(--px-panel) / 0.98));
+  color: rgb(var(--px-lav));
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  box-shadow: inset 0 1px 0 rgb(var(--px-gold) / 0.14), 0 4px 14px rgb(var(--px-ink) / 0.5);
+  transition: all 0.16s ease;
+  cursor: pointer;
+}
+.px-btn:hover {
+  border-color: rgb(var(--px-gold-hi));
+  color: rgb(var(--px-cream));
+  box-shadow: inset 0 1px 0 rgb(var(--px-gold) / 0.25), 0 4px 20px rgb(var(--px-gold) / 0.25);
+  transform: translateY(-1px);
+}
+.px-btn:active {
+  transform: translateY(0);
+}
+.px-btn--primary {
+  border-color: rgb(var(--px-gold-hi));
+  background: linear-gradient(180deg, rgb(var(--px-gold) / 0.28), rgb(var(--px-gold-dk)) / 0.16), linear-gradient(180deg, #3a2a10, #241a08);
+  color: rgb(var(--px-gold-glow));
+  text-shadow: 0 0 12px rgb(var(--px-gold) / 0.5);
+  box-shadow: inset 0 1px 0 rgb(var(--px-gold-glow) / 0.3), 0 0 24px rgb(var(--px-gold) / 0.28), 0 4px 14px rgb(var(--px-ink) / 0.5);
+}
+.px-btn--primary:hover {
+  box-shadow: inset 0 1px 0 rgb(var(--px-gold-glow) / 0.45), 0 0 40px rgb(var(--px-gold) / 0.45), 0 4px 14px rgb(var(--px-ink) / 0.5);
+}
+.px-btn--purple {
+  border-color: rgb(var(--px-violet-hi) / 0.8);
+  color: rgb(var(--px-violet-glow));
+}
+.px-btn--purple:hover {
+  border-color: rgb(var(--px-violet-glow));
+  box-shadow: inset 0 1px 0 rgb(var(--px-violet) / 0.25), 0 0 22px rgb(var(--px-violet) / 0.35);
+}
+.px-btn--ghost {
+  border-width: 1px;
+  border-color: rgb(var(--px-mut) / 0.4);
+  background: rgb(var(--px-panel) / 0.8);
+}
+
+/* ---- pill bars (HP/mana/energy) ---- */
+.px-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: rgb(var(--px-ink) / 0.8);
+  border: 1px solid rgb(var(--px-gold) / 0.35);
+  box-shadow: inset 0 2px 4px rgb(var(--px-ink) / 0.8);
+  overflow: hidden;
+}
+.px-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.15s ease-out;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 0 10px rgb(var(--px-gold) / 0.2);
+}
+
+/* ---- icon socket (round dark chip with colored ring) ---- */
+.px-socket {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgb(var(--px-ink) / 0.9);
+  flex-shrink: 0;
+}
+
+/* ---- filigree divider: hairline + terminal diamond ---- */
+.px-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--px-gold) / 0.85), transparent);
+}
+
+/* ---- diamond ornament ---- */
+.px-diamond {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ffe9ad, #d9a441);
+  border: 1px solid #b8822e;
+  box-shadow: 0 0 8px rgb(var(--px-gold) / 0.7);
+  flex-shrink: 0;
+}
+.px-diamond--sm {
+  width: 5px;
+  height: 5px;
+}
+
+/* ---- gem finial hanging under a card ---- */
+.px-finial {
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%) rotate(45deg);
+  border: 2px solid rgb(var(--px-gold-hi));
+  background: linear-gradient(135deg, rgb(var(--px-violet-hi)), rgb(var(--px-violet)));
+  box-shadow: 0 0 12px rgb(var(--px-violet) / 0.7);
+}
+
+/* ---- section header with icon + tracked caps + gold rule ---- */
+.px-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: rgb(var(--px-gold-hi));
+}
+.px-header::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(var(--px-gold) / 0.55), transparent);
+}
+
+/* ---- drifting sparkle motes (menu ambience) ---- */
+@keyframes px-sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(90deg);
+  }
+}
+.px-sparkle {
+  animation: px-sparkle var(--sparkle-dur, 3s) ease-in-out infinite;
+  animation-delay: var(--sparkle-delay, 0s);
+}
+
+/* ---- soft breathing glow for hero buttons ---- */
+@keyframes px-breathe {
+  0%, 100% {
+    box-shadow: 0 0 18px rgb(var(--px-gold) / 0.25), 0 6px 18px rgb(var(--px-ink) / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 34px rgb(var(--px-gold) / 0.45), 0 6px 18px rgb(var(--px-ink) / 0.6);
+  }
+}
+.px-breathe {
+  animation: px-breathe 3.2s ease-in-out infinite;
+}
+
+/* ---- stat row delta (upgrade cards) ---- */
+.px-delta {
+  color: #4ae87a;
+  font-weight: 800;
+}
+
+/* ---- reduced motion guard for the v3 decorative loops ---- */
+@media (prefers-reduced-motion: reduce) {
+  .px-sparkle,
+  .px-breathe {
+    animation: none !important;
   }
 }

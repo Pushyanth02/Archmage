@@ -33,6 +33,9 @@ interface RiftStore {
   evolveOffer: EvolveOfferPayload | null; // v2.2 spell-evolution offer
   stats: RunStats | null;
   settingsOpen: boolean;
+  /* v3.0: settings snapshot taken when the dialog opens — the Discard
+   * button restores it (settings themselves still apply live). */
+  settingsBaseline: GameSettings | null;
 
   /* actions */
   setScreen: (s: ScreenId) => void;
@@ -112,6 +115,7 @@ export const useRiftStore = create<RiftStore>((set, get) => ({
   evolveOffer: null,
   stats: null,
   settingsOpen: false,
+  settingsBaseline: null,
 
   setScreen: (s) => {
     sfx.click();
@@ -152,7 +156,7 @@ export const useRiftStore = create<RiftStore>((set, get) => ({
   setStats: (s) => set({ stats: s }),
   openSettings: () => {
     sfx.click();
-    set({ settingsOpen: true });
+    set({ settingsOpen: true, settingsBaseline: get().meta.settings });
   },
   closeSettings: () => {
     sfx.click();

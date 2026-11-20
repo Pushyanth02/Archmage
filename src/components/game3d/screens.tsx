@@ -3,16 +3,18 @@
 
 import { useState, useEffect, useSyncExternalStore, useRef, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { AudioLines, BookMarked, BookOpen, Clock, Copy, Crown, Dices, DoorOpen, Flame, Gauge, Gem, Heart, HeartPulse, House, Hourglass, Infinity, Music4, Play, RotateCcw, Scan, Settings, Skull, Sparkles, Star, Sun, Swords, Trash2, TriangleAlert, Trophy, Volume2, Wind, X, Zap } from "lucide-react";
+import { Accessibility, AudioLines, BookMarked, BookOpen, Clock, Copy, Crown, Database, Dices, DoorOpen, Flame, Gamepad2, Gauge, Gem, Heart, HeartPulse, House, Hourglass, Infinity, Monitor, Music4, Pencil, Play, RotateCcw, Scan, Settings, Shuffle, Skull, Sparkles, Star, Sun, Swords, Trash2, TriangleAlert, Trophy, Users, Volume2, Wind, X, Zap } from "lucide-react";
+import { PxPanel, PxDiamond, PxFiligree, PxHeader, PxHexButton, PxStarInArch, IconChest, IconTriquetra } from "@/components/game3d/pixel";
 import { useRiftStore, peekSlots } from "@/game3d/store";
 import { sfx } from "@/game3d/audio";
 import { FALLBACK_PACKS, fetchPackCredits } from "@/game3d/assets";
-import { ACTS, computeBonuses, RELIQUARY, RELIQUARY_MAX_LEVEL, reliquaryCost, SPELL_ORDER, ALL_PAIRS, comboKey, COMBOS, SPELLS, ELITE_ORDER, ELITE_DEFS, ENEMY_ORDER, ENEMY_DEFS, BOSS_DEFS, CHANGELOG, GAME_VERSION, MERCY_MAX_TIER, mercyTierBase, VICTORY_WAVE, TERRAINS, biomeDeckFor, PALETTE_IDS, PALETTE_LABELS,
+import { ACTS, computeBonuses, RELIQUARY, RELIQUARY_MAX_LEVEL, reliquaryCost, SPELL_ORDER, ALL_PAIRS, comboKey, COMBOS, SPELLS, ELITE_ORDER, ELITE_DEFS, ENEMY_ORDER, ENEMY_DEFS, BOSS_DEFS, CHANGELOG, GAME_VERSION, MERCY_MAX_TIER, mercyTierBase, VICTORY_WAVE, TERRAINS, biomeDeckFor, PALETTE_IDS, PALETTE_LABELS, elementColor, elementGlow, DEFAULT_SETTINGS,
   type ReliquaryKey,
+  type GameSettings,
 } from "@/game3d/content";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose as DialogPrimitiveClose } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
@@ -42,6 +44,7 @@ const VIOLET = "#9a7bff";
 const TEAL = "#43e8d8";
 const CRIMSON = "#ff4d6b";
 const SCREEN_BG = "fixed inset-0 z-40 bg-[#0a0812]/95 backdrop-blur-md dark";
+const ROMAN_ACTS = ["I", "II", "III", "IV", "V"];
 function fmtTime(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
@@ -174,23 +177,23 @@ function KeyartBackdrop() {
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);
-  return <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<div ref={parallaxRef} className="absolute inset-0 will-change-transform">{<img src={assetPath("/art/keyart.jpg")} alt="" draggable={false} className="rift-kenburns h-full w-full object-cover object-center" />}</div>}{<div className="absolute inset-0 bg-gradient-to-b from-[#0a0812]/75 via-[#0a0812]/40 to-[#0a0812]/92" />}{<div className="rift-veil-breathe absolute inset-0" style={{
-      background: "radial-gradient(1100px 700px at 50% 34%, rgba(88,58,160,0.30), transparent 62%)," + "radial-gradient(720px 520px at 16% 88%, rgba(208,91,255,0.12), transparent 60%)," + "radial-gradient(720px 520px at 86% 10%, rgba(67,232,216,0.09), transparent 60%)"
+  return <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<div ref={parallaxRef} className="absolute inset-0 will-change-transform">{<img src={assetPath("/art/v3/menu-bg.jpg")} alt="" draggable={false} className="rift-kenburns h-full w-full object-cover object-center" />}</div>}{<div className="absolute inset-0 bg-gradient-to-b from-[#0a0812]/72 via-[#0a0812]/30 to-[#0a0812]/90" />}{<div className="rift-veil-breathe absolute inset-0" style={{
+      background: "radial-gradient(1100px 700px at 50% 30%, rgba(122,63,212,0.26), transparent 62%)," + "radial-gradient(720px 520px at 14% 92%, rgba(199,125,255,0.12), transparent 60%)," + "radial-gradient(720px 520px at 88% 8%, rgba(232,180,75,0.08), transparent 60%)"
     }} />}{<div className="absolute inset-0" style={{
-      background: "radial-gradient(ellipse at center, transparent 55%, rgba(5,3,12,0.62) 100%)"
+      background: "radial-gradient(ellipse at center, transparent 52%, rgba(10,7,18,0.66) 100%)"
     }} />}</div>;
 }
 /** Layer 1 — the ported MenuBackdrop: counter-rotating sigil rings, drifting
  *  motes, and rising rift embers (cinematic pass). */
 function MenuBackdrop() {
-  return <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<svg className="rift-sigil-spin absolute left-1/2 top-1/2 h-[min(112vw,760px)] w-[min(112vw,760px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.15]" viewBox="0 0 760 760" fill="none">{<circle cx="380" cy="380" r="360" stroke="#f5c96b" strokeWidth="1.5" strokeDasharray="16 12" />}{<circle cx="380" cy="380" r="238" stroke="#f5c96b" strokeWidth="1" />}{Array.from({
+  return <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<svg className="rift-sigil-spin absolute left-1/2 top-1/2 h-[min(112vw,760px)] w-[min(112vw,760px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.09]" viewBox="0 0 760 760" fill="none">{<circle cx="380" cy="380" r="360" stroke="#f5c96b" strokeWidth="1.5" strokeDasharray="16 12" />}{<circle cx="380" cy="380" r="238" stroke="#f5c96b" strokeWidth="1" />}{Array.from({
         length: 8
       }).map((_, i) => {
         const a = i / 8 * Math.PI * 2;
         const x = 380 + Math.cos(a) * 330;
         const y = 380 + Math.sin(a) * 330;
         return <rect x={x - 9} y={y - 9} width="18" height="18" transform={`rotate(45 ${x} ${y})`} stroke="#f5c96b" strokeWidth="1.4" key={i} />;
-      })}</svg>}{<svg className="rift-sigil-spin-rev absolute left-1/2 top-1/2 h-[min(88vw,600px)] w-[min(88vw,600px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.13]" viewBox="0 0 760 760" fill="none">{<circle cx="380" cy="380" r="300" stroke="#9a7bff" strokeWidth="1" strokeDasharray="4 16" />}{Array.from({
+      })}</svg>}{<svg className="rift-sigil-spin-rev absolute left-1/2 top-1/2 h-[min(88vw,600px)] w-[min(88vw,600px)] -translate-x-1/2 -translate-y-1/2 opacity-[0.08]" viewBox="0 0 760 760" fill="none">{<circle cx="380" cy="380" r="300" stroke="#9a7bff" strokeWidth="1" strokeDasharray="4 16" />}{Array.from({
         length: 6
       }).map((_, i) => {
         const a = i / 6 * Math.PI * 2 + Math.PI / 6;
@@ -245,147 +248,268 @@ function MenuContent() {
   const randomizeSeed = useRiftStore(s => s.randomizeSeed);
   const setScreen = useRiftStore(s => s.setScreen);
   const openSettings = useRiftStore(s => s.openSettings);
-  const patchSettings = useRiftStore(s => s.patchSettings);
   const [seedCopied, setSeedCopied] = useState(false);
+  const [editingSeed, setEditingSeed] = useState(false);
+  const [partyNotice, setPartyNotice] = useState(false);
   /* touch-primary devices get a one-line gesture note under the begin rite */
   const isTouch = useIsTouch();
   /* v2.1.1: the legal documents (Terms / Privacy) open from the footer row. */
   const [legal, setLegal] = useState<null | "terms" | "privacy">(null);
-  /* F-06 (audit): the menu seed is the NEXT run's seed — the deterministic
-   *  itinerary preview is derived from THIS seed (a prediction, never a
-   *  live terrain selector; the deck is frozen the moment the run starts). */
-  const itinerary = useMemo(() => biomeDeckFor(seed).slice(0, 5).map(id => TERRAINS.find(t => t.id === id)?.name ?? id), [seed]);
   const copySeed = async () => {
     sfx.click();
     try {
       await navigator.clipboard.writeText(seed);
     } catch {
-      /* clipboard denied (permissions/old browser) — select the input text
-       *  as a visible fallback so the player can still copy manually */
       (document.getElementById("rift-seed") as HTMLInputElement | null)?.select();
     }
     setSeedCopied(true);
     window.setTimeout(() => setSeedCopied(false), 1400);
   };
-  /* the next horizon: which biome the rift opens onto, from lifetime progress */
-  const act = ACTS[Math.min(ACTS.length - 1, Math.floor(Math.max(0, meta.bestWave) / 10))];
+  /* the rift level — a lifetime progress metric distilled from real meta:
+   * waves, foes, resonances, seals. Deterministic, no new save fields. */
+  const xp = meta.totalKills * 2 + meta.bestWave * 30 + meta.combosFound.length * 120 + meta.victories * 800 + meta.runs * 40;
+  const level = Math.floor(xp / 1000) + 1;
+  const xpPct = Math.min(100, (xp % 1000) / 10);
   const hover = () => sfx.hover();
-  return <motion.div className="fixed inset-0 z-40 overflow-hidden bg-[#0a0812]" initial={{
-    opacity: 0
-  }} animate={{
-    opacity: 1
-  }} exit={{
-    opacity: 0,
-    transition: {
-      duration: 0.45
-    }
-  }} transition={{
-    duration: 0.5
-  }}>{<KeyartBackdrop />}{<MenuBackdrop />}{<div aria-hidden className="rift-grain pointer-events-none absolute inset-0 z-10" />}{<RuneCorners />}{<LetterboxBars />}{<div className="rift-scroll safe-x relative z-10 h-full overflow-y-auto">{<div className="font-body flex min-h-full flex-col items-center px-4 pb-14 pt-12 text-center sm:pt-16 [@media(max-height:540px)]:pb-8 [@media(max-height:540px)]:pt-5">{<motion.div className="flex items-center gap-3 text-[#9a7bff]" initial={{
-          opacity: 0,
-          y: 14
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.15,
-          duration: 0.5
-        }}>{<span className="h-px w-14 bg-gradient-to-r from-transparent to-[#9a7bff] sm:w-20" />}{<span className="text-[11px] font-bold uppercase tracking-[0.42em] sm:text-xs">Riftbound · 3D Edition</span>}{<span className="h-px w-14 bg-gradient-to-l from-transparent to-[#9a7bff] sm:w-20" />}</motion.div>}{<motion.h2 className="font-display mt-4 text-[clamp(52px,9vw,110px)] font-black leading-none tracking-[0.08em] [@media(max-height:540px)]:mt-2 [@media(max-height:540px)]:text-[clamp(40px,7vw,84px)] text-[#f5e3b3] [text-shadow:0_0_34px_rgba(245,201,107,0.5),0_0_90px_rgba(154,123,255,0.35)]" initial={{
-          opacity: 0,
-          y: 26,
-          filter: "blur(10px)"
-        }} animate={{
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)"
-        }} transition={{
-          delay: 0.3,
-          duration: 0.8,
-          ease: [0.22, 0.9, 0.3, 1]
-        }}>ARCHMAGE</motion.h2>}{<motion.div className="mt-3 flex flex-wrap items-center justify-center gap-2.5" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.55,
-          duration: 0.5
-        }} aria-label={`Version ${GAME_VERSION} — ${CHANGELOG[0].name}`}>{<span className="border border-[#f5c96b]/65 bg-[#f5c96b]/10 px-3.5 py-1 text-[11px] font-black uppercase tracking-[0.26em] text-[#f5c96b]">Version {GAME_VERSION}</span>}{<span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a7bff]">{CHANGELOG[0].name}</span>}</motion.div>}{<motion.p className="mt-4 max-w-xl text-[15px] leading-relaxed italic text-[#b9aee0] [@media(max-height:540px)]:hidden" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.7,
-          duration: 0.5
-        }}>Fifty waves stand between you and the sealed rift. Thirteen elements, twenty-two evolutions, seventy-eight resonances, five tyrants that shuffle with every seed — weave fast enough, and the abyss learns your name.</motion.p>}{<motion.div className={`mt-5 flex items-center gap-4 px-6 py-2.5 text-left ${PANEL} [@media(max-height:540px)]:mt-2.5 [@media(max-height:540px)]:py-1.5`} initial={{
-          opacity: 0,
-          y: 14
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.8,
-          duration: 0.45
-        }}>{<DoorOpen className="size-5 shrink-0 text-[#f5c96b]" />}{<div>{<div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#6bf0c2]">Current biome</div>}{<div className="font-display text-lg font-bold leading-tight text-[#f0e8ff]">{act.name}</div>}{<div className="text-[11px] italic text-[#8f7bff]">{act.subtitle}</div>}</div>}{meta.victories > 0 && <div className="ml-2 border-l border-[#f5c96b]/35 pl-4 text-left">{<div className="font-display text-2xl font-black text-[#ffe9ad]">{meta.victories}</div>}{<div className="text-[9px] uppercase tracking-[0.18em] text-[#8f7bff]">seals</div>}</div>}</motion.div>}{<motion.div className="mt-4 flex items-center gap-2" initial={{
-          opacity: 0,
-          y: 12
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.9,
-          duration: 0.4
-        }}>{<label htmlFor="rift-seed" className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#8f7bff]" title="The seed for the run you are about to start — reroll or type one to explore a different rift">Next rift seed</label>}{<input id="rift-seed" value={seed} onChange={e => setSeed(e.target.value)} onKeyDown={e => {
-            if (e.key === "Enter") {
-              sfx.resume();
-              sfx.click();
-              ui.onStartRun(seed);
-            }
-          }} spellCheck={false} maxLength={24} className="min-h-11 w-40 border border-[#9a7bff]/32 bg-[#120b24]/90 px-3 py-1.5 text-center text-sm font-bold tracking-widest text-[#ffe9ad] outline-none transition-all focus:border-[#f5c96b] focus:ring-2 focus:ring-[#f5c96b]/50" />}{<button className="flex size-11 items-center justify-center border border-[#9a7bff]/32 bg-[#120b24]/90 text-[#43e8d8] transition-colors hover:border-[#43e8d8]/60 hover:text-[#6bf0c2]" title="Reroll — draws a fresh seed for the NEXT run only" aria-label="Reroll seed" onClick={randomizeSeed} onMouseEnter={hover}>{<Dices className="size-4" />}</button>}{<button className="flex size-11 items-center justify-center border border-[#9a7bff]/32 bg-[#120b24]/90 transition-colors hover:border-[#f5c96b]/60" title="Copy this seed — paste it back any time to replay the same rift" aria-label="Copy seed" onClick={copySeed} onMouseEnter={hover}>{seedCopied ? <span className="text-[10px] font-black uppercase tracking-widest text-[#6bf0c2]">Copied</span> : <Copy className="size-4 text-[#f5c96b]" />}</button>}</motion.div>}{<motion.div className="mt-2.5 flex flex-col items-center gap-1 [@media(max-height:540px)]:hidden" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.95,
-          duration: 0.4
-        }}>{<div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] text-[#8f7bff]" aria-label="Predicted biome itinerary for this seed">{<span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#6bf0c2]">Itinerary</span>}{itinerary.map((name, i) => <span key={i} className="flex items-center gap-2"><span className="text-white/25">·</span><span className={i === 0 ? "font-bold text-[#ffe9ad]" : "text-[#b9aee0]"}>{name}</span></span>)}</div>}{<p className="text-[10px] italic text-white/50">Derived from this seed — the same seed always walks the same ground.</p>}</motion.div>}{<motion.button className="font-display group relative mt-4 flex items-center gap-3 border border-[#f5c96b]/60 [@media(max-height:540px)]:mt-2.5 bg-[#f5c96b]/12 px-12 py-4 text-lg font-bold uppercase tracking-[0.22em] text-[#ffe9ad] shadow-[0_0_35px_rgba(245,201,107,0.2)] transition-all hover:bg-[#f5c96b]/22 hover:shadow-[0_0_60px_rgba(245,201,107,0.4)] active:scale-[0.98]" initial={{
-          opacity: 0,
-          y: 16
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 1.0,
-          duration: 0.45
-        }} onClick={() => {
-          sfx.resume();
-          sfx.click();
-          ui.onStartRun(seed);
-        }} onMouseEnter={hover}>{<DoorOpen className="size-5 text-[#f5c96b] transition-transform group-hover:scale-110" />}Enter the Rift</motion.button>}{isTouch ? <p className="mt-2 text-center text-[10px] uppercase tracking-[0.22em] text-white/50">One tap — fullscreen · landscape · the rift</p> : <p className="mt-2 text-center text-[10px] uppercase tracking-[0.22em] text-white/50">WASD move · LMB cast · RMB volley · Space blink · F surge</p>}{<motion.div className="mt-4 flex flex-wrap items-center justify-center gap-3" initial={{
-          opacity: 0,
-          y: 12
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 1.1,
-          duration: 0.4
-        }}>{<button onClick={() => setScreen("reliquary")} onMouseEnter={hover} className={`flex min-h-11 items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[#e9e2ff] transition-colors hover:text-[#ffe9ad] ${PANEL}`} title="The Vault — permanent upgrades bought with aether glyphs">{<Gem className="size-4 text-[#f5c96b]" />}Vault{<span className="font-display font-black text-[#ffe9ad]">{fmtNum(meta.shards)}</span>}</button>}{<button onClick={() => setScreen("arcanum")} onMouseEnter={hover} className={`flex min-h-11 items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[#e9e2ff] transition-colors hover:text-[#ffe9ad] ${PANEL}`}>{<BookOpen className="size-4 text-[#9a7bff]" />}Runes{<span className="font-display font-black text-[#ffe9ad]">{meta.combosFound.length}</span>}</button>}{<button onClick={() => setScreen("codex")} onMouseEnter={hover} className={`flex min-h-11 items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[#e9e2ff] transition-colors hover:text-[#ffe9ad] ${PANEL}`} title="Codex — how to play and what changed">{<BookMarked className="size-4 text-[#d05bff]" />}Codex</button>}{<button onClick={openSettings} onMouseEnter={hover} className={`flex min-h-11 items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[#e9e2ff] transition-colors hover:text-[#ffe9ad] ${PANEL}`}>{<Settings className="size-4 text-[#43e8d8]" />}Settings</button>}</motion.div>}{<motion.div className="mt-5 w-full max-w-2xl px-7 py-4 text-left [@media(max-height:540px)]:hidden" initial={{
-          opacity: 0,
-          y: 14
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 1.2,
-          duration: 0.45
-        }}>{<div>{<div className="mb-1.5 text-center text-[11px] font-bold uppercase tracking-[0.26em] text-[#f5c96b]">Records</div>}{<div className="mx-auto grid max-w-xl grid-cols-2 gap-x-8 gap-y-2 py-2 text-center sm:grid-cols-4">{<div>{<div className="font-display text-2xl font-bold text-[#ffe9ad]">{meta.bestWave}</div>}{<div className="text-[11px] uppercase tracking-wider text-[#8f7bff]">Best wave</div>}</div>}{<div>{<div className="font-display text-2xl font-bold text-[#ffe9ad]">{meta.runs}</div>}{<div className="text-[11px] uppercase tracking-wider text-[#8f7bff]">Trials</div>}</div>}{<div>{<div className="font-display text-2xl font-bold text-[#ffe9ad]">{fmtNum(meta.totalKills)}</div>}{<div className="text-[11px] uppercase tracking-wider text-[#8f7bff]">Foes felled</div>}</div>}{<div>{<div className="font-display text-2xl font-bold text-[#ffe9ad]">{meta.combosFound.length}</div>}{<div className="text-[11px] uppercase tracking-wider text-[#8f7bff]">Resonances</div>}</div>}</div>}{<p className="mx-auto max-w-md text-balance text-center text-[12px] italic text-[#8f7bff]">Cast two elements within a breath to discover a resonance. Fell a tyrant — or touch a rift shrine — to transmute a spell forever.</p>}</div>}</motion.div>}{<motion.div className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] uppercase tracking-[0.18em]" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 1.3,
-          duration: 0.4
-        }}>{<span className="sr-only">Legal</span>}{<button onClick={() => setLegal("terms")} className="min-h-11 px-2 py-2 font-bold text-white/50 transition-colors hover:text-[#f5c96b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c96b]">Terms of Service</button>}{<span aria-hidden className="text-white/20">·</span>}{<button onClick={() => setLegal("privacy")} className="min-h-11 px-2 py-2 font-bold text-white/50 transition-colors hover:text-[#f5c96b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c96b]">Privacy Policy</button>}</motion.div>}</div>}</div>}{<div className="safe-b safe-x pointer-events-none absolute bottom-8 right-4 z-30 text-[9px] uppercase tracking-[0.25em] text-white/45">v{GAME_VERSION} · {CHANGELOG[0].name}</div>}{<LegalDialog which={legal} onClose={() => setLegal(null)} onSwitch={setLegal} />}</motion.div>;
+  const startRun = () => {
+    sfx.resume();
+    sfx.click();
+    ui.onStartRun(seed);
+  };
+  return (
+    <motion.div
+      className="fixed inset-0 z-40 overflow-hidden bg-[#0a0812]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.45 } }}
+      transition={{ duration: 0.5 }}
+    >
+      <KeyartBackdrop />
+      <MenuBackdrop />
+      <div aria-hidden className="rift-grain pointer-events-none absolute inset-0 z-10" />
+      <div className="rift-scroll safe-x relative z-10 h-full overflow-y-auto">
+        <div className="font-body relative flex min-h-full flex-col items-center px-4 pb-8 pt-4 sm:pt-6">
+          {/* ---- top bar: player card left, currency cluster right ---- */}
+          <div className="flex w-full max-w-6xl flex-wrap items-start justify-between gap-x-3 gap-y-2">
+            <motion.div initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
+              <PxPanel className="flex items-center gap-3 px-3 py-2">
+                <span aria-hidden className="relative block size-14 shrink-0 [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-gradient-to-b from-[#f0c060] to-[#b8822e] p-[2px]">
+                  <span className="block size-full [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-[#1e1430]">
+                    <img
+                      src={assetPath("/assets/sprites/player-idle.png")}
+                      alt=""
+                      width={56}
+                      height={56}
+                      draggable={false}
+                      className="size-full scale-[1.65] object-contain [image-rendering:pixelated]"
+                      style={{ objectPosition: "50% 20%" }}
+                    />
+                  </span>
+                </span>
+                <span className="min-w-0">
+                  <span className="font-display block truncate text-base font-bold leading-tight text-[#f2e8c9]">Archmage</span>
+                  <span className="block text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#f0c060]">Lv. {level}</span>
+                  <span className="mt-1 block h-1.5 w-32 overflow-hidden rounded-full border border-[#3a2c52] bg-[#0a0712]">
+                    <span className="block h-full rounded-full bg-gradient-to-r from-[#8a4fe0] to-[#c9a0ff]" style={{ width: `${xpPct}%` }} />
+                  </span>
+                </span>
+              </PxPanel>
+            </motion.div>
+            <motion.div className="flex items-center gap-2" initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.28, duration: 0.5 }}>
+              <PxPanel className="flex items-center gap-2 px-3 py-2">
+                <Gem className="size-4 text-[#c9a0ff] [filter:drop-shadow(0_0_6px_#a66bf0)]" />
+                <span className="font-display text-sm font-bold tabular-nums text-[#f2e8c9]">{fmtNum(meta.shards)}</span>
+                <button
+                  className="flex size-7 items-center justify-center rounded-md border-2 border-[#d9a441]/80 bg-[#3a2a55] text-sm font-black text-[#ffd97a] transition-colors hover:border-[#f0c060] hover:bg-[#4a3a68]"
+                  title="Spend glyphs in the Vault"
+                  aria-label="Open the Vault"
+                  onClick={() => { sfx.click(); setScreen("reliquary"); }}
+                >
+                  <span className="-mt-0.5">+</span>
+                </button>
+              </PxPanel>
+              <PxPanel className="flex items-center gap-2 px-3 py-2">
+                <span aria-hidden className="block size-3 rotate-45 bg-[#ffd24a] shadow-[0_0_8px_#f0c030]" />
+                <span className="font-display text-sm font-bold tabular-nums text-[#f2e8c9]">{fmtNum(meta.totalKills)}</span>
+                <button
+                  className="flex size-7 items-center justify-center rounded-md border-2 border-[#d9a441]/80 bg-[#3a2a55] text-sm font-black text-[#ffd97a] transition-colors hover:border-[#f0c060] hover:bg-[#4a3a68]"
+                  title="Foes felled across every run"
+                  aria-label="Open the Runes"
+                  onClick={() => { sfx.click(); setScreen("arcanum"); }}
+                >
+                  <span className="-mt-0.5">+</span>
+                </button>
+              </PxPanel>
+            </motion.div>
+          </div>
+
+          {/* ---- title block ---- */}
+          <div className="mt-4 flex flex-col items-center sm:mt-8">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}>
+              <PxStarInArch className="h-14 w-auto drop-shadow-[0_0_14px_rgba(255,217,122,0.35)] sm:h-16" />
+            </motion.div>
+            <motion.h2
+              className="font-display px-gold-text mt-1 text-[clamp(54px,10vw,118px)] font-black leading-none tracking-[0.06em]"
+              initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ delay: 0.45, duration: 0.8, ease: [0.22, 0.9, 0.3, 1] }}
+            >
+              ARCHMAGE
+            </motion.h2>
+            <motion.div className="mt-2 flex items-center gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65, duration: 0.5 }}>
+              <PxFiligree width="w-14 sm:w-24" />
+              <span className="text-[clamp(12px,1.6vw,16px)] font-bold uppercase tracking-[0.5em] text-[#c9b8e8] [text-shadow:0_0_16px_rgba(154,123,255,0.45)]">Riftbound</span>
+              <PxFiligree width="w-14 sm:w-24" />
+            </motion.div>
+            <motion.div className="mt-2 flex items-center gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.78, duration: 0.4 }} aria-label={`Version ${GAME_VERSION} — ${CHANGELOG[0].name}`}>
+              <span className="border border-[#d9a441]/60 bg-[#241a3a]/80 px-3 py-0.5 text-[10px] font-black uppercase tracking-[0.24em] text-[#f0c060]">Version {GAME_VERSION}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#a66bf0]">{CHANGELOG[0].name}</span>
+            </motion.div>
+          </div>
+
+          {/* ---- the two rift calls ---- */}
+          <div className="mt-6 flex w-full max-w-3xl flex-col items-stretch justify-center gap-7 sm:mt-10 sm:flex-row sm:items-center sm:gap-10">
+            <motion.div className="w-full sm:max-w-[300px]" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.5 }}>
+              <PxHexButton glow="gold" className="px-breathe w-full" tabIcon={<Swords className="size-6" />} onClick={startRun} onMouseEnter={hover}>
+                Solo Run
+              </PxHexButton>
+            </motion.div>
+            <motion.div className="w-full sm:max-w-[300px]" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95, duration: 0.5 }}>
+              <PxHexButton
+                glow="violet"
+                className="w-full"
+                tabIcon={<Users className="size-6" />}
+                onClick={() => { sfx.click(); setPartyNotice(true); window.setTimeout(() => setPartyNotice(false), 3200); }}
+                onMouseEnter={hover}
+              >
+                Online Party
+              </PxHexButton>
+            </motion.div>
+          </div>
+          {/* party notice — honest: no netcode in a zero-backend game */}
+          <AnimatePresence>
+            {partyNotice && (
+              <motion.p
+                className="mt-3 rounded-md border border-[#a66bf0]/40 bg-[#241740]/85 px-4 py-1.5 text-[11px] italic text-[#d8cfe8]"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                The party channels are still being woven — the rift answers solo calls for now.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* ---- seed bar ---- */}
+          <motion.div className="mt-5 flex flex-wrap items-center justify-center gap-2" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.05, duration: 0.4 }}>
+            <PxPanel className="flex items-center gap-2.5 px-4 py-2">
+              <Dices className="size-4 text-[#f0c060]" />
+              {editingSeed ? (
+                <input
+                  id="rift-seed"
+                  value={seed}
+                  onChange={e => setSeed(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter") { setEditingSeed(false); sfx.click(); }
+                    if (e.key === "Escape") setEditingSeed(false);
+                  }}
+                  onBlur={() => setEditingSeed(false)}
+                  autoFocus
+                  spellCheck={false}
+                  maxLength={24}
+                  className="w-36 border border-[#a66bf0]/40 bg-[#0a0712]/90 px-2 py-0.5 text-center text-sm font-bold tracking-widest text-[#ffe9ad] outline-none focus:border-[#f0c060]"
+                />
+              ) : (
+                <button className="flex min-h-11 items-center text-sm tracking-wider" title="Click to edit the seed" onClick={() => { sfx.click(); setEditingSeed(true); }}>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#9a8fb5]">Seed:</span>
+                  <span className="ml-1.5 font-bold text-[#f2e8c9]">{seed}</span>
+                </button>
+              )}
+              <button className="flex size-8 items-center justify-center rounded-md border border-[#d9a441]/50 text-[#f0c060] transition-colors hover:border-[#f0c060]" title="Edit seed" aria-label="Edit seed" onClick={() => { sfx.click(); setEditingSeed(true); }}>
+                <Pencil className="size-3.5" />
+              </button>
+              <button className="flex size-8 items-center justify-center rounded-md border border-[#d9a441]/50 text-[#f0c060] transition-colors hover:border-[#f0c060]" title="Copy this seed — paste it back any time to replay the same rift" aria-label="Copy seed" onClick={copySeed}>
+                {seedCopied ? <span className="text-[9px] font-black uppercase tracking-widest text-[#6bf0c2]">Copied</span> : <Copy className="size-3.5" />}
+              </button>
+            </PxPanel>
+            <PxPanel className="flex items-center px-2.5 py-2" corners={false}>
+              <button
+                className="flex size-8 items-center justify-center rounded-md text-[#c9a0ff] transition-transform hover:scale-110"
+                title="Reroll — draws a fresh seed for the NEXT run only"
+                aria-label="Reroll seed"
+                onClick={() => { sfx.click(); randomizeSeed(); }}
+              >
+                <Shuffle className="size-4" />
+              </button>
+            </PxPanel>
+          </motion.div>
+          {isTouch ? (
+            <p className="mt-3 text-center text-[10px] uppercase tracking-[0.22em] text-white/60 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">One tap — fullscreen · landscape · the rift</p>
+          ) : (
+            <p className="mt-3 text-center text-[10px] uppercase tracking-[0.22em] text-white/60 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">WASD move · LMB cast · RMB volley · Space blink · F surge</p>
+          )}
+
+          {/* ---- bottom nav + records + legal ---- */}
+          <motion.div className="mt-auto w-full pt-8" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.15, duration: 0.45 }}>
+            <div className="mx-auto flex w-full max-w-3xl flex-wrap items-stretch justify-center gap-2.5 sm:gap-3.5">
+              <button
+                onClick={() => { sfx.click(); setScreen("reliquary"); }}
+                onMouseEnter={hover}
+                className="px-panel px-corners flex min-h-11 flex-1 basis-32 items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#f0c060] transition-all hover:-translate-y-0.5 hover:text-[#ffd97a] sm:text-[13px]"
+                title="The Vault — permanent upgrades bought with aether glyphs"
+              >
+                <IconChest className="size-[18px]" />Vault
+              </button>
+              <button
+                onClick={() => { sfx.click(); setScreen("arcanum"); }}
+                onMouseEnter={hover}
+                className="px-panel px-corners flex min-h-11 flex-1 basis-32 items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#f0c060] transition-all hover:-translate-y-0.5 hover:text-[#ffd97a] sm:text-[13px]"
+              >
+                <IconTriquetra className="size-[18px]" />Runes
+              </button>
+              <button
+                onClick={() => { sfx.click(); setScreen("codex"); }}
+                onMouseEnter={hover}
+                className="px-panel px-corners flex min-h-11 flex-1 basis-32 items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#f0c060] transition-all hover:-translate-y-0.5 hover:text-[#ffd97a] sm:text-[13px]"
+                title="Codex — how to play and what changed"
+              >
+                <BookOpen className="size-[18px]" />Codex
+              </button>
+              <button
+                onClick={() => { sfx.click(); openSettings(); }}
+                onMouseEnter={hover}
+                className="px-panel px-corners flex min-h-11 flex-1 basis-32 items-center justify-center gap-2 px-4 py-2.5 text-[12px] font-extrabold uppercase tracking-[0.18em] text-[#f0c060] transition-all hover:-translate-y-0.5 hover:text-[#ffd97a] sm:text-[13px]"
+              >
+                <Settings className="size-[18px]" />Settings
+              </button>
+            </div>
+            {/* records — subtle lifetime strip under the nav */}
+            <div className="mx-auto mt-3 flex w-full max-w-2xl flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[10px] uppercase tracking-[0.16em] text-[#9a8fb5]" aria-label="Lifetime records">
+              <span><span className="font-bold text-[#f0c060]">{meta.bestWave}</span> best wave</span>
+              <PxDiamond small className="opacity-50" />
+              <span><span className="font-bold text-[#f0c060]">{meta.runs}</span> trials</span>
+              <PxDiamond small className="opacity-50" />
+              <span><span className="font-bold text-[#f0c060]">{meta.combosFound.length}</span> resonances</span>
+              {meta.victories > 0 && (
+                <>
+                  <PxDiamond small className="opacity-50" />
+                  <span><span className="font-bold text-[#f0c060]">{meta.victories}</span> seals</span>
+                </>
+              )}
+            </div>
+            {/* legal footer */}
+            <div className="mt-2 flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[9px] uppercase tracking-[0.18em]">
+              <button onClick={() => setLegal("terms")} className="min-h-11 px-2 py-1 font-bold text-white/40 transition-colors hover:text-[#f0c060] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c060]">Terms of Service</button>
+              <span aria-hidden className="text-white/20">·</span>
+              <button onClick={() => setLegal("privacy")} className="min-h-11 px-2 py-1 font-bold text-white/40 transition-colors hover:text-[#f0c060] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c060]">Privacy Policy</button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+      <div className="safe-b safe-x pointer-events-none absolute bottom-2 right-3 z-30 text-[9px] uppercase tracking-[0.25em] text-white/40">v{GAME_VERSION} · {CHANGELOG[0].name}</div>
+      <LegalDialog which={legal} onClose={() => setLegal(null)} onSwitch={setLegal} />
+    </motion.div>
+  );
 }
 /* ------------------------------------------------------------------ */ /*  LEGAL — Terms of Service / Privacy Policy (v2.1.1).                */ /*  One dialog, two documents, reachable from the main menu row. The    */ /*  copy states exactly what the game does: zero collection,           */ /*  localStorage-only saves, clipboard-only crash snapshots.            */ /* ------------------------------------------------------------------ */const LEGAL_UPDATED = "2026-10-27";
 const LEGAL_TERMS: [string, string][] = [["The game", "ARCHMAGE: RIFTBOUND is a free 3D roguelike that runs entirely in your browser. It is provided as-is, for enjoyment, without warranty of any kind."], ["Your progress", "The game has no accounts. Progress, unlocks and settings live in your browser's local storage — they never leave your device, and clearing your browser data erases them. Nothing is backed up anywhere."], ["Seeds and fair play", "Every run is deterministic per seed. Sharing seeds is encouraged; exploiting bugs is between you and the rift."], ["The art and the code", "The game's code is by The Last Archmage. The mage, the bestiary, the terrains, the spell icons and the particles come from open-source art packs, credited in full in the in-game Codex."], ["Changes", "The game and these terms may change between versions; the in-game Codex carries the changelog."], ["Contact", "File issues at the source repository: github.com/Pushyanth02/Archmage."]];
@@ -623,6 +747,10 @@ function ControlsPane({
 function KbmRows() {
   return <>{<KeyRow keys={["W", "A", "S", "D"]} label="Move — arrow keys work too" />}{<KeyRow keys={["LMB"]} label="Cast — hold to keep casting" />}{<KeyRow keys={["RMB"]} label="Volley — bolts seek on their own" />}{<KeyRow keys={["SPACE"]} label="Blink step — brief immunity" />}{<KeyRow keys={["F"]} label="Unleash the Surge when full" />}{<KeyRow keys={["P"]} label="Pause the trial" />}{<KeyRow keys={["Q", "E"]} label="Cycle spells both ways" />}{<KeyRow keys={["1", "2", "3"]} label="Pick a spell slot" />}{<KeyRow keys={["WHEEL"]} label="Cycle spells during a run" />}{<KeyRow keys={["F3"]} label="Telemetry overlay" />}{<KeyRow keys={["M"]} label="Mute all audio" />}</>;
 }
+/** Touch rite rows — mirrors TouchControls.tsx's actual cluster. */
+function TouchRows() {
+  return <>{<TouchRow badge="STICK" label="Left thumb — move (up is away)" />}{<TouchRow badge="CAST" label="Right cluster — hold to keep casting" />}{<TouchRow badge="VOLLEY" label="Right cluster — seeking bolts" />}{<TouchRow badge="BLINK" label="Right cluster — tap, brief immunity" />}{<TouchRow badge="SURGE" label="Right cluster — tap when full" />}{<TouchRow badge="SWAP" label="Cycle spell slots" />}</>;
+}
 /* ================================================================== */ /*  SETTINGS                                                           */ /* ================================================================== */ /*  11-c — the panel is four tabs (Audio / Video & Graphics / Rift Mercy /
                                                                                                                                                                                                                             Save Slots) over the exact store wiring the old single column had:
                                                                                                                                                                                                                             every control still calls patchSettings / setMercyTier / the slot
@@ -683,70 +811,309 @@ export function SettingsModal() {
   const st = meta.settings;
   const maxTier = Math.min(MERCY_MAX_TIER, meta.mercyDeaths);
   const fs = useFullscreenLive();
+  /* v3.0 concept-11 layout: nav rail + center panel + right column +
+   * bottom action bar. Settings still apply LIVE; the action bar is honest:
+   * Discard restores the snapshot taken when the dialog opened, Save commits
+   * (persisted immediately, as ever) and closes, Reset restores defaults. */
+  const [nav, setNav] = useState<"audio" | "video" | "controls" | "gameplay" | "touch" | "data">("audio");
+  /* the Discard baseline is snapshotted by the store the moment the dialog
+   * opens (settings still apply live — Discard just restores the snapshot) */
+  const baseline = useRiftStore(s => s.settingsBaseline) ?? st;
   /** Patch a setting AND push volumes to the audio synth live. */
-  const apply = patch => {
+  const apply = (patch: Partial<GameSettings>) => {
     patchSettings(patch);
-    const next = {
-      ...st,
-      ...patch
-    };
+    const next = { ...st, ...patch };
     sfx.setMuted(next.muted);
     sfx.setVolumes(next.master, next.music, next.sfx, next.ambience);
   };
-  const tabCls = "min-h-11 rounded-md px-4 text-[11px] font-semibold uppercase tracking-wider text-white/50 transition-colors data-[state=active]:bg-white/10 data-[state=active]:text-[#f5c96b]";
-  return <Dialog open={settingsOpen} onOpenChange={o => {
-    if (!o) closeSettings();
-  }}>{<DialogContent className="dark flex h-[85vh] max-h-[85vh] flex-col gap-4 overflow-hidden border-white/10 bg-[#14101f]/95 p-4 safe-b-5 text-white/90 backdrop-blur-xl sm:max-w-xl sm:p-5">{<div className="shrink-0">{<DialogTitle className="font-serif text-lg font-bold uppercase tracking-[0.25em] text-[#f5c96b]">Settings</DialogTitle>}{<DialogDescription className="mt-1 text-xs text-white/40">Tune the ritual to your liking.</DialogDescription>}</div>}{<Tabs defaultValue="audio" className="flex min-h-0 flex-1 flex-col gap-3">{<TabsList className="h-auto w-full shrink-0 flex-wrap justify-center gap-1 rounded-lg border border-white/10 bg-black/40 p-1 backdrop-blur-md">{<TabsTrigger value="audio" className={tabCls}>Audio</TabsTrigger>}{<TabsTrigger value="video" className={tabCls}>Video & Graphics</TabsTrigger>}{<TabsTrigger value="mercy" className={tabCls}>Rift Mercy</TabsTrigger>}{<TabsTrigger value="saves" className={tabCls}>Save Slots</TabsTrigger>}</TabsList>}{<TabsContent value="audio" className={SETTINGS_TAB_SCROLL}>{<div className="flex flex-col gap-4">{<p className="text-[11px] leading-relaxed text-white/45">Balance the voices of the rift — music, ambience and spellwork each carry their own weight.</p>}{<SliderRow label="Master" icon={Volume2} value={st.master} disabled={st.muted} onChange={v => apply({
-              master: v
-            })} />}{<SliderRow label="Music" icon={Music4} value={st.music} disabled={st.muted} onChange={v => apply({
-              music: v
-            })} />}{<SliderRow label="Ambience" icon={Wind} value={st.ambience} disabled={st.muted} step={5} onChange={v => apply({
-              ambience: v
-            })} />}{<SliderRow label="Effects" icon={AudioLines} value={st.sfx} disabled={st.muted} onChange={v => apply({
-              sfx: v
-            })} />}{<div className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/30 px-3">{<div>{<div className="text-xs uppercase tracking-wider text-white/70">Mute all</div>}{<div className="text-[10px] text-white/35">Silence every channel at once</div>}</div>}{<Switch checked={st.muted} onCheckedChange={v => apply({
-                muted: v
-              })} aria-label="Mute all audio" className="data-[state=checked]:bg-[#ff4d6b]" />}</div>}{st.muted && <p role="status" className="rounded-lg border border-[#f5c96b]/25 bg-[#f5c96b]/[0.07] px-3 py-2 text-[11px] leading-relaxed text-[#f5c96b]/90">All sound is muted. The sliders hold their levels and return the moment you unmute.</p>}</div>}</TabsContent>}{<TabsContent value="video" className={SETTINGS_TAB_SCROLL}>{<div className="flex flex-col gap-4">{<p className="text-[11px] leading-relaxed text-white/45">Shape what you see, how it moves, and how hard the engine works for it.</p>}{<section className="flex flex-col gap-2">{<SectionLabel>Feel</SectionLabel>}{<ToggleRow label="Screen shake" hint="The world trembles on impact" checked={st.screenShake} onChange={v => apply({
-                screenShake: v
-              })} />}{<ToggleRow label="Damage numbers" hint="Show floating damage digits" checked={st.damageNumbers} onChange={v => apply({
-                damageNumbers: v
-              })} />}{<ToggleRow label="Reduce flashes" hint="Softer strobes and pulses" checked={st.reduceFlashes} onChange={v => apply({
-                reduceFlashes: v
-              })} />}{<ToggleRow label="Aim assist" hint="Gentle pull toward nearby foes" checked={st.aimAssist} onChange={v => apply({
-                aimAssist: v
-              })} />}</section>}{<section className="flex flex-col gap-2">{<SectionLabel>Picture</SectionLabel>}{<div className="flex min-h-11 items-center gap-3">{<Gauge className="size-4 shrink-0 text-white/40" />}{<span className="w-20 shrink-0 text-xs uppercase tracking-wider text-white/60">Quality</span>}{<Slider value={[Math.round(st.quality * 100)]} min={50} max={100} step={5} aria-label="Render quality" onValueChange={v => apply({
-                  quality: v[0] / 100
-                })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-white/10 [&_[data-slot=slider-range]]:bg-[#43e8d8] [&_[data-slot=slider-thumb]]:border-[#43e8d8] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />}{<span className="w-9 text-right font-mono text-xs text-[#43e8d8]">{Math.round(st.quality * 100)}</span>}</div>}{<div className="flex min-h-11 items-center gap-3">{<Sun className="size-4 shrink-0 text-white/40" />}{<span className="w-20 shrink-0 text-xs uppercase tracking-wider text-white/60">Brightness</span>}{<Slider value={[st.brightness]} min={50} max={250} step={5} aria-label="Brightness" onValueChange={v => apply({
-                  brightness: v[0]
-                })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-white/10 [&_[data-slot=slider-range]]:bg-[#f5c96b] [&_[data-slot=slider-thumb]]:border-[#f5c96b] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />}{<span className="w-9 text-right font-mono text-xs text-[#f5c96b]">{st.brightness}</span>}</div>}{<div className="flex min-h-11 items-center gap-3">{<Scan className="size-4 shrink-0 text-white/40" />}{<span className="w-20 shrink-0 text-xs uppercase tracking-wider text-white/60">Field of view</span>}{<Slider value={[st.fov]} min={45} max={80} step={1} aria-label="Field of view in degrees" onValueChange={v => apply({
-                  fov: v[0]
-                })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-white/10 [&_[data-slot=slider-range]]:bg-[#43e8d8] [&_[data-slot=slider-thumb]]:border-[#43e8d8] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />}{<span className="w-9 text-right font-mono text-xs text-[#43e8d8]">{st.fov}°</span>}</div>}</section>}{<section className="flex flex-col gap-2">{<SectionLabel>Performance</SectionLabel>}{<ToggleRow label="Auto performance" hint="Eases resolution to target 60 fps" checked={st.autoQuality} onChange={v => apply({
-                autoQuality: v
-              })} />}{<ToggleRow label="Performance overlay" hint="FPS and render telemetry · F3" checked={st.perfOverlay} onChange={v => apply({
-                perfOverlay: v
-              })} />}{<div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">{<div className="text-xs uppercase tracking-wider text-white/70">Frame-rate cap</div>}{<div className="mt-1 text-[10px] text-white/35">Gentler on hot phones and low batteries</div>}{<div className="mt-2 flex flex-wrap gap-2">{([[0, "Uncapped"], [30, "30 fps"], [60, "60 fps"]] as [number, string][]).map(([v, label]) => <MercyChip key={v} active={st.fpsCap === v} onClick={() => apply({
-                fpsCap: v
-              })}>{label}</MercyChip>)}</div>}</div>}{<ToggleRow label="Battery saver" hint="Below 20% charge: ease quality and cap 30 fps" checked={st.batterySaver} onChange={v => apply({
-                batterySaver: v
-              })} />}</section>}{<section className="flex flex-col gap-2">{<SectionLabel>Display</SectionLabel>}{<ToggleRow label="Auto immersive" hint="Touch devices snap to fullscreen landscape" checked={st.autoImmersive} onChange={v => apply({
-                autoImmersive: v
-              })} />}{<div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">{<div className="flex min-h-11 items-center justify-between gap-3">{<div>{<div className="text-xs uppercase tracking-wider text-white/70">Display mode</div>}{<div className="text-[10px] text-white/35">Fullscreen — the whole screen, edge to edge</div>}</div>}{<Switch checked={fs.isFs} onCheckedChange={fs.toggle} aria-label="Toggle fullscreen" className="data-[state=checked]:bg-[#43e8d8]" />}</div>}{<p className={`mt-1 text-[10px] leading-relaxed ${fs.blocked ? "text-[#ff4d6b]/90" : "text-white/35"}`}>{fs.blocked ? "Fullscreen is blocked here — this view will not hand over the screen." : "A live view state, not a saved setting — your browser asks for a tap each visit, so it stays out of your save."}</p>}</div>}{<div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">{<div className="text-xs uppercase tracking-wider text-white/70">Element palette</div>}{<div className="mt-1 text-[10px] text-white/35">Colorblind-safe hues for every spell — shape and name cues always carry identity too</div>}{<div className="mt-2 flex flex-wrap gap-2">{PALETTE_IDS.map(p => <MercyChip key={p} active={st.palette === p} onClick={() => apply({
-                palette: p
-              })}>{PALETTE_LABELS[p]}</MercyChip>)}</div>}</div>}{<div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">{<div className="text-xs uppercase tracking-wider text-white/70">HUD density</div>}{<div className="mt-1 text-[10px] text-white/35">Compact hides the optional chrome; Expanded breathes</div>}{<div className="mt-2 flex flex-wrap gap-2">{([["compact", "Compact"], ["standard", "Standard"], ["expanded", "Expanded"]] as [string, string][]).map(([v, label]) => <MercyChip key={v} active={st.hudDensity === v} onClick={() => apply({
-                hudDensity: v
-              })}>{label}</MercyChip>)}</div>}</div>}{<div className="rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">{<div className="text-xs uppercase tracking-wider text-white/70">Low-HP vignette</div>}{<div className="mt-1 text-[10px] text-white/35">The crimson edge when vitality runs low — independent of Reduce flashes</div>}{<div className="mt-2 flex flex-wrap gap-2">{([[0, "Off"], [0.35, "Low"], [0.7, "Medium"], [1, "High"]] as [number, string][]).map(([v, label]) => <MercyChip key={label} active={Math.abs(st.vignette - v) < 0.01} onClick={() => apply({
-                vignette: v
-              })}>{label}</MercyChip>)}</div>}</div>}</section>}{<section className="flex flex-col gap-2">{<SectionLabel>Touch & Comfort</SectionLabel>}{<ToggleRow label="Left-handed layout" hint="Mirror the thumb cluster for left-thumb play" checked={st.leftHanded} onChange={v => apply({
-                leftHanded: v
-              })} />}{<ToggleRow label="One-thumb casting" hint="Cast toward your move stick's direction" checked={st.tapToCast} onChange={v => apply({
-                tapToCast: v
-              })} />}{<ToggleRow label="Haptic cues" hint="A pulse when spells ready, hits land, tyrants arrive" checked={st.haptics} onChange={v => apply({
-                haptics: v
-              })} />}{<ToggleRow label="Resume countdown" hint="A 3-2-1 breath before the rift moves again" checked={st.resumeCountdown} onChange={v => apply({
-                resumeCountdown: v
-              })} />}</section>}</div>}</TabsContent>}{<TabsContent value="mercy" className={SETTINGS_TAB_SCROLL}>{<div className="flex flex-col gap-4">{<p className="text-[11px] leading-relaxed text-white/45">The rift relents for the fallen. AUTO spends your banked falls ({meta.mercyDeaths}{" banked) and softens each return. Locked tiers unlock as you fall — tier 1 grants 2% mercy, +4% per tier beyond."}</p>}{<div className="flex flex-wrap gap-2">{<MercyChip active={meta.mercyTierSel === -1} onClick={() => setMercyTier(-1)}>Auto</MercyChip>}{Array.from({
-                length: maxTier
-              }, (_, i) => i + 1).map(t => <MercyChip active={meta.mercyTierSel === t} onClick={() => setMercyTier(t)} key={t}>{t}{<span className="ml-1 font-mono text-[9px] opacity-60">{Math.round(mercyTierBase(t) * 100)}%</span>}</MercyChip>)}{maxTier === 0 && <span className="self-center text-[10px] italic text-white/30">No tiers unlocked — fall once to earn mercy.</span>}</div>}{<p className="rounded-lg border border-[#6bf0c2]/25 bg-[#6bf0c2]/[0.06] px-3 py-2 text-[11px] leading-relaxed text-[#6bf0c2]/90">{meta.mercyTierSel === -1 ? "AUTO: the rift spends your banked falls for you." : `Tier ${meta.mercyTierSel} is locked in — ${Math.round(mercyTierBase(meta.mercyTierSel) * 100)}% base mercy, growing a little each wave.`}</p>}</div>}</TabsContent>}{<TabsContent value="saves" className={SETTINGS_TAB_SCROLL}>{<SaveSlots />}</TabsContent>}</Tabs>}</DialogContent>}</Dialog>;
+  const NAV: [typeof nav, string, React.ComponentType<{ className?: string }>][] = [
+    ["audio", "Audio", Volume2],
+    ["video", "Video", Scan],
+    ["controls", "Controls", Gamepad2],
+    ["gameplay", "Gameplay", Swords],
+    ["touch", "Touch", Accessibility],
+    ["data", "Data", Database]
+  ];
+  return (
+    <Dialog open={settingsOpen} onOpenChange={o => { if (!o) closeSettings(); }}>
+      <DialogContent showCloseButton={false} className="dark flex h-[88vh] max-h-[88vh] w-full max-w-5xl sm:max-w-5xl flex-col gap-0 overflow-hidden border-2 border-[#d9a441]/80 bg-[#120a1e]/96 p-0 text-white/90 backdrop-blur-xl">
+        {/* background: the nebula ruins vista (concept 11) */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <img src={assetPath("/art/v3/settings-bg.jpg")} alt="" draggable={false} className="absolute inset-0 h-full w-full object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#120a1e]/70 to-[#0a0712]/90" />
+        </div>
+        {/* top bar: lockup + title + close */}
+        <div className="relative flex shrink-0 items-center justify-between gap-3 border-b border-[#d9a441]/30 px-4 py-3 sm:px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="hidden shrink-0 text-left sm:block">
+              <div className="font-display text-sm font-black uppercase tracking-[0.2em] text-[#f0c060]">Archmage</div>
+              <div className="text-[8px] font-bold uppercase tracking-[0.34em] text-[#a66bf0]">Riftbound</div>
+            </div>
+            <div className="min-w-0 text-center sm:text-left">
+              <div className="flex items-center justify-center gap-2 sm:justify-start">
+                <PxDiamond small />
+                <DialogTitle className="font-serif text-base font-bold uppercase tracking-[0.22em] text-[#f2e8c9]">Settings</DialogTitle>
+                <PxDiamond small />
+              </div>
+              <DialogDescription className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-[#9a8fb5]">Tune your rift experience</DialogDescription>
+            </div>
+          </div>
+          <DialogPrimitiveClose
+            aria-label="Close settings"
+            onClick={() => sfx.click()}
+            className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#d9a441]/60 bg-[#1e1430] text-[#c9a0ff] transition-colors hover:border-[#c9a0ff] hover:text-white"
+          >
+            <X className="size-4" />
+          </DialogPrimitiveClose>
+        </div>
+        {/* body: nav rail + center + right column */}
+        <div className="relative flex min-h-0 flex-1 flex-col sm:flex-row">
+          {/* nav rail */}
+          <nav className="flex shrink-0 gap-1 overflow-x-auto border-b border-[#d9a441]/20 p-2 sm:w-40 sm:flex-col sm:overflow-y-auto sm:border-b-0 sm:border-r" aria-label="Settings sections">
+            {NAV.map(([id, label, Icon]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => { sfx.hover(); setNav(id); }}
+                aria-current={nav === id}
+                className={cn(
+                  "flex min-h-11 shrink-0 items-center gap-2 rounded-md border px-3 py-2 text-[11px] font-bold uppercase tracking-[0.14em] transition-all",
+                  nav === id
+                    ? "border-[#c9a0ff]/70 bg-gradient-to-r from-[#3a2460] to-[#241740] text-[#e9d5ff] shadow-[0_0_14px_rgba(166,107,240,0.3)]"
+                    : "border-transparent text-[#9a8fb5] hover:border-[#3a2c52] hover:text-[#d8cfe8]"
+                )}
+              >
+                <Icon className="size-4 shrink-0" />
+                <span className="truncate">{label}</span>
+                {nav === id && <span aria-hidden className="ml-auto hidden size-1.5 rotate-45 bg-[#c9a0ff] sm:block" />}
+              </button>
+            ))}
+            {/* the hanging banner ornament (concept 11) */}
+            <div aria-hidden className="relative mx-auto mt-3 hidden w-16 sm:block">
+              <div className="h-6 w-1.5 bg-[#d9a441]/60" />
+              <div className="flex h-12 items-start justify-center border-2 border-[#d9a441]/70 bg-gradient-to-b from-[#6a3aa8] to-[#4a2680] pt-1.5">
+                <PxDiamond small />
+              </div>
+            </div>
+          </nav>
+          {/* center panel */}
+          <div className="rift-scroll min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
+            {nav === "audio" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Volume2 className="size-3.5" />}>Audio</PxHeader>
+                <p className="text-[11px] leading-relaxed text-[#9a8fb5]">Balance the voices of the rift — music, ambience and spellwork each carry their own weight.</p>
+                <SliderRow label="Master" icon={Volume2} value={st.master} disabled={st.muted} onChange={v => apply({ master: v })} />
+                <SliderRow label="Music" icon={Music4} value={st.music} disabled={st.muted} onChange={v => apply({ music: v })} />
+                <SliderRow label="Ambience" icon={Wind} value={st.ambience} disabled={st.muted} step={5} onChange={v => apply({ ambience: v })} />
+                <SliderRow label="Effects" icon={AudioLines} value={st.sfx} disabled={st.muted} onChange={v => apply({ sfx: v })} />
+                <div className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-[#d8cfe8]">Mute all</div>
+                    <div className="text-[10px] text-[#9a8fb5]">Silence every channel at once</div>
+                  </div>
+                  <Switch checked={st.muted} onCheckedChange={v => apply({ muted: v })} aria-label="Mute all audio" className="data-[state=checked]:bg-[#f0c060]" />
+                </div>
+              </div>
+            )}
+            {nav === "video" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Scan className="size-3.5" />}>Video & Graphics</PxHeader>
+                <p className="text-[11px] leading-relaxed text-[#9a8fb5]">Shape what you see, how it moves, and how hard the engine works for it.</p>
+                <section className="flex flex-col gap-2">
+                  <SectionLabel>Picture</SectionLabel>
+                  <div className="flex min-h-11 items-center gap-3">
+                    <Gauge className="size-4 shrink-0 text-[#9a8fb5]" />
+                    <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Quality</span>
+                    <Slider value={[Math.round(st.quality * 100)]} min={50} max={100} step={5} aria-label="Render quality" onValueChange={v => apply({ quality: v[0] / 100 })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#58d6c2] [&_[data-slot=slider-thumb]]:border-[#58d6c2] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
+                    <span className="w-9 text-right font-mono text-xs text-[#58d6c2]">{Math.round(st.quality * 100)}</span>
+                  </div>
+                  <div className="flex min-h-11 items-center gap-3">
+                    <Sun className="size-4 shrink-0 text-[#9a8fb5]" />
+                    <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Brightness</span>
+                    <Slider value={[st.brightness]} min={50} max={250} step={5} aria-label="Brightness" onValueChange={v => apply({ brightness: v[0] })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#f0c060] [&_[data-slot=slider-thumb]]:border-[#f0c060] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
+                    <span className="w-9 text-right font-mono text-xs text-[#f0c060]">{st.brightness}</span>
+                  </div>
+                  <div className="flex min-h-11 items-center gap-3">
+                    <Scan className="size-4 shrink-0 text-[#9a8fb5]" />
+                    <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Field of view</span>
+                    <Slider value={[st.fov]} min={45} max={80} step={1} aria-label="Field of view in degrees" onValueChange={v => apply({ fov: v[0] })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#58d6c2] [&_[data-slot=slider-thumb]]:border-[#58d6c2] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
+                    <span className="w-9 text-right font-mono text-xs text-[#58d6c2]">{st.fov}°</span>
+                  </div>
+                </section>
+                <section className="flex flex-col gap-2">
+                  <SectionLabel>Performance</SectionLabel>
+                  <ToggleRow label="Auto performance" hint="Eases resolution to target 60 fps" checked={st.autoQuality} onChange={v => apply({ autoQuality: v })} />
+                  <ToggleRow label="Performance overlay" hint="FPS and render telemetry · F3" checked={st.perfOverlay} onChange={v => apply({ perfOverlay: v })} />
+                  <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3 py-2.5">
+                    <div className="text-xs uppercase tracking-wider text-[#d8cfe8]">Frame-rate cap</div>
+                    <div className="mt-1 text-[10px] text-[#9a8fb5]">Gentler on hot phones and low batteries</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {([[0, "Uncapped"], [30, "30 fps"], [60, "60 fps"]] as [number, string][]).map(([v, label]) => (
+                        <MercyChip key={v} active={st.fpsCap === v} onClick={() => apply({ fpsCap: v })}>{label}</MercyChip>
+                      ))}
+                    </div>
+                  </div>
+                  <ToggleRow label="Battery saver" hint="Below 20% charge: ease quality and cap 30 fps" checked={st.batterySaver} onChange={v => apply({ batterySaver: v })} />
+                </section>
+                <section className="flex flex-col gap-2">
+                  <SectionLabel>Display</SectionLabel>
+                  <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3 py-2.5">
+                    <div className="flex min-h-11 items-center justify-between gap-3">
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-[#d8cfe8]">Display mode</div>
+                        <div className="text-[10px] text-[#9a8fb5]">Fullscreen — the whole screen, edge to edge</div>
+                      </div>
+                      <Switch checked={fs.isFs} onCheckedChange={fs.toggle} aria-label="Toggle fullscreen" className="data-[state=checked]:bg-[#58d6c2]" />
+                    </div>
+                    <p className={`mt-1 text-[10px] leading-relaxed ${fs.blocked ? "text-[#ff8fa3]" : "text-[#9a8fb5]"}`}>
+                      {fs.blocked ? "Fullscreen is blocked here — this view will not hand over the screen." : "A live view state, not a saved setting — your browser asks for a tap each visit."}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3 py-2.5">
+                    <div className="text-xs uppercase tracking-wider text-[#d8cfe8]">Low-HP vignette</div>
+                    <div className="mt-1 text-[10px] text-[#9a8fb5]">The crimson edge when vitality runs low — independent of Reduce flashes</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {([[0, "Off"], [0.35, "Low"], [0.7, "Medium"], [1, "High"]] as [number, string][]).map(([v, label]) => (
+                        <MercyChip key={label} active={Math.abs(st.vignette - v) < 0.01} onClick={() => apply({ vignette: v })}>{label}</MercyChip>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+            {nav === "controls" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Gamepad2 className="size-3.5" />}>Controls</PxHeader>
+                <p className="text-[11px] leading-relaxed text-[#9a8fb5]">The rite this device actually uses — keyboard and mouse below; touch controls follow.</p>
+                <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-4 py-3">
+                  <div className="mb-1 flex items-center gap-2">
+                    <span className="px-keycap">Default</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9a8fb5]">preset · fixed bindings in this build</span>
+                  </div>
+                  <KbmRows />
+                </div>
+                <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-4 py-3">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#9a8fb5]">Touch rite (coarse-pointer devices)</div>
+                  <TouchRows />
+                </div>
+              </div>
+            )}
+            {nav === "gameplay" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Swords className="size-3.5" />}>Gameplay</PxHeader>
+                <section className="flex flex-col gap-2">
+                  <SectionLabel>Feel</SectionLabel>
+                  <ToggleRow label="Screen shake" hint="The world trembles on impact" checked={st.screenShake} onChange={v => apply({ screenShake: v })} />
+                  <ToggleRow label="Damage numbers" hint="Show floating damage digits" checked={st.damageNumbers} onChange={v => apply({ damageNumbers: v })} />
+                  <ToggleRow label="Aim assist" hint="Gentle pull toward nearby foes" checked={st.aimAssist} onChange={v => apply({ aimAssist: v })} />
+                </section>
+                <section className="flex flex-col gap-2">
+                  <SectionLabel>Rift Mercy</SectionLabel>
+                  <p className="text-[11px] leading-relaxed text-[#9a8fb5]">
+                    The rift relents for the fallen. AUTO spends your banked falls ({meta.mercyDeaths} banked) and softens each return. Tier 1 grants 2% mercy, +4% per tier beyond.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <MercyChip active={meta.mercyTierSel === -1} onClick={() => setMercyTier(-1)}>Auto</MercyChip>
+                    {Array.from({ length: maxTier }, (_, i) => i + 1).map(t => (
+                      <MercyChip active={meta.mercyTierSel === t} onClick={() => setMercyTier(t)} key={t}>
+                        {t}<span className="ml-1 font-mono text-[9px] opacity-60">{Math.round(mercyTierBase(t) * 100)}%</span>
+                      </MercyChip>
+                    ))}
+                    {maxTier === 0 && <span className="self-center text-[10px] italic text-[#9a8fb5]/60">No tiers unlocked — fall once to earn mercy.</span>}
+                  </div>
+                  <p className="rounded-lg border border-[#58d6c2]/25 bg-[#58d6c2]/5 px-3 py-2 text-[11px] leading-relaxed text-[#58d6c2]">
+                    {meta.mercyTierSel === -1 ? "AUTO: the rift spends your banked falls for you." : `Tier ${meta.mercyTierSel} is locked in — ${Math.round(mercyTierBase(meta.mercyTierSel) * 100)}% base mercy, growing a little each wave.`}
+                  </p>
+                </section>
+              </div>
+            )}
+            {nav === "touch" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Accessibility className="size-3.5" />}>Touch & Comfort</PxHeader>
+                <ToggleRow label="Left-handed layout" hint="Mirror the thumb cluster for left-thumb play" checked={st.leftHanded} onChange={v => apply({ leftHanded: v })} />
+                <ToggleRow label="One-thumb casting" hint="Cast toward your move stick's direction" checked={st.tapToCast} onChange={v => apply({ tapToCast: v })} />
+                <ToggleRow label="Haptic cues" hint="A pulse when spells ready, hits land, tyrants arrive" checked={st.haptics} onChange={v => apply({ haptics: v })} />
+                <ToggleRow label="Resume countdown" hint="A 3-2-1 breath before the rift moves again" checked={st.resumeCountdown} onChange={v => apply({ resumeCountdown: v })} />
+                <ToggleRow label="Auto immersive" hint="Touch devices snap to fullscreen landscape" checked={st.autoImmersive} onChange={v => apply({ autoImmersive: v })} />
+              </div>
+            )}
+            {nav === "data" && (
+              <div className="flex flex-col gap-4">
+                <PxHeader icon={<Database className="size-3.5" />}>Data</PxHeader>
+                <p className="text-[11px] leading-relaxed text-[#9a8fb5]">Everything lives in this browser's local storage — three save slots, switchable from the menu.</p>
+                <SaveSlots />
+              </div>
+            )}
+          </div>
+          {/* right column: HUD & interface / colorblind / reduced flashing */}
+          <div className="rift-scroll hidden w-64 shrink-0 flex-col gap-3 overflow-y-auto border-l border-[#d9a441]/20 p-3 lg:flex">
+            <PxPanel className="p-3" corners={false}>
+              <PxHeader className="text-[10px]!">HUD & Interface</PxHeader>
+              <div className="mt-2 text-[10px] text-[#9a8fb5]">HUD density — Compact hides the optional chrome</div>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {([["compact", "Compact"], ["standard", "Standard"], ["expanded", "Expanded"]] as [string, string][]).map(([v, label]) => (
+                  <MercyChip key={v} active={st.hudDensity === v} onClick={() => apply({ hudDensity: v })}>{label}</MercyChip>
+                ))}
+              </div>
+              {/* HUD preview mock (concept 11) */}
+              <div className="mt-3 rounded-md border border-[#d9a441]/40 bg-[#0e0817]/90 p-2">
+                <div className="flex items-center gap-2">
+                  <span aria-hidden className="block size-9 overflow-hidden rounded-md border border-[#a66bf0]/60 bg-[#1e1430]">
+                    <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={36} height={36} className="size-full object-contain [image-rendering:pixelated]" />
+                  </span>
+                  <span className="flex-1 space-y-1">
+                    <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-5/6 rounded-full bg-gradient-to-r from-[#e02040] to-[#ff5a7a]" /></span>
+                    <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-3/4 rounded-full bg-gradient-to-r from-[#2a6ff0] to-[#6fa8ff]" /></span>
+                    <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-1/2 rounded-full bg-gradient-to-r from-[#e8940a] to-[#ffd24a]" /></span>
+                  </span>
+                </div>
+                <div className="mt-2 flex justify-center gap-1.5">
+                  {["fire", "ice", "lightning"].map(el => (
+                    <span key={el} className="flex size-8 items-center justify-center rounded-md border border-[#d9a441]/50 bg-[#171026]">
+                      <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={22} height={22} className="size-[22px] [image-rendering:pixelated]" />
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </PxPanel>
+            <PxPanel className="p-3" corners={false}>
+              <PxHeader className="text-[10px]!">Colorblind Support</PxHeader>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {PALETTE_IDS.map(p => (
+                  <MercyChip key={p} active={st.palette === p} onClick={() => apply({ palette: p })}>{PALETTE_LABELS[p]}</MercyChip>
+                ))}
+              </div>
+              {/* palette swatches (concept 11 — split-diagonal squares) */}
+              <div className="mt-2.5 flex gap-2">
+                {["fire", "ice", "lightning", "void"].map(el => (
+                  <span key={el} aria-hidden className="block size-7 rounded-md border border-[#3a2c52]" style={{ background: `linear-gradient(135deg, ${elementColor(el)} 0 50%, ${elementGlow(el)} 50% 100%)` }} />
+                ))}
+              </div>
+            </PxPanel>
+            <PxPanel className="p-3" corners={false}>
+              <PxHeader className="text-[10px]!">Reduced Flashing</PxHeader>
+              <div className="mt-2 flex min-h-11 items-center justify-between gap-3">
+                <div className="text-[10px] leading-snug text-[#9a8fb5]">Softer strobes and pulses</div>
+                <Switch checked={st.reduceFlashes} onCheckedChange={v => apply({ reduceFlashes: v })} aria-label="Reduce flashes" className="data-[state=checked]:bg-[#f0c060]" />
+              </div>
+            </PxPanel>
+          </div>
+        </div>
+        {/* bottom action bar (concept 11) */}
+        <div className="relative flex shrink-0 items-center justify-end gap-2 border-t border-[#d9a441]/30 bg-[#0e0817]/80 px-4 py-3 safe-b-5 sm:px-5">
+          <button type="button" onClick={() => { sfx.click(); apply(DEFAULT_SETTINGS); }} className="px-btn px-btn--ghost h-10 text-[10px]!">
+            <RotateCcw className="size-3.5" />Reset to Default
+          </button>
+          <button type="button" onClick={() => { sfx.click(); patchSettings(baseline); sfx.setMuted(baseline.muted); sfx.setVolumes(baseline.master, baseline.music, baseline.sfx, baseline.ambience); closeSettings(); }} className="px-btn px-btn--ghost h-10 text-[10px]!">
+            <X className="size-3.5" />Discard Changes
+          </button>
+          <button type="button" onClick={() => { sfx.click(); closeSettings(); }} className="px-btn px-btn--primary h-10 text-[10px]!">
+            <span className="text-[#4ae87a]">✓</span>Save Changes
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 /** Save-slot cards (10-g, restyled 11-c): three slots, switch or overwrite,
  *  menu-only. Summaries re-read from localStorage whenever the active slot or
@@ -861,34 +1228,192 @@ function GameOverContent() {
    so the row shows the post-victory DELTA glyphs the 25% tithe applies to. */
   const payout = stats.payout;
   const earned = stats.delta ? stats.delta.glyphs : stats.glyphs;
-  return <motion.div className="dark fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-md" initial={{
-    opacity: 0
-  }} animate={{
-    opacity: 1
-  }} exit={{
-    opacity: 0
-  }} transition={{
-    duration: 0.3
-  }}>{<div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<div className="absolute left-1/2 top-1/2 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.08] blur-[120px]" style={{
-        backgroundColor: CRIMSON
-      }} />}</div>}{<motion.div className="relative my-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-[#ff4d6b]/25 bg-[#14080f]/95 p-6 shadow-[0_0_70px_rgba(255,77,107,0.14)] sm:p-8" initial={{
-      opacity: 0,
-      y: 24,
-      scale: 0.97
-    }} animate={{
-      opacity: 1,
-      y: 0,
-      scale: 1
-    }} transition={{
-      duration: 0.35,
-      ease: "easeOut"
-    }}>{<div className="text-center">{<Skull className="mx-auto size-6 text-[#ff4d6b]/70" />}{<h2 className="mt-2 text-balance font-serif text-2xl font-bold uppercase tracking-[0.1em] text-[#ff4d6b] [text-shadow:0_0_32px_rgba(255,77,107,0.5)] sm:text-3xl sm:tracking-[0.14em] md:text-4xl">The Rift Claims You</h2>}{stats.endless && <Badge className="mt-3 border-[#9a7bff]/40 bg-[#9a7bff]/10 text-[10px] uppercase tracking-[0.2em] text-[#9a7bff]">Fallen in the Endless Echo</Badge>}{<div className="mt-4 flex items-baseline justify-center gap-3">{<span className="text-[10px] uppercase tracking-[0.3em] text-white/40">Fell at wave</span>}{<span className="font-serif text-6xl font-bold leading-none text-white [text-shadow:0_0_28px_rgba(255,255,255,0.25)]">{stats.wave}</span>}</div>}{<p className="mt-2 text-xs italic text-white/40">{stats.wave >= VICTORY_WAVE - 5 ? "So close to the seal. The rift remembers." : "The rift remembers. Return stronger."}</p>}</div>}{(stats.killedBy || (stats.lastHits && stats.lastHits.length > 0)) && <div className="mt-4 rounded-lg border border-[#ff4d6b]/20 bg-black/30 px-4 py-3">{<div className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#ff4d6b]/70">Slain by {stats.killedBy ?? "the rift's aftermath"}</div>}{stats.lastHits && stats.lastHits.length > 0 && <ul className="mt-2 flex flex-col gap-1">{stats.lastHits.map((h, i) => <li key={i} className="flex items-baseline justify-between gap-4 text-[11px] text-white/50">{<span className="truncate">{h.cause}</span>}{<span className="shrink-0 font-mono font-bold text-[#ff8fa3]">−{h.amount}</span>}</li>)}</ul>}</div>}{<Separator className="my-6 bg-white/10" />}{<div className="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">{[["Score", fmtNum(stats.score)], ["Kills", fmtNum(stats.kills)], ["Damage Dealt", fmtNum(Math.round(stats.damage))], ["Time Survived", fmtTime(stats.timeSec)], ["Resonances Woven", String(stats.newCombos.length)], ["Tyrants Slain", String(stats.bossesSlain.length)]].map(([label, value]) => <div className="text-center" key={label}>{<div className="font-serif text-xl font-bold text-[#f5c96b]">{value}</div>}{<SectionLabel className="mt-1">{label}</SectionLabel>}</div>)}</div>}{earned > 0 && <div className="mt-6 flex items-center justify-center gap-2 rounded-lg border border-[#f5c96b]/20 bg-[#f5c96b]/5 px-4 py-3 text-xs text-white/60">{<Gem className="size-3.5 text-[#f5c96b]" />}{<span>{<span className="font-mono font-bold text-[#f5c96b]">{earned}</span>}{" aether glyphs earned ·"}{" "}{<span className="font-mono font-bold text-[#f5c96b]">{payout}</span>}{" banked"}{<span className="text-white/35">{" (75% paid to the rift)"}</span>}</span>}</div>}{<p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">{"seed · "}{stats.seed}</p>}{<div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">{<Button onClick={() => {
-          sfx.click();
-          ui.onGameOverRetry(stats.seed);
-        }} className="h-12 rounded-lg border border-[#f5c96b]/50 bg-[#f5c96b]/10 text-sm font-bold uppercase tracking-[0.25em] text-[#f5c96b] hover:bg-[#f5c96b]/20 active:scale-[0.98]">{<RotateCcw />}{" Re-Enter Same Rift"}</Button>}{<Button variant="outline" onClick={() => {
-          sfx.click();
-          ui.onGameOverMenu();
-        }} className="h-12 rounded-lg border-white/15 bg-black/30 text-sm font-bold uppercase tracking-[0.25em] text-white/70 hover:bg-white/5 hover:text-white active:scale-[0.98]">{<House />}{" Return"}</Button>}{<p className="col-span-full text-center text-[10px] uppercase tracking-[0.22em] text-white/40">Re-Enter replays the same seed, from wave 1</p>}</div>}</motion.div>}</motion.div>;
+  const actIdx = Math.min(4, Math.floor(Math.max(1, stats.wave - 1) / 10));
+  const act = ACTS[actIdx];
+  const lastHit = stats.lastHits && stats.lastHits.length > 0 ? stats.lastHits[stats.lastHits.length - 1] : null;
+  const remix = () => {
+    sfx.click();
+    useRiftStore.getState().randomizeSeed();
+    ui.onGameOverRetry(useRiftStore.getState().seed);
+  };
+  return (
+    <motion.div
+      className="dark fixed inset-0 z-50 overflow-y-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      {/* the blood-moon vista (concept 09 — defeat) */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        <img src={assetPath("/art/v3/defeat-bg.jpg")} alt="" draggable={false} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0d0512]/78 via-[#0d0512]/62 to-[#0a0510]/92" />
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 42%, rgba(10,5,16,0.8) 100%)" }} />
+      </div>
+      <div className="rift-scroll relative mx-auto flex min-h-full w-full max-w-5xl flex-col items-center gap-4 px-4 py-8 safe-b-4">
+        {/* title block */}
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.42em] text-[#f2e8da]/85">
+            <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#b08aa0]/70" />
+            Archmage
+            <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#b08aa0]/70" />
+          </div>
+          <motion.h2
+            className="font-display px-crimson-text mt-1 text-[clamp(56px,11vw,120px)] font-black leading-none tracking-[0.05em]"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.55, ease: [0.2, 0.9, 0.3, 1.15] }}
+          >
+            DEFEAT
+          </motion.h2>
+          <div className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.34em] text-[#d87878]">
+            {stats.endless ? "The endless echo swallowed you" : "The rift overwhelmed you"}
+          </div>
+        </div>
+        {/* cause of death + fell at */}
+        <div className="flex w-full flex-col gap-3 sm:flex-row">
+          <PxPanel variant="crimson" className="flex flex-1 items-center gap-3 p-3 sm:p-4">
+            <span className="px-socket !size-11 border-2 border-[#e05060]/50" style={{ boxShadow: "0 0 14px rgba(224,80,96,0.35)" }}>
+              <Skull className="size-5 text-[#e05060]" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#e05060]">Cause of Death</span>
+              <span className="font-serif mt-0.5 block truncate text-lg font-bold text-[#f2ead8]">Slain by {stats.killedBy ?? "the rift's aftermath"}</span>
+              {lastHit && (
+                <span className="mt-0.5 block text-[11px] leading-snug text-[#a898b0]">
+                  A final strike that dealt <span className="font-bold text-[#e84858]">{lastHit.amount}</span> damage.
+                </span>
+              )}
+            </span>
+          </PxPanel>
+          <PxPanel className="flex items-center gap-3 p-3 sm:w-64 sm:p-4">
+            <svg viewBox="0 0 24 24" className="size-5 shrink-0 text-[#e05060]" fill="currentColor"><path d="M6 3 L6 21 M6 4 C9 3.2 12 3.6 15 5 C13.4 7.4 12.8 9.8 13.4 12.4 C10.8 11.4 8.4 11.6 6 12.8 Z" /></svg>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#9a8fb5]">Fell At</span>
+              <span className="font-display block text-2xl font-black leading-tight text-[#f0c060]">WAVE {stats.wave}</span>
+              <span className="block truncate text-[10px] uppercase tracking-[0.18em] text-[#a898b0]">Act {ROMAN_ACTS[actIdx]} · {act?.name}</span>
+            </span>
+          </PxPanel>
+        </div>
+        {/* your build */}
+        <PxPanel className="w-full p-3 sm:p-4">
+          <PxHeader icon={<Sparkles className="size-3.5" />}>Your Build</PxHeader>
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden className="block size-12 overflow-hidden rounded-md border-2 border-[#a66bf0]/60 bg-[#1e1430]">
+                <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={48} height={48} className="size-full object-contain [image-rendering:pixelated]" />
+              </span>
+              <span>
+                <span className="font-serif block text-base font-bold text-[#f2ead8]">Archmage</span>
+                <span className="block text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#f0c060]">The Last Magus</span>
+              </span>
+            </div>
+            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+            <div className="min-w-0">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Spells</div>
+              <div className="mt-1 flex gap-2">
+                {[0, 1, 2].map(i => {
+                  const slot = stats.equipped?.[i];
+                  const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
+                  return (
+                    <span key={i} className="flex size-11 items-center justify-center rounded-md border bg-[#1a0e22]" style={{ borderColor: el ? `${elementColor(el)}66` : "rgba(58,37,69,0.9)" }}>
+                      {el ? <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={30} height={30} className="h-[30px] w-[30px] [image-rendering:pixelated]" /> : <span className="text-lg font-black text-white/15">+</span>}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Resonances ({stats.newCombos.length})</div>
+              <div className="mt-1 flex max-w-xs flex-wrap gap-1.5">
+                {stats.newCombos.length === 0 ? (
+                  <span className="text-[11px] italic text-[#a898b0]/70">None woven this run</span>
+                ) : (
+                  stats.newCombos.slice(0, 6).map(k => (
+                    <span key={k} className="rounded-md border border-[#a66bf0]/40 bg-[#241740]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#c9a0ff]">
+                      {COMBOS[k]?.name ?? k}
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </PxPanel>
+        {/* stats strip */}
+        <PxPanel className="grid w-full grid-cols-3 gap-px overflow-hidden !rounded-lg sm:grid-cols-6" corners={false}>
+          {[
+            ["Damage Dealt", fmtNum(Math.round(stats.damage)), Swords],
+            ["Kills", fmtNum(stats.kills), Skull],
+            ["Score", fmtNum(stats.score), Trophy],
+            ["Time Survived", fmtTime(stats.timeSec), Clock],
+            ["Resonances", String(stats.newCombos.length), Sparkles],
+            ["Tyrants Slain", String(stats.bossesSlain.length), Crown]
+          ].map(([label, value, Icon]) => {
+            const I = Icon as typeof Swords;
+            return (
+              <div key={label as string} className="flex items-center gap-2 bg-[#160e22]/80 px-2.5 py-2.5">
+                <I className="size-4 shrink-0 text-[#f0c060]" />
+                <span className="min-w-0">
+                  <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">{label as string}</span>
+                  <span className="font-display block text-base font-black leading-tight text-[#f2ead8]">{value as string}</span>
+                </span>
+              </div>
+            );
+          })}
+        </PxPanel>
+        {/* run summary */}
+        <PxPanel className="w-full p-3 sm:p-4">
+          <PxHeader icon={<BookOpen className="size-3.5" />}>Run Summary</PxHeader>
+          <div className="mt-2 grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
+            {[
+              ["Waves Cleared", `${Math.max(0, stats.wave - 1)} / ${VICTORY_WAVE}`],
+              ["Resonances Woven", String(stats.newCombos.length)],
+              ["Tyrants Slain", String(stats.bossesSlain.length)],
+              ["Glyphs Collected", fmtNum(stats.glyphs)]
+            ].map(([label, value]) => (
+              <div key={label} className="flex items-center justify-between gap-4 border-b border-[#2a1835] py-1 last:border-b-0">
+                <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-[#c8b8d0]"><PxDiamond small className="opacity-60" />{label}</span>
+                <span className="text-sm font-bold tabular-nums text-[#f2ead8]">{value}</span>
+              </div>
+            ))}
+          </div>
+          {earned > 0 && (
+            <div className="mt-2 flex items-center justify-center gap-2 rounded-md border border-[#f0c060]/30 bg-[#f0c060]/5 px-3 py-2 text-[11px] text-[#d8cfe8]">
+              <Gem className="size-3.5 text-[#f0c060]" />
+              <span><span className="font-bold text-[#f0c060]">{earned}</span> glyphs earned · <span className="font-bold text-[#f0c060]">{payout}</span> banked<span className="text-[#9a8fb5]"> (75% paid to the rift)</span></span>
+            </div>
+          )}
+          <div className="mt-2 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.24em] text-[#9a8fb5]">
+            Seed
+            <span className="font-mono font-bold tracking-widest text-[#f0c060]">{stats.seed}</span>
+            <button
+              className="flex size-6 items-center justify-center rounded-md border border-[#3a2c52] text-[#c8b8d0] transition-colors hover:border-[#f0c060] hover:text-[#f0c060]"
+              aria-label="Copy seed"
+              onClick={async () => { try { await navigator.clipboard.writeText(stats.seed); sfx.click(); } catch { /* clipboard denied */ } }}
+            >
+              <Copy className="size-3" />
+            </button>
+          </div>
+        </PxPanel>
+        {/* actions */}
+        <div className="mt-1 grid w-full max-w-2xl grid-cols-1 gap-3 pb-4 sm:grid-cols-3">
+          <button type="button" onClick={() => { sfx.click(); ui.onGameOverMenu(); }} className="px-btn px-btn--ghost h-14 flex-col !tracking-[0.16em]">
+            <span className="flex items-center gap-2"><House className="size-4" />Return</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-60">to hub</span>
+          </button>
+          <button type="button" onClick={() => { sfx.click(); ui.onGameOverRetry(stats.seed); }} className="px-btn px-btn--primary px-breathe h-14 flex-col">
+            <span className="flex items-center gap-2"><RotateCcw className="size-4" />Replay</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-70">(same seed · from wave 1)</span>
+          </button>
+          <button type="button" onClick={remix} className="px-btn px-btn--purple h-14 flex-col">
+            <span className="flex items-center gap-2"><Swords className="size-4" />Rematch</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-60">(new run)</span>
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
 }
 export function VictoryCredits() {
   const phase = useRiftStore(s => s.phase);
@@ -899,75 +1424,200 @@ export function VictoryCredits() {
 function CreditsContent() {
   const stats = useRiftStore(s => s.stats);
   if (!stats) return null;
-  const deeds = [["Waves Survived", String(stats.wave)], ["Foes Unmade", fmtNum(stats.kills)], ["Damage Dealt", fmtNum(Math.round(stats.damage))], ["New Resonances", String(stats.newCombos.length)], ["Tyrants Slain", String(stats.bossesSlain.length)], ["Time in the Rift", fmtTime(stats.timeSec)], ["Aether Glyphs", `${fmtNum(stats.payout)} · 100% banked on triumph`]];
-  return <motion.div className={cn(SCREEN_BG, "z-50 overflow-y-auto")} initial={{
-    opacity: 0
-  }} animate={{
-    opacity: 1
-  }} exit={{
-    opacity: 0
-  }} transition={{
-    duration: 0.4
-  }}>{<AmbientGlows />}{<div className="relative mx-auto flex min-h-full w-full max-w-3xl flex-col items-center justify-center gap-8 px-4 py-12">{<div className="relative text-center">{<div aria-hidden className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-[90px]" style={{
-          backgroundColor: GOLD
-        }} />}{<motion.p className="relative text-[10px] font-semibold uppercase tracking-[0.5em] text-[#43e8d8]" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.1,
-          duration: 0.4
-        }}>Victory</motion.p>}{<motion.h2 className="relative mt-2 text-balance font-serif text-3xl font-bold uppercase tracking-[0.08em] text-[#f5c96b] [text-shadow:0_0_40px_rgba(245,201,107,0.5)] sm:text-4xl sm:tracking-[0.12em] md:text-5xl" initial={{
-          opacity: 0,
-          y: 16
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.25,
-          duration: 0.5,
-          ease: "easeOut"
-        }}>The Rift Is Sealed</motion.h2>}{<motion.p className="relative mt-3 text-sm italic text-white/50" initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          delay: 0.5,
-          duration: 0.4
-        }}>The fifty-first dawn belongs to you alone.</motion.p>}</div>}{<div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-md sm:p-6">{<SectionLabel className="text-center">Deeds of the final archmage</SectionLabel>}{<div className="mt-4 flex flex-col gap-2.5">{deeds.map(([label, value], i) => <motion.div className="flex items-center justify-between gap-4 border-b border-white/5 pb-2 last:border-b-0" initial={{
-            opacity: 0,
-            x: -14
-          }} animate={{
-            opacity: 1,
-            x: 0
-          }} transition={{
-            delay: 0.65 + i * 0.14,
-            duration: 0.35
-          }} key={label}>{<span className="text-[11px] uppercase tracking-[0.2em] text-white/45">{label}</span>}{<span className="font-mono text-sm font-bold text-[#f5c96b]">{value}</span>}</motion.div>)}</div>}</div>}{<motion.div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-md sm:p-6" initial={{
-        opacity: 0,
-        y: 14
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 1.6,
-        duration: 0.4
-      }}>{<SectionLabel className="text-center">Asset attribution</SectionLabel>}{<div className="mt-3">{<AssetAttributionList />}</div>}</motion.div>}{<motion.div className="grid w-full gap-3 sm:grid-cols-2" initial={{
-        opacity: 0,
-        y: 18
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 1.75,
-        duration: 0.4
-      }}>{<Button variant="outline" onClick={() => {
-          sfx.click();
-          ui.onCreditsReturn();
-        }} className="h-auto flex-col items-start gap-1.5 rounded-xl border-[#f5c96b]/40 bg-[#f5c96b]/5 px-5 py-4 text-left hover:bg-[#f5c96b]/15 active:scale-[0.98]">{<span className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.15em] text-[#f5c96b] sm:tracking-[0.25em]">{<House className="size-4" />}{" Return"}</span>}{<span className="text-[10px] normal-case tracking-normal text-white/45">{"Bank "}{fmtNum(stats.payout)}{" glyphs · seal the weave forever"}</span>}</Button>}{<Button variant="outline" onClick={() => {
-          sfx.click();
-          ui.onCreditsFight();
-        }} className="h-auto flex-col items-start gap-1.5 rounded-xl border-[#ff4d6b]/40 bg-[#ff4d6b]/5 px-5 py-4 text-left hover:bg-[#ff4d6b]/15 active:scale-[0.98]">{<span className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.15em] text-[#ff4d6b] sm:tracking-[0.25em]">{<Infinity className="size-4" />}{" Fight — the Endless Echo"}</span>}{<span className="text-[10px] normal-case tracking-normal text-white/45">Waves 51+ with escalating pressure</span>}</Button>}</motion.div>}</div>}</motion.div>;
+  return (
+    <motion.div
+      className="dark fixed inset-0 z-50 overflow-y-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* the golden portal vista (concept 09 — victory) */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        <img src={assetPath("/art/v3/victory-bg.jpg")} alt="" draggable={false} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a0a28]/72 via-[#150a18]/55 to-[#0a0510]/90" />
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 44%, rgba(10,5,16,0.78) 100%)" }} />
+      </div>
+      <div className="rift-scroll relative mx-auto flex min-h-full w-full max-w-5xl flex-col items-center gap-4 px-4 py-8 safe-b-4">
+        {/* title block with laurels */}
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-[0.42em] text-[#f2e8da]/90">
+            <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#f0d0a0]/70" />
+            Archmage
+            <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#f0d0a0]/70" />
+          </div>
+          <div className="mt-1 flex items-center justify-center gap-3 sm:gap-5">
+            <svg viewBox="0 0 64 88" className="h-16 w-auto sm:h-20" fill="none" aria-hidden>
+              <path d="M52 6 C30 12 16 30 14 56 C13 68 16 78 22 86" stroke="#e8b040" strokeWidth="3.2" strokeLinecap="round" />
+              {[0, 1, 2, 3, 4, 5, 6].map(i => {
+                const t = i / 6;
+                const x = 52 - t * 36, y = 8 + t * 74;
+                return <ellipse key={i} cx={x} cy={y} rx="6.5" ry="3.2" transform={`rotate(${-38 + i * 9} ${x} ${y})`} fill="#e8b040" stroke="#b8822e" strokeWidth="0.8" />;
+              })}
+            </svg>
+            <motion.h2
+              className="font-display px-gold-text text-[clamp(48px,9.5vw,104px)] font-black leading-none tracking-[0.05em]"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.2, 0.9, 0.3, 1.15] }}
+            >
+              VICTORY
+            </motion.h2>
+            <svg viewBox="0 0 64 88" className="h-16 w-auto scale-x-[-1] sm:h-20" fill="none" aria-hidden>
+              <path d="M52 6 C30 12 16 30 14 56 C13 68 16 78 22 86" stroke="#e8b040" strokeWidth="3.2" strokeLinecap="round" />
+              {[0, 1, 2, 3, 4, 5, 6].map(i => {
+                const t = i / 6;
+                const x = 52 - t * 36, y = 8 + t * 74;
+                return <ellipse key={i} cx={x} cy={y} rx="6.5" ry="3.2" transform={`rotate(${-38 + i * 9} ${x} ${y})`} fill="#e8b040" stroke="#b8822e" strokeWidth="0.8" />;
+              })}
+            </svg>
+          </div>
+          <div className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.34em] text-[#f0d0a0]">The rift has been sealed</div>
+        </div>
+        {/* run-complete banner row */}
+        <PxPanel className="grid w-full grid-cols-2 gap-px overflow-hidden sm:grid-cols-4" corners={false}>
+          {[
+            { icon: <Trophy className="size-4 text-[#f0c060]" />, label: "Run Complete", value: `Wave ${stats.wave} / ${VICTORY_WAVE}` },
+            { icon: <Crown className="size-4 text-[#e070a0]" />, label: "Final Act", value: `Act ${ROMAN_ACTS[Math.min(4, Math.floor((stats.wave - 1) / 10))]}` },
+            { icon: <Clock className="size-4 text-[#f0c060]" />, label: "Clear Time", value: fmtTime(stats.timeSec) },
+            { icon: <Sparkles className="size-4 text-[#f0c060]" />, label: "Seed", value: stats.seed }
+          ].map((c, i) => (
+            <div key={c.label} className="flex items-center gap-2.5 bg-[#160e22]/85 px-3 py-2.5">
+              {c.icon}
+              <span className="min-w-0">
+                <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-[#a898b0]">{c.label}</span>
+                <span className="font-display block truncate text-sm font-black leading-tight text-[#f2ead8]">{c.value}</span>
+              </span>
+              {i === 3 && (
+                <button
+                  className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-md border border-[#3a2c52] text-[#c8b8d0] transition-colors hover:border-[#f0c060] hover:text-[#f0c060]"
+                  aria-label="Copy seed"
+                  onClick={async () => { try { await navigator.clipboard.writeText(stats.seed); sfx.click(); } catch { /* clipboard denied */ } }}
+                >
+                  <Copy className="size-3" />
+                </button>
+              )}
+            </div>
+          ))}
+        </PxPanel>
+        {/* your build */}
+        <PxPanel className="w-full p-3 sm:p-4">
+          <PxHeader icon={<Sparkles className="size-3.5" />}>Your Build</PxHeader>
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden className="block size-12 overflow-hidden rounded-md border-2 border-[#f0c060]/70 bg-[#1e1430]">
+                <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={48} height={48} className="size-full object-contain [image-rendering:pixelated]" />
+              </span>
+              <span>
+                <span className="font-serif block text-base font-bold text-[#f2ead8]">Archmage</span>
+                <span className="block text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#f0c060]">Rift Sealer</span>
+              </span>
+            </div>
+            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Spells</div>
+              <div className="mt-1 flex gap-2">
+                {[0, 1, 2].map(i => {
+                  const slot = stats.equipped?.[i];
+                  const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
+                  return (
+                    <span key={i} className="flex size-11 items-center justify-center rounded-md border bg-[#1a0e22]" style={{ borderColor: el ? `${elementColor(el)}66` : "rgba(58,37,69,0.9)" }}>
+                      {el ? <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={30} height={30} className="h-[30px] w-[30px] [image-rendering:pixelated]" /> : <span className="text-lg font-black text-white/15">+</span>}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Resonances ({stats.newCombos.length})</div>
+              <div className="mt-1 flex max-w-md flex-wrap gap-1.5">
+                {stats.newCombos.length === 0 ? (
+                  <span className="text-[11px] italic text-[#a898b0]/70">None woven this run</span>
+                ) : (
+                  stats.newCombos.map(k => (
+                    <span key={k} className="rounded-md border border-[#a66bf0]/40 bg-[#241740]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#c9a0ff]">
+                      {COMBOS[k]?.name ?? k}
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </PxPanel>
+        {/* stats strip */}
+        <PxPanel className="grid w-full grid-cols-3 gap-px overflow-hidden sm:grid-cols-6" corners={false}>
+          {[
+            ["Damage Dealt", fmtNum(Math.round(stats.damage)), Swords],
+            ["Kills", fmtNum(stats.kills), Skull],
+            ["Score", fmtNum(stats.score), Trophy],
+            ["Tyrants Slain", String(stats.bossesSlain.length), Crown],
+            ["Time in the Rift", fmtTime(stats.timeSec), Clock],
+            ["New Resonances", String(stats.newCombos.length), Sparkles]
+          ].map(([label, value, Icon]) => {
+            const I = Icon as typeof Swords;
+            return (
+              <div key={label as string} className="flex items-center gap-2 bg-[#160e22]/85 px-2.5 py-2.5">
+                <I className="size-4 shrink-0 text-[#f0c060]" />
+                <span className="min-w-0">
+                  <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">{label as string}</span>
+                  <span className="font-display block text-base font-black leading-tight text-[#f2ead8]">{value as string}</span>
+                </span>
+              </div>
+            );
+          })}
+        </PxPanel>
+        {/* rewards */}
+        <PxPanel className="w-full p-3 sm:p-4">
+          <PxHeader icon={<Crown className="size-3.5" />}>Rewards</PxHeader>
+          <div className="mt-2.5 flex flex-wrap items-center gap-3">
+            <span className="flex items-center gap-2 rounded-md border border-[#b060d0]/50 bg-[#1a0e22] px-3 py-2">
+              <Gem className="size-5 text-[#c9a0ff] [filter:drop-shadow(0_0_6px_#a66bf0)]" />
+              <span className="font-display text-lg font-black tabular-nums text-[#f2ead8]">×{fmtNum(stats.payout)}</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">aether glyphs · 100% banked</span>
+            </span>
+            {stats.bossesSlain.length > 0 && (
+              <span className="flex items-center gap-2 rounded-md border border-[#f0c060]/40 bg-[#1a0e22] px-3 py-2">
+                <Crown className="size-4 text-[#f0c060]" />
+                <span className="text-[11px] font-bold text-[#d8cfe8]">{stats.bossesSlain.length} tyrant{stats.bossesSlain.length > 1 ? "s" : ""} unmade</span>
+              </span>
+            )}
+          </div>
+          {stats.newCombos.length > 0 && (
+            <div className="mt-3">
+              <PxHeader icon={<BookMarked className="size-3.5" />} className="!text-[#c9a0ff]">Unlocked</PxHeader>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {stats.newCombos.map(k => (
+                  <span key={k} className="flex items-center gap-1.5 text-[11px] text-[#c8b8d0]">
+                    <PxDiamond small />
+                    New Resonance: <span className="font-bold text-[#c9a0ff]">{COMBOS[k]?.name ?? k}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </PxPanel>
+        {/* actions */}
+        <div className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
+          <button type="button" onClick={() => { sfx.click(); ui.onCreditsReturn(); }} className="px-btn px-btn--ghost h-14 flex-col !tracking-[0.16em]">
+            <span className="flex items-center gap-2"><House className="size-4" />Return</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-60">Bank {fmtNum(stats.payout)} glyphs · seal the weave</span>
+          </button>
+          <button type="button" onClick={() => { sfx.click(); ui.onCreditsFight(); }} className="px-btn px-btn--primary px-breathe h-14 flex-col">
+            <span className="flex items-center gap-2"><Infinity className="size-4" />Fight — the Endless Echo</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-70">waves 51+ · escalating pressure</span>
+          </button>
+        </div>
+        {/* asset attribution — kept honest and compact */}
+        <details className="w-full max-w-3xl pb-6">
+          <summary className="cursor-pointer text-center text-[10px] font-bold uppercase tracking-[0.24em] text-[#9a8fb5]/70 transition-colors hover:text-[#d8cfe8]">Asset attribution</summary>
+          <PxPanel className="mt-2 p-4">
+            <AssetAttributionList />
+          </PxPanel>
+        </details>
+      </div>
+    </motion.div>
+  );
 }
 export function PauseOverlay({
   onResume,
@@ -976,7 +1626,7 @@ export function PauseOverlay({
   hud
 }) {
   const phase = useRiftStore(s => s.phase);
-  return <AnimatePresence>{phase === "paused" && <motion.div className="dark fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" initial={{
+  return <AnimatePresence>{phase === "paused" && <motion.div className="dark fixed inset-0 z-40 flex items-center justify-center bg-[#0a0712]/70 p-4 backdrop-blur-sm" initial={{
       opacity: 0
     }} animate={{
       opacity: 1
@@ -984,7 +1634,7 @@ export function PauseOverlay({
       opacity: 0
     }} transition={{
       duration: 0.2
-    }} key={"pause"}>{<motion.div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#14101f]/95 p-6 text-center shadow-[0_0_50px_rgba(0,0,0,0.6)]" initial={{
+    }} key={"pause"}>{<motion.div className="px-panel px-corners relative w-full max-w-sm p-6 text-center" initial={{
         opacity: 0,
         y: 16,
         scale: 0.97
@@ -1001,16 +1651,14 @@ export function PauseOverlay({
         ease: "easeOut"
       }}>{<div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-32 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-[60px]" style={{
           backgroundColor: GOLD
-        }} />}{<Hourglass className="relative mx-auto size-6 text-[#f5c96b]" />}{<h2 className="relative mt-3 text-balance font-serif text-lg font-bold uppercase tracking-[0.1em] text-[#f5c96b] [text-shadow:0_0_22px_rgba(245,201,107,0.35)] sm:text-2xl sm:tracking-[0.18em]">The Rift Sleeps</h2>}{<p className="relative mt-2 text-xs italic text-white/40">It waits, impatient.</p>}{/* F-06 (audit): the FROZEN active-run identity — this seed + this biome
-          are what the run is ACTUALLY using; the menu's next-run seed can
-          never leak into this display. */}{hud && <div className="relative mt-4 rounded-lg border border-[#9a7bff]/25 bg-[#120b24]/70 px-4 py-2.5" aria-label="Active run identity">{<div className="flex items-center justify-center gap-2">{<span className="text-[9px] font-bold uppercase tracking-[0.28em] text-[#6bf0c2]">Active rift seed</span>}{<span className="font-mono text-sm font-bold tracking-widest text-[#ffe9ad]">{hud.seed}</span>}</div>}{hud.biomeName && <div className="mt-1 text-center text-[10px] uppercase tracking-[0.22em] text-white/40">{"Current ground · "}<span className="font-bold text-[#b9aee0]">{hud.biomeName}</span></div>}</div>}{<div className="relative mt-6 flex flex-col gap-2.5">{<Button onClick={() => {
+        }} />}{<Hourglass className="relative mx-auto size-6 text-[#f0c060]" />}{<h2 className="font-display relative mt-3 text-balance text-lg font-black uppercase tracking-[0.14em] text-[#f0c060] [text-shadow:0_0_22px_rgba(240,192,96,0.35)] sm:text-2xl">The Rift Sleeps</h2>}{<div className="relative mt-1.5 flex items-center justify-center gap-2">{<PxDiamond small />}{<span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]">it waits, impatient</span>}{<PxDiamond small />}</div>}{hud && <div className="relative mt-4 rounded-lg border border-[#a66bf0]/25 bg-[#120b24]/70 px-4 py-2.5" aria-label="Active run identity">{<div className="flex items-center justify-center gap-2">{<span className="text-[9px] font-bold uppercase tracking-[0.28em] text-[#6bf0c2]">Active rift seed</span>}{<span className="font-mono text-sm font-bold tracking-widest text-[#ffe9ad]">{hud.seed}</span>}</div>}{hud.biomeName && <div className="mt-1 text-center text-[10px] uppercase tracking-[0.22em] text-white/40">{"Current ground · "}<span className="font-bold text-[#b9aee0]">{hud.biomeName}</span></div>}</div>}{<div className="relative mt-6 flex flex-col gap-2.5">{<button type="button" onClick={() => {
             sfx.click();
             onResume();
-          }} className="h-11 rounded-lg border border-[#f5c96b]/50 bg-[#f5c96b]/10 text-xs font-bold uppercase tracking-[0.3em] text-[#f5c96b] hover:bg-[#f5c96b]/20 active:scale-[0.98]">{<Play />}{" Resume"}</Button>}{<Button variant="outline" onClick={() => {
+          }} className="px-btn px-btn--primary w-full">{<Play className="size-4" />}{" Resume"}</button>}{<button type="button" onClick={() => {
             sfx.click();
             onSettings();
-          }} className="h-11 rounded-lg border-white/15 bg-black/30 text-xs font-bold uppercase tracking-[0.3em] text-white/70 hover:bg-white/5 hover:text-white active:scale-[0.98]">{<Settings />}{" Settings"}</Button>}{<Button variant="outline" onClick={() => {
+          }} className="px-btn w-full">{<Settings className="size-4" />}{" Settings"}</button>}{<button type="button" onClick={() => {
             sfx.click();
             onAbandon();
-          }} className="h-11 rounded-lg border-[#ff4d6b]/35 bg-transparent text-xs font-bold uppercase tracking-[0.3em] text-[#ff4d6b]/90 hover:bg-[#ff4d6b]/10 hover:text-[#ff4d6b] active:scale-[0.98]">{<DoorOpen />}{" Abandon Run"}</Button>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
+          }} className="px-btn w-full" style={{ borderColor: "rgba(224,32,64,0.5)", color: "#ff8fa3" }}>{<DoorOpen className="size-4" />}{" Abandon Run"}</button>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
 }

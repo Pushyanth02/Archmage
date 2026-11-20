@@ -2,6 +2,20 @@
 
 Source of truth: the `CHANGELOG` array in `src/game3d/content.ts`; this file mirrors it, and the in-game Codex renders the same notes.
 
+## Version 3.0.0 — The Pixel Reforging (2026-11-20)
+
+- The whole game is re-skinned to the v3 concept boards: enchanted dark-purple panels with gold filigree corners, diamond ornaments, notched hex plaques, keycap chips and gem finials across every screen.
+- The main menu is the concept vista — a pixel-art rift twilight with the star-in-arch title, hex SOLO RUN / ONLINE PARTY plaques, a dice-and-pencil seed bar and the VAULT · RUNES · CODEX · SETTINGS rail.
+- The combat HUD is the concept layout: octagonal portrait with pill bars and icon sockets, the act/wave banner with its gold underline, the tyrant bar with skull socket and counter, score chip, currency pills, a live minimap with foe blips, rift objectives, a party plate and the keycapped ability bar with the conic SURGE ring.
+- Every in-run overlay speaks the upgrade-card language — banner tabs, hex medallions, inset stat boxes, trait callouts and diamond-pip rows over the wizard-sanctum vista.
+- The defeat and victory screens are full-bleed results boards: gradient DEFEAT/VICTORY titles with laurels, cause-of-death and fell-at panels, YOUR BUILD with spell tiles and resonance chips, six-stat strips, run summary and rewards.
+- The settings dialog is the three-column concept layout: nav rail, center pane per section, HUD/colorblind/flashing column and the Reset · Discard · Save action bar.
+- The bestiary is now chibi pixel sprites, canvas-drawn in-engine: skeleton warriors, cultist mages, goblin raiders, wraiths, rift oozes, imps, bats and thorn menders — with idle, walk, attack, hurt and death frames.
+- The five tyrants take their concept names and silhouettes: Bone Regent the Grave Tyrant, Pyre Behemoth the Infernal Engine, Void Seraph the Eclipse Herald, Rift Colossus the Shattered Guardian and Frost Leviathan the Glacial Wyrm.
+- You play the chibi witch from the reference sheet — purple hat, gold-trimmed robe and a glowing staff, with cast, hurt and KO poses.
+- The arena floor is a pixel-cobblestone plaza with a breathing gold summoning circle at its heart.
+- The GLTF bestiary and its clip bank are retired — the deploy sheds their megabytes; terrain decor, particles and spell icons remain, credited in the Codex.
+
 ## Version 2.2.0 — The Reforged Update (2026-10-28)
 
 - A real loading screen: the game now opens behind a byte-accurate summoning veil (sprites, the mage and the clip bank arrive first; the bestiary and terrain stream behind it), and starting a run waits for the relics with live MB progress instead of falling through to fallback art after 8 seconds.

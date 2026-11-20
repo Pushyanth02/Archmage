@@ -11,9 +11,9 @@ export const SITE_URL = "https://pushyanth02.github.io/Archmage";
 
 export const SITE_NAME = "ARCHMAGE: RIFTBOUND";
 
-export const SITE_VERSION = "2.2.0";
+export const SITE_VERSION = "3.0.0";
 
-export const SITE_VERSION_NAME = "The Reforged Update";
+export const SITE_VERSION_NAME = "The Pixel Reforging";
 
 /* Earliest CHANGELOG entry date (v1.x, 2026-10-21) — used for
    schema.org datePublished. */

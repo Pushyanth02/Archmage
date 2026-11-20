@@ -85,6 +85,8 @@ export interface RunStats {
   payout: number; // shards banked by this milestone
   /** post-victory delta for endless-death commits (null for other kinds) */
   delta: { kills: number; damage: number; timeSec: number; glyphs: number; score: number } | null;
+  /* v3.0: the final loadout — drives the YOUR BUILD panel on the results screens. */
+  equipped: (string | { merged: string[] } | null)[];
 }
 
 /** Fast-path HUD snapshot — pushed by engine ~30 Hz, applied to DOM refs. */
@@ -127,6 +129,12 @@ export interface HudSnapshot {
    *  always describes the world actually generated. */
   biomeName: string;
   seed: string;
+  /* v3.0: minimap blips — live world-space dots (k: 0 foe, 1 elite,
+   * 2 boss), capped, plus the player's own position. Player-relative so
+   * the minimap can center on the archmage without another transform. */
+  blips: { x: number; z: number; k: 0 | 1 | 2 }[];
+  px: number;
+  pz: number;
 }
 
 /** Input state — mutated by GameShell (keyboard/mouse) + TouchControls. */

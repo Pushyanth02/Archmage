@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { TERRAINS, mulberry32, STARTER_SPELLS, hashSeed, streamRng, poolBias, BOSS_DEFS, SPELL_DROP_WAVE_MIN, SPELL_DROP_WAVE_MAX, actForWave, SPELLS, attunement, mercyForRound, RESONANCE_WINDOW, COMBOS, spawnCap, spawnWindow, waveBudget, availableTypes, eliteChance, ELITE_ORDER, VICTORY_WAVE, endlessBossMult, TRIBUTE_INTERVAL, draftGateChoices, SPELL_DROP_NERF, draftSpellOffer, HEART_DROP_HEAL_FRAC, REWARD_DEFS, ELITE_BONUS, hexNum, terrainForAct, layoutForAct, ENEMY_DEFS, MERCY_CAPLIVE, MERCY_SPAWNS, evolvedSpellDef, draftEvolutionOffer, setActiveElementPalette, elementColor, EVOLUTIONS, type ElementId } from "./content";
-import { EnemySystem, MODEL_FIT } from "./entities";
+import { EnemySystem } from "./entities";
 import { AssetSystem } from "./assets";
-import { AnimationController } from "./anim";
+import { BillboardSprite, loadPlayerSheet, type SpriteState } from "./pixelsprites";
 import { SpellSystem } from "./spells";
 
 /** Minimal Battery Status API surface (v2.2) — event-driven only. */
@@ -535,9 +535,10 @@ export class RiftEngine {
    until (or unless) its model/texture arrives. Public so the shell can
    read load progress for the pre-run attunement veil (plan §4 loading). */
   assets;
-  /** Player animation stack (plan §5) — null on the procedural fallback body
-  *  (no clips → the controller is a no-op there by construction). */
-  playerAnim;
+  /** v3.0: the player's chibi pixel billboard + pose timer. */
+  playerSprite: BillboardSprite | null;
+  playerPoseT;
+  playerPoseLock: boolean;
   throwAnimCd;
   stepDustT;
   auraRing;
@@ -650,7 +651,9 @@ export class RiftEngine {
     this.player = makePlayer();
     this.playerGroup = new THREE.Group();
     this.assets = new AssetSystem();
-    this.playerAnim = null;
+    this.playerSprite = null;
+    this.playerPoseT = 0;
+    this.playerPoseLock = false;
     this.throwAnimCd = 0;
     this.stepDustT = 0;
     this.equipped = [...STARTER_SPELLS];
@@ -816,18 +819,16 @@ export class RiftEngine {
     v2.2 staged loading: the PLAYER's own models (mage/staff/imp) rebuild
     the body the moment each arrives (onModel), instead of waiting for the
     whole manifest; the full-load .then() still re-applies sprites. */
-    this.assets.onModel = kind => {
+    /* v3.0: the player body is the pixel sheet — build as soon as it loads
+    (a procedural imp-colored fallback keeps the game playable offline). */
+    loadPlayerSheet().then(() => {
       if (this.disposed) return;
-      if (kind !== "mage" && kind !== "staff") return;
       this.disposePlayerModel();
       this.buildPlayerModel();
       this.buildAimRing();
-    };
+    });
     this.assets.load().then(() => {
       if (this.disposed) return;
-      this.disposePlayerModel();
-      this.buildPlayerModel();
-      this.buildAimRing();
       this.applyVfxSprites();
     }).catch(() => {});
     this.ctx = this.makeContext();
@@ -1685,9 +1686,9 @@ export class RiftEngine {
           this.player.aether -= cost;
           this.volleyTimer = 0.19;
           this.spells.volley(this.ctx);
-          if (this.throwAnimCd <= 0 && this.playerAnim) {
+          if (this.throwAnimCd <= 0 && this.playerSprite) {
             this.throwAnimCd = 0.5;
-            this.playerAnim.play("cast");
+            this.playerPose("attack", 0.4);
           }
         } else if (this.castDenyT <= 0) {
           this.castDenyT = 0.35;
@@ -1823,9 +1824,9 @@ export class RiftEngine {
     this.spells.cast(element, this.ctx, this.evolved[element] ? evolvedSpellDef(element, this.evolved[element]) : undefined);
     /* cast flourish — throttled so volleys don't spasm the arm (cast does NOT
     interrupt a hit flinch: priority 2 < 3 — the controller rejects it) */
-    if (this.throwAnimCd <= 0 && this.playerAnim) {
+    if (this.throwAnimCd <= 0 && this.playerSprite) {
       this.throwAnimCd = 0.5;
-      this.playerAnim.play("cast");
+      this.playerPose("attack", 0.4);
     }
     /* resonance weave window */
     if (this.lastCast && this.lastCast.element !== element && this.time - this.lastCast.t <= RESONANCE_WINDOW) {
@@ -2063,7 +2064,8 @@ export class RiftEngine {
         runId: this.runId,
         kind: "victory",
         payout: this.stats.glyphs,
-        delta: null
+        delta: null,
+        equipped: [...this.equipped]
       });
       this.setPhase("credits");
       return;
@@ -2251,7 +2253,7 @@ export class RiftEngine {
     });
     if (this.lastHits.length > 3) this.lastHits.shift();
     this.haptic(20); // player-hit haptic cue (settings-gated)
-    this.playerAnim?.play("hit"); // acquired-mage flinch (no-op procedurally)
+    this.playerPose("hurt", 0.3);
     this.trauma = Math.min(1, this.trauma + 0.35);
     this.rumble(120, 0.7, 0.4); // haptic hurt tick (screenShake-gated)
     this.vfx.burst(_fxPos.set(p.x, 1.3, p.z), 0xff4d6b, 10, {
@@ -2374,7 +2376,7 @@ export class RiftEngine {
     this.trauma = MAX_TRAUMA;
     /* acquired-mage death collapse (procedural body simply explodes away);
     the controller locks every further state until resetPlayerAnim() */
-    this.playerAnim?.play("death");
+    this.playerPose("death", 0);
     this.vfx.explosion(_fxPos.set(p.x, 1.2, p.z), 0x9a7bff, 5);
     this.opts.sfx.musicStop();
     this.opts.sfx.play("death", {
@@ -2405,7 +2407,8 @@ export class RiftEngine {
         lastHits: [...this.lastHits],
         payout: delta ? Math.round(delta.glyphs * 0.25) // endless: 25% of the DELTA glyphs
         : Math.round(this.stats.glyphs * 0.25),
-        delta
+        delta,
+        equipped: [...this.equipped]
       });
     }
     /* let the death slow-mo play out before the screen — the timer is
@@ -2570,53 +2573,35 @@ export class RiftEngine {
   /* ------------------------------- visuals ------------------------------- */ /** Acquired KayKit mage (CC0, docs/AUDITS.md): rigged model + staff
                                                                                 *  bound to the right-hand bone + retargeted Rig_Medium clips (idle/run
                                                                                 *  blend, hit flinch, death collapse, throw flourish on casts). */
-  buildMageModel(g) {
-    const mage = this.assets.spawnModel("mage");
-    if (!mage) return;
-    mage.scale.setScalar(MODEL_FIT.mage);
-    g.add(mage);
-    /* animation stack (plan §5 AnimationController) — clips retarget 1:1
-    (identical Rig_Medium skeleton). Missing clips degrade gracefully:
-    that state is simply unavailable (procedural-fallback parity). */
-    this.playerAnim = new AnimationController(new THREE.AnimationMixer(mage), {
-      idle: this.assets.clip("Idle_A"),
-      move: this.assets.clip("Running_A"),
-      dash: this.assets.clip("Running_B"),
-      cast: this.assets.clip("Throw"),
-      hit: this.assets.clip("Hit_A"),
-      death: this.assets.clip("Death_A")
+  /* ------------------------------- visuals ------------------------------- */
+  /** v3.0: the player is the chibi pixel witch (reference sheet p1, purple
+   *  variant) — a feet-anchored billboard with the frame poses from the
+   *  sheet (idle/windup/run/cast/hurt/ko). A floating additive staff-orb
+   *  keeps the selected-spell color language; aura fx unchanged. */
+  buildPlayerModel() {
+    const g = this.playerGroup;
+    g.clear();
+    loadPlayerSheet().then(sheet => {
+      if (this.disposed) return;
+      const spr = new BillboardSprite(sheet, 3.4);
+      spr.mesh.rotation.x = -0.1;
+      spr.tint("#c9b8ff");
+      g.add(spr.mesh);
+      this.playerSprite = spr;
+      this.resetPlayerAnim();
     });
-    /* staff (KayKit CC0) — child of the hand bone so it rides every clip */
-    const hand = mage.getObjectByName("handslotr");
-    const staff = this.assets.spawnModel("staff");
-    if (hand && staff) {
-      staff.position.set(0, 0.1, 0.02);
-      hand.add(staff);
-      /* recolorable crystal crown on the staff head (updateStaffColor drives it) */
-      const orbGeo = new THREE.OctahedronGeometry(0.11, 0);
-      orbGeo.scale(1, 1.5, 1);
-      this.staffOrb = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({
-        color: 0xff7847,
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.95,
-        depthWrite: false
-      }));
-      this.staffOrb.position.y = 1.3;
-      staff.add(this.staffOrb);
-    } else {
-      const orbGeo = new THREE.OctahedronGeometry(0.17, 0);
-      orbGeo.scale(1, 1.5, 1);
-      this.staffOrb = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({
-        color: 0xff7847,
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        opacity: 0.95,
-        depthWrite: false
-      }));
-      this.staffOrb.position.set(0.55, 2.2, 0.15);
-      g.add(this.staffOrb);
-    }
+    /* recolorable staff-orb — floats where the sprite's staff crystal sits */
+    const orbGeo = new THREE.OctahedronGeometry(0.16, 0);
+    orbGeo.scale(1, 1.5, 1);
+    this.staffOrb = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({
+      color: 0xff7847,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.95,
+      depthWrite: false
+    }));
+    this.staffOrb.position.set(0.62, 2.45, 0.2);
+    g.add(this.staffOrb);
     this.addPlayerAuraFx(g);
     this.scene.add(g);
   }
@@ -2673,176 +2658,24 @@ export class RiftEngine {
     this.auraRing.position.y = 0.1;
     g.add(this.auraRing);
   }
-  /** Reset locomotion/one-shot actions for a fresh run (death pose clear).
-  *  Same semantics as before the controller: stop one-shots, clear the
-  *  death lock, restart idle/run at weights 1/0. */
+  /** Reset the sprite pose for a fresh run (death pose clear). */
   resetPlayerAnim() {
-    this.playerAnim?.reset();
+    this.playerPoseLock = false;
+    this.playerPoseT = 0;
+    if (this.playerSprite) this.playerSprite.state = "idle";
   }
-  /** Procedural fallback archmage: flared lathe robe with gold trims,
-  *  shoulder mantle with gold trim, boot hints, wide-brim hat (sloped brim +
-  *  crown + band), gnarled segmented staff with pronged crystal head
-  *  (tintable per selected spell — see updateStaffColor). ~1.6k triangles. */
-  buildPlayerModel() {
-    const g = this.playerGroup;
-    g.clear();
-    this.playerAnim?.dispose();
-    this.playerAnim = null;
-    /* acquired animated mage when the pack has landed; procedural archmage
-    otherwise (identical silhouette role, zero gameplay difference) */
-    if (this.assets.models.has("mage")) {
-      this.buildMageModel(g);
-      return;
-    }
-    const robeMat = new THREE.MeshStandardMaterial({
-      color: 0x3a2766,
-      roughness: 0.62,
-      metalness: 0.05,
-      emissive: 0x1c1140,
-      emissiveIntensity: 0.9
-    });
-    const robeDarkMat = new THREE.MeshStandardMaterial({
-      color: 0x251744,
-      roughness: 0.68,
-      metalness: 0.05,
-      emissive: 0x150c2c
-    });
-    const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xf5c96b,
-      roughness: 0.34,
-      metalness: 0.55,
-      emissive: 0x40300e,
-      emissiveIntensity: 1
-    });
-    const hatMat = new THREE.MeshStandardMaterial({
-      color: 0x2b1a52,
-      roughness: 0.7,
-      metalness: 0.05,
-      emissive: 0x170e30,
-      side: THREE.DoubleSide
-    });
-    const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xe8d5ff,
-      roughness: 0.5
-    });
-    const woodMat = new THREE.MeshStandardMaterial({
-      color: 0x6b4a2a,
-      roughness: 0.85,
-      flatShading: true
-    });
-    const darkMat = new THREE.MeshStandardMaterial({
-      color: 0x1a1030,
-      roughness: 0.8
-    });
-    const eyeGlowMat = new THREE.MeshBasicMaterial({
-      color: 0xbfa8ff,
-      transparent: true,
-      opacity: 0.95,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
-    });
-    /* --- robe: flared lathe profile (hem → skirt → waist → chest → neck) --- */
-    const profile = [new THREE.Vector2(0.62, 0.03), new THREE.Vector2(0.56, 0.2), new THREE.Vector2(0.44, 0.5), new THREE.Vector2(0.35, 0.82), new THREE.Vector2(0.31, 1.04), new THREE.Vector2(0.27, 1.2), new THREE.Vector2(0.1, 1.3)];
-    g.add(new THREE.Mesh(new THREE.LatheGeometry(profile, 12), robeMat));
-    /* hem trim + belt + buckle */
-    const hem = new THREE.Mesh(new THREE.TorusGeometry(0.585, 0.05, 5, 14), goldMat);
-    hem.rotation.x = Math.PI / 2;
-    hem.scale.set(1, 1, 0.6);
-    hem.position.y = 0.09;
-    g.add(hem);
-    const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.375, 0.1, 12, 1, true), robeDarkMat);
-    belt.position.y = 0.86;
-    g.add(belt);
-    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.13, 0.05), goldMat);
-    buckle.position.set(0, 0.86, 0.33);
-    g.add(buckle);
-    /* shoulder mantle + gold trim */
-    const mantle = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.48, 0.28, 12, 1, true), robeDarkMat);
-    mantle.position.y = 1.17;
-    g.add(mantle);
-    const mantleTrim = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.032, 5, 14), goldMat);
-    mantleTrim.rotation.x = Math.PI / 2;
-    mantleTrim.position.y = 1.05;
-    g.add(mantleTrim);
-    /* boot hints peeking under the hem */
-    const bootGeo = new THREE.BoxGeometry(0.17, 0.12, 0.26);
-    const bootL = new THREE.Mesh(bootGeo, darkMat);
-    bootL.position.set(0.17, 0.06, 0.36);
-    const bootR = new THREE.Mesh(bootGeo, darkMat);
-    bootR.position.set(-0.17, 0.06, 0.36);
-    g.add(bootL, bootR);
-    /* head + glowing eyes (read against dark floors) */
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 9), skinMat);
-    head.position.y = 1.62;
-    g.add(head);
-    const eyeGeo = new THREE.OctahedronGeometry(0.035);
-    const eyeL = new THREE.Mesh(eyeGeo, eyeGlowMat);
-    eyeL.position.set(0.09, 1.66, 0.21);
-    const eyeR = new THREE.Mesh(eyeGeo, eyeGlowMat);
-    eyeR.position.set(-0.09, 1.66, 0.21);
-    g.add(eyeL, eyeR);
-    /* wide-brim hat: sloped brim ring + crown + band (tilted for character) */
-    const hat = new THREE.Group();
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.68, 0.1, 14, 1, true), hatMat);
-    brim.position.y = 1.86;
-    hat.add(brim);
-    const crown = new THREE.Mesh(new THREE.ConeGeometry(0.33, 0.62, 12), hatMat);
-    crown.position.y = 2.2;
-    hat.add(crown);
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.042, 5, 12), goldMat);
-    band.rotation.x = Math.PI / 2;
-    band.position.y = 1.95;
-    hat.add(band);
-    hat.rotation.z = 0.12;
-    hat.rotation.x = -0.05;
-    g.add(hat);
-    /* gnarled staff: three kinked segments + root knob + prongs clutching the crystal */
-    const staff = new THREE.Group();
-    staff.position.set(0.55, 0, 0.15);
-    staff.rotation.z = -0.16;
-    const seg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.062, 0.85, 7), woodMat);
-    seg1.position.y = 0.42;
-    staff.add(seg1);
-    const seg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.05, 0.75, 7), woodMat);
-    seg2.position.set(0.035, 1.18, 0);
-    seg2.rotation.z = 0.1;
-    staff.add(seg2);
-    const seg3 = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.042, 0.55, 7), woodMat);
-    seg3.position.set(0.105, 1.79, 0);
-    seg3.rotation.z = 0.16;
-    staff.add(seg3);
-    const root = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), woodMat);
-    root.position.y = 0.06;
-    staff.add(root);
-    const prongGeo = new THREE.ConeGeometry(0.035, 0.24, 5);
-    for (let i = 0; i < 3; i++) {
-      const a = i / 3 * Math.PI * 2 + 0.5;
-      const prong = new THREE.Mesh(prongGeo, woodMat);
-      prong.position.set(Math.cos(a) * 0.12, 2.14, Math.sin(a) * 0.12);
-      prong.rotation.z = -Math.cos(a) * 0.45;
-      prong.rotation.x = Math.sin(a) * 0.45;
-      staff.add(prong);
-    }
-    /* crystal head — recolored per selected spell in updateStaffColor() */
-    const orbGeo = new THREE.OctahedronGeometry(0.17, 0);
-    orbGeo.scale(1, 1.5, 1);
-    this.staffOrb = new THREE.Mesh(orbGeo, new THREE.MeshBasicMaterial({
-      color: 0xff7847,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      opacity: 0.95,
-      depthWrite: false
-    }));
-    this.staffOrb.position.y = 2.2;
-    staff.add(this.staffOrb);
-    g.add(staff);
-    this.addPlayerAuraFx(g);
-    this.scene.add(g);
+  /** One-shot pose from gameplay events (cast/hit/death). */
+  playerPose(state: SpriteState, dur: number) {
+    if (!this.playerSprite) return;
+    if (this.playerPoseLock) return; // death locks the controller
+    if (state === "death") this.playerPoseLock = true;
+    this.playerSprite.state = state;
+    this.playerPoseT = dur;
   }
   /** Tear down the player model + aim ring (geometries AND materials). */
   disposePlayerModel() {
-    this.playerAnim?.dispose();
-    this.playerAnim = null;
+    this.playerSprite?.dispose();
+    this.playerSprite = null;
     this.scene.remove(this.playerGroup);
     this.scene.remove(this.aimRing);
     this.playerGroup.traverse(o => {
@@ -2879,27 +2712,29 @@ export class RiftEngine {
   }
   updatePlayerVisual(dt) {
     const p = this.player;
-    const bob = Math.sin(this.time * 2.2) * (this.playerAnim ? 0.02 : 0.07);
+    const bob = Math.sin(this.time * 2.2) * 0.03;
     this.playerGroup.position.set(p.x, bob, p.z);
-    if (!p.dead) {
-      const aimA = Math.atan2(p.aimX - p.x, p.aimZ - p.z);
-      let diff = aimA - this.playerGroup.rotation.y;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      this.playerGroup.rotation.y += diff * Math.min(1, dt * 12);
-    }
+    this.playerGroup.rotation.y = 0; // billboards never yaw — the sprite mirrors
     /* living details: rune shards orbit + breathe, staff crystal spins + pulses */
     this.runeShards.rotation.y += dt * 1.5;
     this.runeShards.position.y = 1.35 + Math.sin(this.time * 2.2 + 0.8) * 0.08;
     this.staffOrb.rotation.y += dt * 1.1;
     this.staffOrb.scale.setScalar(1 + Math.sin(this.time * 5.4) * 0.08);
-    /* acquired-mage locomotion: the controller blends idle/run from the
-    input intent (same 9/s easing as before) and overlays any one-shot
-    (hit/cast/death); footstep dust puffs keep the run grounded. */
+    /* the sprite mirrors to face the aim and steps through its poses:
+    idle/run from input intent, one-shots (cast/hit/death) overlay */
     const movingNow = !p.dead && (this.input.moveX !== 0 || this.input.moveZ !== 0);
-    if (this.playerAnim) {
-      if (!p.dead) this.playerAnim.setMoveWeight(movingNow ? 1 : 0);
-      this.playerAnim.update(dt);
+    const spr = this.playerSprite;
+    if (spr) {
+      spr.face = p.aimX >= p.x ? 1 : -1;
+      if (!this.playerPoseLock) {
+        if (this.playerPoseT > 0) {
+          this.playerPoseT -= dt;
+          if (this.playerPoseT <= 0) spr.state = "idle";
+        } else {
+          spr.state = movingNow ? "walk" : "idle";
+        }
+      }
+      spr.update(dt);
     }
     if (movingNow) {
       this.stepDustT -= dt;
@@ -3090,9 +2925,24 @@ export class RiftEngine {
       /* F-06: the HUD describes the world actually generated — biome name
        *  + the FROZEN active-run seed (never the prospective next seed). */
       biomeName: TERRAIN_NAME[this.actTerrain] ?? "Rubble Field",
-      seed: this.runSeed
+      seed: this.runSeed,
+      /* v3.0 minimap — live foe dots + the player's ground position */
+      blips: this.computeBlips(),
+      px: p.x,
+      pz: p.z
     };
     this.opts.callbacks.onHud(snap);
+  }
+  /** v3.0: capped live blip list for the HUD minimap (foes / elites / boss). */
+  computeBlips(): { x: number; z: number; k: 0 | 1 | 2 }[] {
+    const out: { x: number; z: number; k: 0 | 1 | 2 }[] = [];
+    const list = this.enemies.enemies;
+    for (let i = 0; i < list.length && out.length < 28; i++) {
+      const e = list[i];
+      if (e.hp <= 0) continue;
+      out.push({ x: e.x, z: e.z, k: e.boss ? 2 : e.elite ? 1 : 0 });
+    }
+    return out;
   }
   /** v2.2 off-screen threat markers: up to 3 screen-space angle cues for
    *  looming danger — the tyrant first, then the nearest elites. Angles are

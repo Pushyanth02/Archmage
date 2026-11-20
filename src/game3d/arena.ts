@@ -347,12 +347,12 @@ function luminance(c: THREE.Color): number {
    palettes span ~18× in sky luminance (act 4 ≈ 0.22 vs act 6 ≈ 0.012 linear),
    so every light is intensity-normalized to hit the same effective luminance
    in every act — hue is preserved, only intensity compensates. */
-const HEMI_SKY_LUM = 0.12; // sky ambient on up-facing surfaces (floor readability)
+const HEMI_SKY_LUM = 0.22; // v3.0: raised — the concept's plaza reads under dusk light
 const HEMI_GND_LUM = 0.05; // bounce ambient on down-facing surfaces
 const KEY_INTENSITY = 0.62; // directional key — identical in every act
 const KEY_TINT = 0.25; // how far the key drifts toward the biome rune hue
 const RUNE_LUM = 0.3; // center rune light effective luminance @ 10u
-const GROUND_LUM = 0.024; // ground albedo target → readable floor everywhere
+const GROUND_LUM = 0.115; // v3.0: raised — the concept's cobblestone plaza reads clearly
 /* ------------------------- reusable temp objects ------------------------ */ /* Module scope only — never allocate in update(). */
 const _o = new THREE.Object3D();
 const _cA = new THREE.Color();
@@ -439,22 +439,173 @@ function bucketGeometry(b: Bucket): THREE.BufferGeometry {
   g.setAttribute("color", new THREE.Float32BufferAttribute(b.col, 3));
   return g;
 }
-/* ------------------------------ ground ---------------------------------- */ /** Big ground disc with a baked radial vignette (vertex colors darken the rim). */
+/* ------------------------------ ground ---------------------------------- */
+/** v3.0 — pixel-cobble canvas texture. Chunky 8×8 stone grid on a 128px
+ *  canvas (16px stones, 1px mortar), nearest-neighbor filtering so the
+ *  floor reads as pixel-art from the concept boards. Tinted by the act's
+ *  normalized ground albedo + accent stones; the material color stays the
+ *  palette driver, the texture carries luminance variation only. */
+function makeCobbleTexture(ground: THREE.Color, accent: THREE.Color): THREE.Texture {
+  /* headless (validate-terrain) has no DOM — a neutral 2×2 tile keeps the
+   * geometry path testable */
+  if (typeof document === "undefined") {
+    const tex = new THREE.DataTexture(new Uint8Array(16).map((_, i) => (i % 4 === 3 ? 255 : i % 4 === 0 ? 120 : i % 4 === 1 ? 90 : 140)), 2, 2, THREE.RGBAFormat);
+    tex.needsUpdate = true;
+    return tex;
+  }
+  const S = 132;
+  const ST = 22; // stone pitch — 6×6 chunky flagstones per tile
+  const GAP = 3; // mortar width in px
+  const cvs = document.createElement("canvas");
+  cvs.width = S;
+  cvs.height = S;
+  const ctx = cvs.getContext("2d")!;
+  /* THREE.Color components arrive in the linear working space; the canvas
+   * needs display-space (sRGB) values or every draw lands near-black. */
+  const gSRGB = ground.clone().convertLinearToSRGB();
+  const aSRGB = accent.clone().convertLinearToSRGB();
+  const rgb = (c: THREE.Color, m: number) => `rgb(${Math.round(Math.min(255, c.r * 255 * m))},${Math.round(Math.min(255, c.g * 255 * m))},${Math.round(Math.min(255, c.b * 255 * m))})`;
+  // mortar bed (dark)
+  ctx.fillStyle = rgb(gSRGB, 0.45);
+  ctx.fillRect(0, 0, S, S);
+  // deterministic stone jitter (visual only — same every build)
+  let seed = 1337;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  for (let y = 0; y < S; y += ST) {
+    for (let x = 0; x < S; x += ST) {
+      const j = rnd();
+      const lum = 0.85 + j * 0.5; // per-stone variance — bright, readable plaza stones
+      const accentStone = rnd() < 0.14;
+      ctx.fillStyle = accentStone ? rgb(aSRGB, Math.min(1.45, lum * 1.1)) : rgb(gSRGB, lum);
+      // chunky mortar gap, occasional chipped corner (pixel variety)
+      const chip = j < 0.3 ? 2 : 0;
+      ctx.fillRect(x + GAP, y + GAP, ST - GAP * 2 - chip, ST - GAP * 2);
+      // top highlight edge
+      ctx.fillStyle = `rgba(255,255,255,${0.07 + j * 0.06})`;
+      ctx.fillRect(x + GAP, y + GAP, ST - GAP * 2, 2);
+      // bottom shade edge
+      ctx.fillStyle = `rgba(0,0,0,${0.14 + j * 0.1})`;
+      ctx.fillRect(x + GAP, y + ST - GAP - 2, ST - GAP * 2, 2);
+    }
+  }
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestMipmapLinearFilter;
+  tex.generateMipmaps = true;
+  // world-scale tiling comes from the planar UVs (pos/8 → one 128px tile per
+  // 8 world units → 16px stones at 0.5u); repeat stays identity
+  tex.anisotropy = 4;
+  return tex;
+}
+
+/** v3.0 — the gold summoning circle (concept 05): concentric rune rings,
+ *  diamond glyphs and tick runes drawn on a transparent canvas, tinted by
+ *  the act's rune color and laid over the cobblestones at the arena heart. */
+function makeSummonCircleTexture(): THREE.Texture {
+  if (typeof document === "undefined") {
+    const tex = new THREE.DataTexture(new Uint8Array(16).fill(255), 2, 2, THREE.RGBAFormat);
+    tex.needsUpdate = true;
+    return tex;
+  }
+  const S = 512;
+  const cvs = document.createElement("canvas");
+  cvs.width = S;
+  cvs.height = S;
+  const ctx = cvs.getContext("2d")!;
+  const cx = S / 2, cy = S / 2;
+  ctx.strokeStyle = "#ffffff";
+  ctx.fillStyle = "#ffffff";
+  ctx.lineCap = "round";
+  const ring = (r0: number, r1: number, w: number) => {
+    ctx.lineWidth = w;
+    ctx.beginPath();
+    ctx.arc(cx, cy, (r0 + r1) / 2, 0, TAU);
+    ctx.stroke();
+  };
+  // outer double ring
+  ring(234, 246, 9);
+  ring(222, 228, 4);
+  // 8 diamond glyphs on the outer band
+  for (let i = 0; i < 8; i++) {
+    const a = i / 8 * TAU;
+    const x = cx + Math.cos(a) * 208;
+    const y = cy + Math.sin(a) * 208;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(a + Math.PI / 4);
+    ctx.fillRect(-9, -9, 18, 18);
+    ctx.restore();
+  }
+  // tick runes (24) between bands
+  ctx.lineWidth = 5;
+  for (let i = 0; i < 24; i++) {
+    const a = i / 24 * TAU;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * 176, cy + Math.sin(a) * 176);
+    ctx.lineTo(cx + Math.cos(a) * 192, cy + Math.sin(a) * 192);
+    ctx.stroke();
+  }
+  // middle ring
+  ring(158, 166, 6);
+  // inner ring + fine companion
+  ring(112, 120, 8);
+  ring(102, 106, 3);
+  // the center star: four long + four short points
+  ctx.lineWidth = 7;
+  for (let i = 0; i < 4; i++) {
+    const a = i / 4 * TAU;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * 88, cy + Math.sin(a) * 88);
+    ctx.stroke();
+  }
+  ctx.lineWidth = 4;
+  for (let i = 0; i < 4; i++) {
+    const a = (i + 0.5) / 4 * TAU;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * 22, cy + Math.sin(a) * 22);
+    ctx.lineTo(cx + Math.cos(a) * 54, cy + Math.sin(a) * 54);
+    ctx.stroke();
+  }
+  // center gem
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillRect(-13, -13, 26, 26);
+  ctx.restore();
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+/** Big ground disc with a baked radial vignette (vertex colors darken the rim).
+ *  v3.0: pixel-cobble canvas texture carries the stone detail (concept 05). */
 function buildGround(c: ArenaCtx): THREE.Mesh {
   const geo = new THREE.CircleGeometry(GROUND_RADIUS, 96);
   geo.rotateX(-Math.PI / 2);
   const pos = geo.getAttribute("position");
+  const uv = geo.getAttribute("uv");
+  // planar world-space UVs (tile repeat already world-scaled in the texture)
+  for (let i = 0; i < pos.count; i++) {
+    uv.setXY(i, pos.getX(i) / 8, pos.getZ(i) / 8);
+  }
+  uv.needsUpdate = true;
   const col = new Float32Array(pos.count * 3);
   for (let i = 0; i < pos.count; i++) {
     const r = Math.hypot(pos.getX(i), pos.getZ(i)) / GROUND_RADIUS;
-    const v = 1 - 0.55 * THREE.MathUtils.smoothstep(r, 0.55, 1.0);
+    const v = 1 - 0.42 * THREE.MathUtils.smoothstep(r, 0.62, 1.0);
     col[i * 3] = v;
     col[i * 3 + 1] = v;
     col[i * 3 + 2] = v;
   }
   geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
   const mat = new THREE.MeshStandardMaterial({
-    color: c.groundColor,
+    color: 0xffffff,
+    map: makeCobbleTexture(c.groundColor, c.colors.accent),
     vertexColors: true,
     roughness: 0.95,
     metalness: 0
@@ -1188,7 +1339,7 @@ export function buildArena(
    scale to the shared target luminance — clamped so extreme palettes keep
    their character while every act's floor stays equally readable */
   const groundColor = colors.ground.clone().lerp(colors.accent, 0.4);
-  groundColor.multiplyScalar(THREE.MathUtils.clamp(GROUND_LUM / Math.max(luminance(groundColor), 1e-4), 0.8, 2.2));
+  groundColor.multiplyScalar(THREE.MathUtils.clamp(GROUND_LUM / Math.max(luminance(groundColor), 1e-4), 0.8, 5.0));
   /* --- two independent rng streams (plan §7: "cosmetic random calls cannot
    change combat spawns") — the incoming seeded rng is split ONCE; the
    gameplay layout stream plans the obstacles, the cosmetic stream drives
@@ -1270,6 +1421,23 @@ export function buildArena(
   glowMesh.matrixAutoUpdate = false;
   glowMesh.updateMatrix();
   group.add(glowMesh);
+  /* --- v3.0: the gold summoning circle over the cobblestones (concept 05):
+   *  a 15-unit rune-circle decal at the arena heart, breathing with the
+   *  ground runes. Additive + depthWrite:false, drawn under the glow rings. */
+  const circleMat = new THREE.MeshBasicMaterial({
+    map: makeSummonCircleTexture(),
+    color: colors.rune.clone().multiplyScalar(0.82), // eased — full additive saturates to white
+    transparent: true,
+    opacity: 0.36,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+  const circle = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), circleMat);
+  circle.rotation.x = -Math.PI / 2;
+  circle.position.y = 0.05;
+  circle.renderOrder = 2;
+  group.add(circle);
   /* --- energy fence (containment shell at r=42) + inner ghost --- */
   const fenceMat = new THREE.MeshBasicMaterial({
     color: colors.rune,
@@ -1457,6 +1625,10 @@ export function buildArena(
     ghostMat.opacity = 0.045 + 0.025 * pulse;
     // ground rune pulse (offset phase)
     glowMat.opacity = 0.22 + 0.1 * (0.5 + 0.5 * Math.sin(t * 0.8 + 1.6));
+    // v3.0: the summoning circle breathes with the runes and drifts a slow
+    // quarter-turn per minute — a living seal, never a static decal
+    circleMat.opacity = 0.3 + 0.12 * (0.5 + 0.5 * Math.sin(t * 0.8 + 1.6));
+    circle.rotation.z = t * 0.026;
     // center rune light flicker (normalized base per act)
     runeLight.intensity = runeIntensity * (0.9 + 0.1 * Math.sin(t * 2.1));
     // rift landmark: gyroscope rings precess, swirl counter-rotates + breathes,

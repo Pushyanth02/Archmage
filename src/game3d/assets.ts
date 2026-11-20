@@ -4,11 +4,9 @@ import { clone as skeletonClone } from "three/examples/jsm/utils/SkeletonUtils.j
 import type { EnemyDef, EnemyType } from "./content";
 import { assetPath } from "../lib/asset-path";
 
+/* v3.0: the GLTF bestiary is retired — every combatant is a pixel sprite
+ * (pixelsprites.ts). Only the Kenney Graveyard terrain decor remains GLTF. */
 export type ModelKind =
-  | "mage" | "staff" | "imp" | "puglin" | "slime" | "ghost" | "plant"
-  | "skeleton" | "skeletonmage"
-  /* 10-c terrain decor (Kenney Graveyard Kit, CC0) — pre-scaled GLBs consumed
-   *  by arena.ts per-terrain dressing (10-e). */
   | "terrain-tomb" | "terrain-tomb-round" | "terrain-tomb-broken" | "terrain-cross"
   | "terrain-tree" | "terrain-fence" | "terrain-crypt" | "terrain-sarcophagus"
   | "terrain-pillar" | "terrain-lantern";
@@ -82,80 +80,38 @@ interface AssetManifest {
    imports three + content types only (no cycles). */
 
 const MANIFEST_URL = "/assets/manifests/assets.json"; // routed through assetPath() at fetch time (R-08 subpath deploys)
-/** Model kinds this system can host (manifest entries outside this set are skipped). */
-const KNOWN_MODELS: readonly ModelKind[] = ["mage", "staff", "imp", "puglin", "slime", "ghost", "plant", "skeleton", "skeletonmage",
-/* 10-c terrain decor (Kenney Graveyard Kit, CC0) — pre-scaled GLBs consumed
-*  by arena.ts per-terrain dressing (10-e). */
-"terrain-tomb", "terrain-tomb-round", "terrain-tomb-broken", "terrain-cross", "terrain-tree", "terrain-fence", "terrain-crypt", "terrain-sarcophagus", "terrain-pillar", "terrain-lantern"];
+/** Model kinds this system can host (manifest entries outside this set are skipped).
+ * v3.0: terrain decor only — the bestiary is pixel sprites now. */
+const KNOWN_MODELS: readonly ModelKind[] = ["terrain-tomb", "terrain-tomb-round", "terrain-tomb-broken", "terrain-cross", "terrain-tree", "terrain-fence", "terrain-crypt", "terrain-sarcophagus", "terrain-pillar", "terrain-lantern"];
 export const FALLBACK_PACKS: PackCredits[] = [{
-  id: "kaykit-adventurers",
-  pack: "KayKit – Character Pack: Adventurers 2.0",
-  author: "Kay Lousberg",
-  sourceUrl: "https://kaylousberg.itch.io/kaykit-adventurers",
-  licenseId: "CC0",
-  attributionRequired: false,
-  licenseStatus: "verified"
-}, {
-  id: "kaykit-skeletons",
-  pack: "KayKit – Character Pack: Skeletons",
-  author: "Kay Lousberg",
-  sourceUrl: "https://kaylousberg.itch.io/kaykit-skeletons",
-  licenseId: "CC0",
-  attributionRequired: false,
-  licenseStatus: "verified"
-}, {
-  id: "quaternius-bestiary",
-  pack: "Bestiary – Dungeon Monsters Kit",
-  author: "Quaternius",
-  sourceUrl: "https://quaternius.itch.io/bestiary-dungeon-monsters-kit",
-  licenseId: "QAL-1.0 (Quaternius Asset License, free commercial)",
-  attributionRequired: false,
-  licenseStatus: "verified"
-}, {
-  id: "quaternius-animated-monsters",
-  pack: "LowPoly Animated Monsters",
-  author: "Quaternius",
-  sourceUrl: "https://quaternius.itch.io/lowpoly-animated-monsters",
-  licenseId: "CC0",
-  attributionRequired: false,
-  licenseStatus: "verified"
-}, {
-  id: "augusto-faria-monsters",
-  pack: "Low Poly Monsters Pack",
-  author: "Augusto Faria",
-  sourceUrl: "https://augusto-faria.itch.io/low-poly-monsters-pack-slime-ghost-carnivorous-plant",
-  licenseId: "No explicit license found (free download; pending author confirmation)",
-  attributionRequired: true,
-  licenseStatus: "permission-pending"
-}, {
   id: "kronbits-particles",
-  pack: "1000 Free Game Assets (Particles)",
+  pack: "Kronbits – 16x16 Particle Effects",
   author: "Kronbits",
-  sourceUrl: "https://kronbits.itch.io/particle-pack",
+  sourceUrl: "https://kronbits.itch.io/particle-fx-16x16",
   licenseId: "CC0",
-  attributionRequired: false,
-  licenseStatus: "verified"
-}, {
-  id: "dunpixel-skill-icons",
-  pack: "30 Free Pixel Art Skill Icons",
-  author: "Dani Melich (dunpixel)",
-  sourceUrl: "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
-  licenseId: "Free commercial",
   attributionRequired: false,
   licenseStatus: "verified"
 }, {
   id: "kenney-graveyard",
-  pack: "Graveyard Kit",
+  pack: "Kenney – Graveyard Kit",
   author: "Kenney",
-  sourceUrl: "https://kenney.nl/assets/graveyard-kit",
+  sourceUrl: "https://kenney.nl/assets/graveyard-kenney",
   licenseId: "CC0",
   attributionRequired: false,
   licenseStatus: "verified"
 }, {
   id: "kenney-particles",
-  pack: "Particle Pack",
+  pack: "Kenney – Particle Pack",
   author: "Kenney",
   sourceUrl: "https://kenney.nl/assets/particle-pack",
+  licenseId: "CC0",
+  attributionRequired: false,
+  licenseStatus: "verified"
+}, {
+  id: "dunpixel-skill-icons",
+  pack: "dunpixel – Skill Icons 16x16",
+  author: "dunpixel",
+  sourceUrl: "https://dunpixel.itch.io/skill-icons-16x16",
   licenseId: "CC0",
   attributionRequired: false,
   licenseStatus: "verified"
@@ -166,23 +122,24 @@ const FALLBACK: AssetManifest = {
   generator: "fallback (manifest unreachable)",
   version: "0",
   packs: FALLBACK_PACKS,
-  assets: [...KNOWN_MODELS.map((k): ManifestEntry => ({
+  assets: [...KNOWN_MODELS.filter(k => k.startsWith("terrain-")).map((k): ManifestEntry => ({
     id: `model.${k}`,
     kind: "model",
     uri: `models/${k}.glb`,
     format: "glb"
-  })), {
-    id: "clipbank.anims",
-    kind: "clipbank",
-    uri: "models/anims.glb",
-    format: "glb"
-  }, ...["glow", "glow-soft", "flare", "ring", "streak", "muzzle", "lightrays", "smoke", "star", "star-hard", "spiral", "kenney-ripple", "kenney-crescent"].map((n): ManifestEntry => ({
+  })), ...["glow", "glow-soft", "flare", "ring", "streak", "muzzle", "lightrays", "smoke", "star", "star-hard", "spiral", "kenney-ripple", "kenney-crescent"].map((n): ManifestEntry => ({
     id: `sprite.${n}`,
     kind: "sprite",
     uri: `particles/${n}.png`,
     format: "png"
-  }))]
+  })), {
+    id: "sprite.player",
+    kind: "sprite",
+    uri: "sprites/player.png",
+    format: "png"
+  }]
 };
+
 /** Normalize manifest packs[] rows into PackCredits; malformed rows are
  *  skipped defensively (the credits UI never crashes on a bad manifest). */
 function parsePacks(m: { packs?: unknown }): PackCredits[] {
@@ -224,18 +181,7 @@ export function fetchPackCredits(): Promise<PackCredits[]> {
   return packCreditsPromise;
 }
 /** Enemy body kind → acquired model. Unmapped bodies keep their procedural kits. */
-const BODY_MODEL: Partial<Record<EnemyDef["body"], ModelKind>> = {
-  imp: "imp",
-  brute: "puglin",
-  wraith: "ghost",
-  swarmlet: "slime",
-  knight: "skeleton",
-  caster: "skeletonmage"
-};
 /** Per-enemy-type overrides (Corpseweaver = rooted corpse-flower healer). */
-const TYPE_MODEL: Partial<Record<EnemyType, ModelKind>> = {
-  mender: "plant"
-};
 export class AssetSystem {
   readonly models = new Map<ModelKind, ModelTemplate>();
   /** Retarget clips (KayKit Rig_Medium — shares the mage skeleton 1:1). */
@@ -330,10 +276,9 @@ export class AssetSystem {
     this.progress = 0;
     this.loadedBytes = 0;
     this.totalBytes = entries.reduce((n, e) => n + (e.byteSize ?? 0), 0);
-    const ESSENTIAL_MODELS = new Set(["mage", "staff", "imp"]);
-    const isEssential = (e: ManifestEntry) =>
-      e.kind === "sprite" || e.kind === "clipbank" ||
-      (e.kind === "model" && ESSENTIAL_MODELS.has(e.id.replace(/^model\./, "")));
+    /* v3.0: the essentials tier is every sprite (particles + the player
+       sheet); models are terrain decor only — tier 2. */
+    const isEssential = (e: ManifestEntry) => e.kind === "sprite";
     const tier1 = entries.filter(isEssential);
     const tier2 = entries.filter(e => !isEssential(e));
     await this.runPooled(tier1, 4);
@@ -497,22 +442,7 @@ export class AssetSystem {
     per-model retargeted set — the imp/puglin 8-clip bank). Returns null for
     models without embedded clips or a missing clip name, exactly like
     clip() does for the shared KayKit bank. */
-  modelClip(kind: ModelKind, name: string): THREE.AnimationClip | null {
-    return this.models.get(kind)?.clips.find(c => c.name === name) ?? null;
-  }
   /** Which model (if any) should render this enemy definition. */
-  modelFor(def: EnemyDef, isBoss: boolean): ModelKind | null {
-    if (isBoss) {
-      /* brute-brained tyrants wear the puglin colossus; Sylthara the blade
-      dancer wears the skeleton knight (her regalia rides on top); the rest
-      keep their kits */
-      if (def.body === "brute") return "puglin";
-      if (def.body === "wraith") return "ghost";
-      if (def.body === "knight") return "skeleton";
-      return null;
-    }
-    return TYPE_MODEL[def.type] ?? BODY_MODEL[def.body] ?? null;
-  }
   /**
   * Clone a template for the arena. Skinned models are cloned with SkeletonUtils
   * (geometry + textures stay shared with the template); the caller owns disposal
@@ -529,18 +459,6 @@ export class AssetSystem {
     return g;
   }
   /** Clone the primary material so a foe can tint + hit-flash independently. */
-  clonePrimaryMat(kind: ModelKind, tint: THREE.Color, emissiveStrength: number): THREE.MeshStandardMaterial | null {
-    const t = this.models.get(kind);
-    if (!t?.primaryMat) return null;
-    const mat = t.primaryMat.clone();
-    /* authored texture stays recognizable: a light mix keeps identity, the strong
-    emissive tint (fog:false philosophy) makes the foe read against any biome */
-    mat.color.copy(tint).lerp(new THREE.Color(1, 1, 1), 0.68);
-    mat.emissive = new THREE.Color(tint);
-    mat.emissiveIntensity = 1; // per-frame flash strength is driven by emissive COLOR (syncVisual)
-    mat.fog = false;
-    return mat;
-  }
   dispose(): void {
     this.disposed = true;
     for (const t of this.models.values()) {

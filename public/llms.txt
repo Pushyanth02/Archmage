@@ -1,6 +1,6 @@
 # ARCHMAGE: RIFTBOUND
 
-> Free 3D roguelike that runs entirely in the browser. Fifty waves, five act bands drawn from ten terrains, five tyrants, 13 elements, 78 resonances and 22 spell evolutions. Deterministic per seed, no installs, no accounts, no ads, no tracking. Current version: 2.2.0 "The Reforged Update".
+> Free 3D roguelike that runs entirely in the browser. Fifty waves, five act bands drawn from ten terrains, five tyrants, 13 elements, 78 resonances and 22 spell evolutions. Deterministic per seed, no installs, no accounts, no ads, no tracking. Current version: 3.0.0 "The Pixel Reforging".
 
 The game is a single-page application at the URL below. Playing it requires JavaScript and WebGL2. All progress and settings are stored locally in the player's browser (localStorage). The game sends no player data to any server; every spell, wave and save lives on the player's device.
 
@@ -8,7 +8,7 @@ Play: https://pushyanth02.github.io/Archmage/
 
 ## Facts
 - Price: free. No in-app purchases, no accounts, no ads, no analytics, no cookies.
-- Version: 2.2.0 — The Reforged Update. First published 2026-10-21.
+- Version: 3.0.0 — The Pixel Reforging. First published 2026-10-21.
 - Platform: any modern browser with WebGL2: desktop, tablet and phone.
 - Input: keyboard + mouse, touch (left-hand mirror and one-thumb modes) and gamepad.
 - Scope of a run: 50 waves, 5 act bands drawn from 10 terrains, 5 tyrants, 13 elements, 78 pair resonances, 22 spell evolutions.

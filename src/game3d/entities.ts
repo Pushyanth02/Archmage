@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { hexNum, ENEMY_DEFS, scaleEnemy, ELITE_DEFS, FOE_MOVE_SPEED_SCALE, MERCY_HP, MERCY_SPD, type EliteAffix, type EnemyDef, type EnemyType, type BossDef } from "./content";
-import type { AssetSystem, ModelKind } from "./assets";
+import type { AssetSystem } from "./assets";
+import { BillboardSprite, getSheet, type PixelKind } from "./pixelsprites";
 import type { BossState, Enemy, SimContext, Hazard } from "./sim";
 
 /* ARCHMAGE: RIFTBOUND (3D Edition) — EnemySystem: 19 foe types (8 AI archetypes) + 5 tyrant brains.
@@ -99,8 +100,7 @@ function tellFire(e: Enemy, ctx: SimContext, dur: number): void {
   /* 9-e attack policy, told route: the swing starts from its wind-up and the
    STRIKE lands on the tell's release (the committed shot) — clip layers on
    top of the coil, sim stays authoritative */
-  const anim = foeAnims.get(e.group);
-  if (anim) foeAttackWindup(anim, dur);
+  attackPulses.set(e.group, Math.max(0.05, dur) + 0.18);
   const color = e.boss ? hexNum(e.boss.def.color) : hexNum(e.def.color);
   ctx.vfx.ring(_tellPos.set(e.x, 0, e.z), color, Math.max(1.7, e.radius * 2.6), {
     life: dur,
@@ -120,191 +120,10 @@ const hpBarBgGeo = () => geo("hpbar-bg", () => new THREE.PlaneGeometry(1.16, 0.1
 const hpBarFillGeo = () => geo("hpbar-fill", () => new THREE.PlaneGeometry(1.08, 0.08).translate(0.54, 0, 0));
 /** Per-model clip plan (audits P2-8 / 9-e / 10-d): which clip bank to read,
  *  clip names per state, the combo rotation and gait tuning. */
-interface FoeClipPlan {
-  bank: "kaykit" | "model";
-  idle: string;
-  walk?: string;
-  run?: string;
-  sprint?: string;
-  attack?: string;
-  attackStrike?: number;
-  hit?: string;
-  death?: string;
-  worldH: number;
-  idleTs?: number;
-  gaitTs?: number;
-  combo?: string[];
-  comboStrike?: number[];
-  comboTail?: number[];
-}
-
-/** Live per-foe animation record (foeAnims WeakMap value). */
-interface FoeAnimRec {
-  mixer: THREE.AnimationMixer;
-  root: THREE.Object3D;
-  idle: THREE.AnimationAction;
-  walk: THREE.AnimationAction | null;
-  run: THREE.AnimationAction | null;
-  sprint: THREE.AnimationAction | null;
-  attack: THREE.AnimationAction | null;
-  hit: THREE.AnimationAction | null;
-  death: THREE.AnimationAction | null;
-  current: string | null;
-  legacy: boolean;
-  worldH: number;
-  gaitTs: number;
-  blend: number;
-  hitT: number;
-  hitDur: number;
-  attackT: number;
-  attackWin: number;
-  attackTail: number;
-  strikeAt: number;
-  combo: THREE.AnimationAction[];
-  comboStrike: number[];
-  comboTail: number[];
-  comboStep: number;
-  lastX: number;
-  lastZ: number;
-}
-
-/** One lingering corpse in the death-linger pool (10-d). */
-interface DyingBody {
-  e: Enemy;
-  anim: FoeAnimRec | null;
-  style: "clip" | "ghost" | "slime" | "plant" | "fall";
-  t: number;
-  dur: number;
-  fadeAt: number;
-  bodyRoot: THREE.Group | null;
-  fallDir: number;
-  baseOpacity: number;
-  baseY: number;
-}
-
-/** Ghost banking state (9-e) — smoothed local-frame velocity. */
-interface GhostDrift {
-  lx: number;
-  lz: number;
-  pitch: number;
-  roll: number;
-  yaw: number;
-  model: THREE.Object3D;
-}
-
-/** Slime hop state (9-e). */
-interface SlimeHop {
-  lx: number;
-  lz: number;
-  phase: number;
-  amp: number;
-}
-
-export const FOE_CLIP_PLANS: Partial<Record<ModelKind, FoeClipPlan>> = {
-  skeleton: {
-    bank: "kaykit",
-    idle: "Idle_A",
-    run: "Running_A",
-    hit: "Hit_A",
-    death: "Death_A",
-    worldH: 1.9
-  },
-  skeletonmage: {
-    bank: "kaykit",
-    idle: "Idle_A",
-    run: "Running_A",
-    hit: "Hit_A",
-    death: "Death_A",
-    worldH: 1.9
-  },
-  imp: {
-    bank: "model",
-    idle: "Idle_Loop",
-    walk: "Walk_Loop",
-    run: "Jog_Fwd_Loop",
-    sprint: "Sprint_Loop",
-    attack: "Sword_Attack",
-    attackStrike: 0.4,
-    hit: "Hit_Chest",
-    death: "Death01",
-    worldH: 1.7,
-    combo: ["Sword_Regular_A", "Sword_Regular_B", "Sword_Regular_A", "Sword_Regular_C", "Sword_Regular_B", "Sword_Regular_A", "Melee_Hook", "Sword_Regular_C"],
-    comboStrike: [0.21, 0.21, 0.21, 0.64, 0.21, 0.21, 0.24, 0.64],
-    comboTail: [0.32, 0.32, 0.32, 0.85, 0.32, 0.32, 0.32, 0.85]
-  },
-  puglin: {
-    bank: "model",
-    idle: "Idle_Loop",
-    walk: "Walk_Loop",
-    run: "Jog_Fwd_Loop",
-    sprint: "Sprint_Loop",
-    attack: "Sword_Attack",
-    attackStrike: 0.4,
-    hit: "Hit_Chest",
-    death: "Death01",
-    worldH: 2.1,
-    combo: ["Sword_Regular_A", "Sword_Regular_B", "Sword_Regular_A", "Sword_Regular_C", "Sword_Regular_B", "Sword_Regular_A", "Melee_Hook", "Sword_Regular_C"],
-    comboStrike: [0.21, 0.21, 0.21, 0.64, 0.21, 0.21, 0.24, 0.64],
-    comboTail: [0.32, 0.32, 0.32, 0.85, 0.32, 0.32, 0.32, 0.85]
-  }
-};
-/* ---- boss clip plans (10-d polish) — what each tyrant actually wears ----
-   (BOSS_BODY + assets.modelFor: body brute→puglin, knight→skeleton,
-   wraith→ghost, orb→procedural; NOTE ghost.glb ships a MeshBasicMaterial
-   primary so clonePrimaryMat yields null and wraith bosses run the
-   PROCEDURAL kit today — verified /home/z/tmp-10d/check-materials.ts)
-   • Grimm (charger) + Cinder (juggernaut) = puglin colossus: same 4-gait
-     substrate as puglin foes but idling at 0.55× (weightier) and stepping
-     at 0.7× cadence; their told patterns play Sword_Regular_C — the 2.00s
-     committed finisher — as the wind-up (Grimm's dash strike / Cinder's
-     slam raise), recovery included.
-   • Sable (dancer) = skeleton on the KayKit bank: Idle_B + Running_B (the
-     bank's B-side — a distinct tyrant silhouette vs every skeleton foe's
-     Idle_A/Running_A) + Hit_B, and Throw (the bank's cast/slash flourish,
-     strike 0.67 measured) as her volley tell.
-   • Dusk (fortress) = procedural orb kit — no rig, keeps the orbiting shard
-     regalia + coil (documented: no clip possible).
-   • Vex (storm) = wraith body (procedural kit today) — no rig, keeps the
-     procedural bob/regalia + the anticipation coil as the tell. */
-const BOSS_CLIP_PLANS: Partial<Record<ModelKind, FoeClipPlan>> = {
-  puglin: {
-    bank: "model",
-    idle: "Idle_Loop",
-    walk: "Walk_Loop",
-    run: "Jog_Fwd_Loop",
-    sprint: "Sprint_Loop",
-    hit: "Hit_Chest",
-    death: "Death01",
-    worldH: 2.1,
-    idleTs: 0.55,
-    gaitTs: 0.7,
-    combo: ["Sword_Regular_C"],
-    comboStrike: [0.64],
-    comboTail: [0.85]
-  },
-  skeleton: {
-    bank: "kaykit",
-    idle: "Idle_B",
-    run: "Running_B",
-    attack: "Throw",
-    attackStrike: 0.67,
-    hit: "Hit_B",
-    death: "Death_A",
-    worldH: 1.9,
-    idleTs: 0.6,
-    gaitTs: 0.75
-  }
-};
-export const foeAnims = new WeakMap<THREE.Group, FoeAnimRec>();
-export const RIG_MEDIUM_MODELS = ["skeleton", "skeletonmage"];
-/** Model kind per foe group (set in buildEnemyBody) — lets syncVisual pick the
- *  per-model procedural motion layers (ghost drift / slime hop / plant sway)
- *  without Enemy schema changes. */
-const foeKinds = new WeakMap<THREE.Group, ModelKind>();
-const FOE_MOVE_SMOOTH = 8; // blend approach rate (player rig uses 9)
-const FOE_RUN_GATE = 0.25; // legacy: speedRatio above this = running
-const FOE_HIT_IN = 0.1; // hit weight-in
-const FOE_HIT_OUT = 0.15; // hit weight-out
+/* v3.0 — the KayKit clip bank is retired with the GLTF bestiary. Foe
+   animation is the pixel-sprite state machine in syncVisual; FOE_HIT_TRIGGER
+   keeps its original role: the fresh-damage threshold that flips a foe into
+   its hurt pose. */
 const FOE_HIT_TRIGGER = 0.85; // hitFlash above this = fresh damage (brain telegraph pulses stay ≤ 0.85)
 const FOE_HIT_DUR_KAYKIT = 0.5; // Hit_A window (8-d value, kept exactly)
 const FOE_HIT_DUR_MODEL = 0.42; // Hit_Chest window (0.33s clip + small tail)
@@ -314,19 +133,149 @@ const FOE_ATTACK_IN = 0.07; // weight-in (a strike snaps in)
 const FOE_ATTACK_OUT = 0.18; // weight-out
 const FOE_MELEE_RANGE = 1.45; // swing anticipation starts inside this range
 const FOE_MELEE_LEAD = 0.15; // strike lands this far ahead of the wind-up
-/* ==================== staged movement contract (audit F-01) ================
-   The FINAL invariant must hold after the LAST displacement of the frame:
-     A. integrate   — status effects, knockback velocity, AI brains
-     B. foe↔foe     — pairwise separation (bosses plow through)
-     C. foe↔player  — contact-damage EVENT, then separation (foes step out of
-                      the player; bosses shove the player out instead)
-     D. wards       — ward walls push ground foes
-     E. final pass  — bounded iteration over arena bounds + solid obstacles
-                      + pairs + player; diagnostics collected after the last
-     F. visuals     — anims/transforms from the RESOLVED positions
-   Contact damage is decided from the contact state BEFORE the pair is
-   separated, so no foe can keep re-damaging merely because it stayed
-   embedded inside the player. */
+/* v3.0 — the shared maps/types the pixel-sprite system still needs
+   (formerly interleaved with the retired clip machinery). */
+const foeKinds = new WeakMap<THREE.Group, PixelKind>();
+interface DyingBody {
+  e: Enemy;
+  anim: null;
+  style: "ghost" | "slime" | "plant" | "fall";
+  t: number;
+  dur: number;
+  fadeAt: number;
+  bodyRoot: THREE.Group | null;
+  fallDir: number;
+  baseOpacity: number;
+  baseY: number;
+}
+interface GhostDrift {
+  lx: number;
+  lz: number;
+  pitch: number;
+  roll: number;
+}
+interface SlimeHop {
+  lx: number;
+  lz: number;
+  phase: number;
+  amp: number;
+}
+/* ghost drift + slime hop tuning (9-e values, kept exactly) */
+const FOE_HIT_IN = 0.07;
+const FOE_HIT_OUT = 0.18;
+const FOE_RUN_GATE = 0.22;
+const FOE_MOVE_SMOOTH = 7;
+
+const MAX_DYING = 12;
+const DYING_FADE_SPAN = 0.3; // last 30% of the window = sink + fade
+/* scratch (module scope — the linger update runs per frame, never allocates) */
+const _deadColor = new THREE.Color();
+/** Compute the linger window for a slain enemy (bosses read heavier — their
+ *  death slow-mo runs 1.1s and wants a body under it). Clip deaths get the
+ *  full 0.8s brief so Death_A's collapse completes; procedural styles run
+ *  0.6–0.7s. */
+function dyingDuration(e: Enemy, style: string): number {
+  const base = style === "plant" ? 0.7 : style === "ghost" ? 0.6 : 0.65;
+  return e.boss ? base + 0.25 : base;
+}
+/** Begin the death linger for a slain foe. Call INSTEAD of removeEnemy —
+ *  this splices the Enemy out of the sim array (same-frame gameplay death)
+ *  and takes ownership of the group until the sequence finishes. */
+function beginDyingBody(sys: EnemySystem, e: Enemy): void {
+  /* cap: oldest finishes instantly when the pool would overflow */while (sys.dyingCount() >= MAX_DYING) sys.finishOldestDying();
+  const mk = foeKinds.get(e.group) ?? null;
+  /* death style by pixel kind: wraiths disperse, oozes deflate, plants wilt,
+   everything else topples — the sprite's death frames play underneath */
+  let style: DyingBody["style"] = "fall";
+  if (mk === "wraith") style = "ghost";else if (mk === "ooze" || mk === "swarm") style = "slime";else if (mk === "plant") style = "plant";
+  /* clear the interaction layers so no tell/coil/bar survives on the corpse */
+  fireTells.delete(e.group);
+  coils.delete(e.group);
+  attackPulses.delete(e.group);
+  const hb = healthBars.get(e.group);
+  if (hb) hb.bar.visible = false;
+  /* the sprite enters its death frame sequence and fades via setOpacity */
+  if (e.sprite) {
+    e.sprite.state = "death";
+    e.sprite.flash = 0;
+  }
+  const bodyRoot = bodyRoots.get(e.group) ?? null;
+  sys.pushDying({
+    e,
+    anim: null,
+    style,
+    t: 0,
+    dur: dyingDuration(e, style),
+    fadeAt: 0.6,
+    bodyRoot,
+    fallDir: e.id % 2 === 0 ? 1 : -1,
+    baseOpacity: 1,
+    baseY: e.group.position.y
+  });
+}
+/** Advance one dying body's sequence (called from EnemySystem.updateDying). */
+function updateDyingBody(b: DyingBody, dt: number): boolean {
+  b.t += dt;
+  const u = b.t / b.dur;
+  if (u >= 1) return false; // finished
+  const e = b.e;
+  /* the sprite's death frames keep advancing under the sequence */
+  if (e.sprite) e.sprite.update(dt);
+  /* shared fade/sink window (final DYING_FADE_SPAN of the sequence) */
+  const f = Math.max(0, Math.min(1, (u - b.fadeAt) / DYING_FADE_SPAN));
+  const fade = 1 - f;
+  switch (b.style) {
+    case "ghost":
+      {
+        /* disperse: rise, slow spin, thin out over the whole window */e.group.position.y = b.baseY + b.t * 0.9;
+        if (b.bodyRoot) b.bodyRoot.rotation.y += dt * 1.4;
+        const disperse = 1 - Math.pow(u, 1.5);
+        if (e.sprite) e.sprite.setOpacity(b.baseOpacity * disperse);
+        if (b.bodyRoot) b.bodyRoot.scale.setScalar(1 + u * 0.35);
+        break;
+      }
+    case "slime":
+      {
+        /* deflate: squash flat + spread, then fade */if (b.bodyRoot) {
+          const sy = Math.max(0.1, 1 - u * 1.05);
+          b.bodyRoot.scale.set(1 + u * 0.5, sy, 1 + u * 0.5);
+        }
+        e.group.position.y = b.baseY - 0.2 * f;
+        if (e.sprite) e.sprite.setOpacity(b.baseOpacity * fade);
+        break;
+      }
+    case "plant":
+      {
+        /* wilt: droop forward + shrink, then fade */if (b.bodyRoot) {
+          b.bodyRoot.rotation.x = Math.min(1.15, u * 1.6);
+          b.bodyRoot.scale.setScalar(1 - u * 0.22);
+        }
+        e.group.position.y = b.baseY - 0.15 * f;
+        if (e.sprite) e.sprite.setOpacity(b.baseOpacity * fade);
+        break;
+      }
+    case "fall":
+      {
+        /* topple: pitch over the body root (ease-in gravity), then sink+fade */if (b.bodyRoot) {
+          const topple = Math.min(1, u * 1.45);
+          b.bodyRoot.rotation.x = b.fallDir * (Math.PI / 2 - 0.12) * (topple * topple);
+        }
+        e.group.position.y = b.baseY - 0.4 * f * f;
+        if (e.sprite) e.sprite.setOpacity(b.baseOpacity * fade);
+        break;
+      }
+  }
+  /* fade the ground fx with the body (shadow + underglow discs) */
+  const fx = groundFx.get(e.group);
+  if (fx) {
+    (fx.shadow.material as THREE.Material).opacity = 0.34 * fade;
+    (fx.glow.material as THREE.Material).opacity = 0.5 * fade;
+  }
+  /* dying bosses keep their regalia orbiting while it dissolves */
+  const spin = spinners.get(e.group);
+  if (spin) spin.rotation.y += dt * 2.2 * fade;
+  return true; // still dying
+}
 /** Player body radius — mirrors engine.updatePlayer's obstacle margin. */
 const PLAYER_RADIUS = 0.55;
 /** Contact-damage reach (slightly generous so grazing reads as a hit). */
@@ -367,381 +316,9 @@ export const motionDiagnostics: MotionDiagnostics = {
   stalledAgents: 0,
   recoveries: 0
 };
-/* 10-d combo pattern start offsets — the NON-finisher slots (A/B/Hook) of the
-   8-slot pattern [A,B,A,C,B,A,Hook,C]. A foe's first swing uses slot
-   STARTS[e.id % 6] so different foes open on different hits (never the heavy
-   C), then advance deterministically — same foe id ⇒ same visible sequence. */
-const COMBO_STARTS = [0, 1, 2, 4, 5, 6];
-/* gait bands on u = speed / worldH (body heights per second) — normalized so
-   one set of bands fits the imp (1.7 u) and the puglin (2.1 u): a stylized
-   biped walks ≈0.5–1.1 h/s, jogs ≈1.2–2.6, sprints above ≈2.8. Using the
-   ABSOLUTE speed (not the per-foe ratio) is what lets the slow Colossus
-   (2.1 u/s) WALK while the zippy Ghoul (6.3 u/s) SPRINTS at each one's own
-   pace. Telescoping smoothsteps: the four weights always sum to exactly 1. */
-const GAIT_IDLE_WALK = [0.18, 0.55];
-const GAIT_WALK_RUN = [1.05, 1.6];
-const GAIT_RUN_SPRINT = [2.6, 3.2];
-const GAIT_TS_WALK = 0.65; // u at which Walk_Loop plays 1×
-const GAIT_TS_RUN = 1.9; // u at which Jog_Fwd_Loop plays 1×
-const GAIT_TS_SPRINT = 3.6; // u at which Sprint_Loop plays 1×
-const clampf = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
-const smoothstepf = (a: number, b: number, x: number): number => {
-  const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
-  return t * t * (3 - 2 * t);
-};
-export function setupFoeAnim(group: THREE.Group, model: THREE.Object3D, kind: ModelKind, assets: AssetSystem, isBoss = false, foeId = 1): FoeAnimRec | null {
-  const plan = (isBoss ? BOSS_CLIP_PLANS[kind] : undefined) ?? FOE_CLIP_PLANS[kind];
-  if (!plan || !assets) return null;
-  const src = (name: string): THREE.AnimationClip | null => plan.bank === "kaykit" ? assets.clip(name) : assets.modelClip(kind, name);
-  const idleClip = src(plan.idle);
-  if (!idleClip) return null; // no clips → procedural motion stays
-  const mixer = new THREE.AnimationMixer(model);
-  const loopAction = (clip: THREE.AnimationClip | null): THREE.AnimationAction | null => {
-    if (!clip) return null;
-    const a = mixer.clipAction(clip);
-    a.setLoop(THREE.LoopRepeat, Infinity);
-    return a;
-  };
-  const oneShot = (clip: THREE.AnimationClip | null): THREE.AnimationAction | null => {
-    if (!clip) return null;
-    const a = mixer.clipAction(clip);
-    a.setLoop(THREE.LoopOnce, 1);
-    a.clampWhenFinished = true;
-    return a;
-  };
-  const idle = loopAction(idleClip) as THREE.AnimationAction;
-  const walk = plan.walk ? loopAction(src(plan.walk)) : null;
-  const run = plan.run ? loopAction(src(plan.run)) : null;
-  const sprint = plan.sprint ? loopAction(src(plan.sprint)) : null;
-  const attack = plan.attack ? oneShot(src(plan.attack)) : null;
-  const hit = plan.hit ? oneShot(src(plan.hit)) : null;
-  const death = plan.death ? oneShot(src(plan.death)) : null;
-  /* 10-d combo: one action per pattern slot (actions are mixer-cached per
-   clip; absent clips simply drop out of the rotation) */
-  const combo: THREE.AnimationAction[] = [];
-  for (const name of plan.combo ?? []) {
-    const a = oneShot(src(name));
-    if (a) combo.push(a);else break; // partial clip set — stop before the parallel arrays desync
-  }
-  const comboStrike = combo.length > 0 ? (plan.comboStrike ?? []).slice(0, combo.length) : [];
-  const comboTail = combo.length > 0 ? (plan.comboTail ?? []).slice(0, combo.length) : [];
-  /* no combo (or partial) — fall back to the single primary attack */
-  const hasCombo = combo.length > 0 && comboStrike.length === combo.length;
-  if (!hasCombo) {
-    combo.length = 0;
-    comboStrike.length = 0;
-  }
-  /* locomotion starts immediately — idle at 1, everything else at 0 */
-  idle?.reset().play();
-  idle?.setEffectiveWeight(1);
-  if (plan.idleTs && plan.idleTs > 0) idle.timeScale = plan.idleTs; // boss weight
-  for (const a of [walk, run, sprint]) {
-    a?.reset().play();
-    a?.setEffectiveWeight(0);
-  }
-  const rec = {
-    mixer,
-    root: model,
-    idle,
-    walk,
-    run,
-    sprint,
-    attack,
-    hit,
-    death,
-    current: "idle",
-    legacy: walk === null && sprint === null,
-    worldH: plan.worldH,
-    gaitTs: plan.gaitTs ?? 1,
-    blend: 0,
-    hitT: 0,
-    hitDur: plan.bank === "kaykit" ? FOE_HIT_DUR_KAYKIT : FOE_HIT_DUR_MODEL,
-    attackT: 0,
-    attackWin: 0,
-    attackTail: FOE_ATTACK_TAIL,
-    strikeAt: plan.attackStrike ?? 0.4,
-    combo: hasCombo ? combo : [],
-    comboStrike: hasCombo ? comboStrike : [],
-    comboTail: hasCombo && comboTail.length === combo.length ? comboTail : [],
-    comboStep: hasCombo ? COMBO_STARTS[Math.abs(foeId) % COMBO_STARTS.length] % combo.length : 0,
-    lastX: Number.NaN,
-    lastZ: Number.NaN
-  };
-  foeAnims.set(group, rec);
-  return rec;
-}
-export function foeAttackWindup(anim: FoeAnimRec, lead: number): void {
-  /* 10-d combo slot pick (deterministic); falls back to the single primary
-   attack when the plan carries no combo */
-  let action = anim.attack;
-  let strike = anim.strikeAt;
-  let tail = FOE_ATTACK_TAIL;
-  if (anim.combo.length > 0) {
-    const idx = anim.comboStep % anim.combo.length;
-    anim.comboStep = (anim.comboStep + 1) % anim.combo.length;
-    action = anim.combo[idx];
-    strike = anim.comboStrike[idx] ?? 0.4;
-    tail = anim.comboTail[idx] ?? FOE_ATTACK_TAIL;
-    anim.attack = action;
-    anim.strikeAt = strike;
-    anim.attackTail = tail;
-  }
-  if (!action) return;
-  const leadS = Math.max(0.05, lead);
-  const strikeT = Math.min(strike, action.getClip().duration - 0.08);
-  const startAt = Math.max(0, strikeT - leadS);
-  action.reset();
-  action.time = startAt;
-  action.timeScale = (strikeT - startAt) / leadS;
-  action.setEffectiveWeight(0);
-  action.play();
-  anim.attackWin = leadS + tail;
-  anim.attackT = anim.attackWin;
-  anim.current = "attack";
-}
-export function updateFoeAnim(anim: FoeAnimRec, e: Enemy, dt: number): void {
-  /* actual speed from position deltas (the first frame after setup is
-   skipped — lastX/lastZ start as NaN) */
-  let ratio = 0;
-  let spd = 0;
-  if (Number.isFinite(anim.lastX)) {
-    const moved = Math.hypot(e.x - anim.lastX, e.z - anim.lastZ);
-    spd = dt > 0 ? moved / dt : 0;
-    const base = e.spd > 0 ? e.spd : e.def.speed;
-    ratio = base > 0 ? spd / base : 0;
-  }
-  anim.lastX = e.x;
-  anim.lastZ = e.z;
-  /* hit one-shot: fresh damage trips it (the engine sets hitFlash = 1 on
-   damage; telegraph pulses stay below the trigger). A flinch outranks a
-   swing — the player controller's hit>cast priority, mirrored. */
-  if (anim.hit && anim.current !== "hit" && e.hitFlash > FOE_HIT_TRIGGER) {
-    if (anim.current === "attack" && anim.attack) {
-      anim.attack.stop();
-      anim.attack.setEffectiveWeight(0);
-      anim.attackT = 0;
-      anim.current = null;
-    }
-    anim.current = "hit";
-    anim.hitT = anim.hitDur;
-    anim.hit.reset().play();
-  }
-  let hitW = 0;
-  if (anim.current === "hit" && anim.hit) {
-    anim.hitT -= dt;
-    const t = anim.hitDur - anim.hitT;
-    hitW = t < FOE_HIT_IN ? Math.max(0, t / FOE_HIT_IN) : anim.hitT > FOE_HIT_OUT ? 1 : Math.max(0, anim.hitT / FOE_HIT_OUT);
-    if (anim.hitT <= 0) {
-      hitW = 0;
-      anim.current = null;
-      anim.hit.stop();
-    }
-    anim.hit.setEffectiveWeight(hitW);
-  }
-  /* attack one-shot envelope (started by foeAttackWindup) */
-  let attackW = 0;
-  if (anim.current === "attack" && anim.attack) {
-    anim.attackT -= dt;
-    const t = anim.attackWin - anim.attackT;
-    attackW = t < FOE_ATTACK_IN ? Math.max(0, t / FOE_ATTACK_IN) : anim.attackT > FOE_ATTACK_OUT ? 1 : Math.max(0, anim.attackT / FOE_ATTACK_OUT);
-    if (anim.attackT <= 0) {
-      attackW = 0;
-      anim.current = null;
-      anim.attack.stop();
-      anim.attack.setEffectiveWeight(0);
-    }
-    anim.attack.setEffectiveWeight(attackW);
-  }
-  /* locomotion substrate — total weight is always exactly 1, so the pose
-   never falls through to the baked rest stance */
-  const locW = 1 - Math.min(1, hitW + attackW);
-  if (anim.legacy) {
-    /* 8-d path verbatim (idle↔run blend by speed ratio, run cadence
-    tracking); 10-d: bosses scale the cadence by gaitTs — weightier steps
-    at the same sim speed (Sable's Running_B at 0.75×). */
-    anim.blend += ((ratio > FOE_RUN_GATE ? 1 : 0) - anim.blend) * Math.min(1, dt * FOE_MOVE_SMOOTH);
-    if (anim.run) anim.run.timeScale = Math.max(0.65, Math.min(1.5, ratio)) * anim.gaitTs;
-    anim.idle?.setEffectiveWeight(locW * (1 - anim.blend));
-    anim.run?.setEffectiveWeight(locW * anim.blend);
-    if (anim.current !== "hit" && anim.current !== "attack") anim.current = anim.blend > 0.5 ? "run" : "idle";
-  } else {
-    /* 4-gait blend on u = speed / worldH (body heights per second); 10-d:
-    gaitTs scales every cadence clamp for the boss plans */
-    const u = anim.worldH > 0 ? spd / anim.worldH : 0;
-    anim.blend += (u - anim.blend) * Math.min(1, dt * FOE_MOVE_SMOOTH);
-    const b = anim.blend;
-    let wIdle = 1 - smoothstepf(GAIT_IDLE_WALK[0], GAIT_IDLE_WALK[1], b);
-    let wWalk = smoothstepf(GAIT_IDLE_WALK[0], GAIT_IDLE_WALK[1], b) * (1 - smoothstepf(GAIT_WALK_RUN[0], GAIT_WALK_RUN[1], b));
-    let wRun = smoothstepf(GAIT_WALK_RUN[0], GAIT_WALK_RUN[1], b) * (1 - smoothstepf(GAIT_RUN_SPRINT[0], GAIT_RUN_SPRINT[1], b));
-    let wSprint = smoothstepf(GAIT_RUN_SPRINT[0], GAIT_RUN_SPRINT[1], b);
-    /* missing gaits fold down into the next slower present gait (defensive —
-    the shipped imp/puglin carry all four) */
-    if (!anim.sprint) {
-      wRun += wSprint;
-      wSprint = 0;
-    }
-    if (!anim.run) {
-      wWalk += wRun;
-      wRun = 0;
-    }
-    if (!anim.walk) {
-      wIdle += wWalk;
-      wWalk = 0;
-    }
-    if (anim.walk) anim.walk.timeScale = clampf(b / GAIT_TS_WALK, 0.6, 1.6) * anim.gaitTs;
-    if (anim.run) anim.run.timeScale = clampf(b / GAIT_TS_RUN, 0.6, 1.5) * anim.gaitTs;
-    if (anim.sprint) anim.sprint.timeScale = clampf(b / GAIT_TS_SPRINT, 0.7, 1.6) * anim.gaitTs;
-    anim.idle?.setEffectiveWeight(locW * wIdle);
-    anim.walk?.setEffectiveWeight(locW * wWalk);
-    anim.run?.setEffectiveWeight(locW * wRun);
-    anim.sprint?.setEffectiveWeight(locW * wSprint);
-    if (anim.current !== "hit" && anim.current !== "attack") {
-      anim.current = wSprint > 0.5 ? "sprint" : wRun > 0.5 ? "run" : wWalk > 0.5 ? "walk" : "idle";
-    }
-  }
-  anim.mixer.update(dt);
-}
-export function disposeFoeAnim(group: THREE.Group): void {
-  const anim = foeAnims.get(group);
-  if (!anim) return;
-  anim.mixer.stopAllAction();
-  anim.mixer.uncacheRoot(anim.root);
-  foeAnims.delete(group);
-}
-const MAX_DYING = 12;
-const DYING_FADE_SPAN = 0.3; // last 30% of the window = sink + fade
-/* scratch (module scope — the linger update runs per frame, never allocates) */
-const _deadColor = new THREE.Color();
-/** Compute the linger window for a slain enemy (bosses read heavier — their
- *  death slow-mo runs 1.1s and wants a body under it). Clip deaths get the
- *  full 0.8s brief so Death_A's collapse completes; procedural styles run
- *  0.6–0.7s. */
-function dyingDuration(e: Enemy, style: string): number {
-  const base = style === "clip" ? 0.8 : style === "plant" ? 0.7 : style === "ghost" ? 0.6 : 0.65;
-  return e.boss ? base + 0.25 : base;
-}
-/** Begin the death linger for a slain foe. Call INSTEAD of removeEnemy —
- *  this splices the Enemy out of the sim array (same-frame gameplay death)
- *  and takes ownership of the group until the sequence finishes. */
-function beginDyingBody(sys: EnemySystem, e: Enemy): void {
-  /* cap: oldest finishes instantly when the pool would overflow */while (sys.dyingCount() >= MAX_DYING) sys.finishOldestDying();
-  const anim = foeAnims.get(e.group) ?? null;
-  const mk = foeKinds.get(e.group) ?? null;
-  /* pick the death style: clip when the plan carries a death clip */
-  let style: DyingBody["style"] = "fall";
-  if (anim?.death) style = "clip";else if (mk === "ghost") style = "ghost";else if (mk === "slime") style = "slime";else if (mk === "plant") style = "plant";
-  /* start the clip death: silence locomotion + one-shots, play the collapse
-   at weight 1 (the mixer stays alive until the linger ends) */
-  if (style === "clip" && anim && anim.death) {
-    anim.mixer.stopAllAction();
-    anim.death.reset();
-    anim.death.setEffectiveWeight(1);
-    anim.death.play();
-    anim.current = null;
-  }
-  /* clear the interaction layers so no tell/coil/bar survives on the corpse */
-  fireTells.delete(e.group);
-  coils.delete(e.group);
-  const hb = healthBars.get(e.group);
-  if (hb) hb.bar.visible = false;
-  /* settle the emissive at the base (no stale hit/tell glow on the corpse) */
-  e.bodyMat.emissive.copy(e.baseColor).multiplyScalar(e.baseEmissive);
-  /* the fade needs a transparent body — per-foe cloned materials, so this
-   never leaks to other foes; depthWrite off avoids sorting pops mid-fade */
-  e.bodyMat.transparent = true;
-  e.bodyMat.depthWrite = false;
-  const bodyRoot = bodyRoots.get(e.group) ?? null;
-  sys.pushDying({
-    e,
-    anim: style === "clip" ? anim : null,
-    style,
-    t: 0,
-    dur: dyingDuration(e, style),
-    fadeAt: style === "clip" ? 0.7 : 0.6,
-    bodyRoot,
-    fallDir: e.id % 2 === 0 ? 1 : -1,
-    baseOpacity: e.bodyMat.opacity,
-    baseY: e.group.position.y
-  });
-}
-/** Advance one dying body's sequence (called from EnemySystem.updateDying). */
-function updateDyingBody(b: DyingBody, dt: number): boolean {
-  b.t += dt;
-  const u = b.t / b.dur;
-  if (u >= 1) return false; // finished
-  const e = b.e;
-  /* the death clip keeps playing (mixer is the same one the foe lived with) */
-  if (b.anim) b.anim.mixer.update(dt);
-  /* shared fade/sink window (final DYING_FADE_SPAN of the sequence) */
-  const f = Math.max(0, Math.min(1, (u - b.fadeAt) / DYING_FADE_SPAN));
-  const fade = 1 - f;
-  switch (b.style) {
-    case "clip":
-      {
-        /* the clip collapses the body; the tail sinks it into the floor.
-        Flyers drop out of their hover first (Death01 is an in-place
-        collapse — the corpse falls to the ground by ~60% of the window,
-        then sinks with everyone else). */
-        e.group.position.y = b.baseY * Math.max(0, 1 - u * 1.6) - 0.45 * f * f;
-        break;
-      }
-    case "ghost":
-      {
-        /* disperse: rise, slow spin, thin out over the whole window */e.group.position.y = b.baseY + b.t * 0.9;
-        if (b.bodyRoot) b.bodyRoot.rotation.y += dt * 1.4;
-        const disperse = 1 - Math.pow(u, 1.5);
-        e.bodyMat.opacity = b.baseOpacity * disperse;
-        if (b.bodyRoot) b.bodyRoot.scale.setScalar(1 + u * 0.35);
-        break;
-      }
-    case "slime":
-      {
-        /* deflate: squash flat + spread, then fade */if (b.bodyRoot) {
-          const sy = Math.max(0.1, 1 - u * 1.05);
-          b.bodyRoot.scale.set(1 + u * 0.5, sy, 1 + u * 0.5);
-        }
-        e.group.position.y = b.baseY - 0.2 * f;
-        e.bodyMat.opacity = b.baseOpacity * fade;
-        break;
-      }
-    case "plant":
-      {
-        /* wilt: droop forward + shrink, then fade */if (b.bodyRoot) {
-          b.bodyRoot.rotation.x = Math.min(1.15, u * 1.6);
-          b.bodyRoot.scale.setScalar(1 - u * 0.22);
-        }
-        e.group.position.y = b.baseY - 0.15 * f;
-        e.bodyMat.opacity = b.baseOpacity * fade;
-        break;
-      }
-    case "fall":
-      {
-        /* topple: pitch over the body root (ease-in gravity), then sink+fade */if (b.bodyRoot) {
-          const topple = Math.min(1, u * 1.45);
-          b.bodyRoot.rotation.x = b.fallDir * (Math.PI / 2 - 0.12) * (topple * topple);
-        }
-        e.group.position.y = b.baseY - 0.4 * f * f;
-        e.bodyMat.opacity = b.baseOpacity * fade;
-        break;
-      }
-  }
-  /* fade the ground fx with the body (shadow + underglow discs) */
-  const fx = groundFx.get(e.group);
-  if (fx) {
-    (fx.shadow.material as THREE.Material).opacity = 0.34 * fade;
-    (fx.glow.material as THREE.Material).opacity = 0.5 * fade;
-  }
-  /* dying bosses keep their regalia orbiting while it dissolves */
-  const spin = spinners.get(e.group);
-  if (spin) spin.rotation.y += dt * 2.2 * fade;
-  /* the tint emissive dims with the fade (a corpse, not a lantern) */
-  if (f > 0) {
-    _deadColor.copy(e.baseColor).multiplyScalar(e.baseEmissive * fade);
-    e.bodyMat.emissive.copy(_deadColor);
-    e.glowMat.opacity = 0.85 * fade;
-  }
-  return true; // still dying
-}
+/* v3.0 sprite state maps: attack windup timers + last-frame positions. */
+const attackPulses = new WeakMap<THREE.Group, number>();
+const lastPos = new WeakMap<THREE.Group, { x: number; z: number }>();
 const ghostDrifts = new WeakMap<THREE.Group, GhostDrift>();
 const GHOST_BANK = 0.05; // rad per unit of local speed
 const GHOST_BANK_MAX = 0.3; // rad clamp
@@ -749,41 +326,25 @@ const GHOST_SMOOTH = 3.5; // banking approach rate (slower than combat = wispy)
 function updateGhostDrift(e: Enemy, dt: number): { pitch: number; roll: number; bobY: number } {
   let d = ghostDrifts.get(e.group);
   if (!d) {
-    const root = bodyRoots.get(e.group);
-    d = {
-      lx: Number.NaN,
-      lz: Number.NaN,
-      pitch: 0,
-      roll: 0,
-      yaw: 0,
-      model: root && root.children.length > 0 ? root.children[0] : new THREE.Group()
-    };
+    d = { lx: Number.NaN, lz: Number.NaN, pitch: 0, roll: 0 };
     ghostDrifts.set(e.group, d);
   }
   let fwd = 0,
-    side = 0,
-    spd = 0;
+    side = 0;
   if (Number.isFinite(d.lx) && dt > 0) {
     const vx = (e.x - d.lx) / dt,
       vz = (e.z - d.lz) / dt;
-    spd = Math.hypot(vx, vz);
-    /* world velocity → the foe's local frame (the group yaws to face the
-    player; +Z local = facing) so the ghost banks toward where IT moves */
-    const yaw = e.group.rotation.y;
-    const cy = Math.cos(yaw),
-      sy = Math.sin(yaw);
-    fwd = sy * vx + cy * vz;
-    side = cy * vx - sy * vz;
+    /* the billboard group no longer yaws — banking is straight world-frame:
+    pitch from north-south motion, roll from east-west */
+    fwd = vz;
+    side = vx;
   }
   d.lx = e.x;
   d.lz = e.z;
   const k = Math.min(1, dt * GHOST_SMOOTH);
-  d.pitch += (clampf(fwd * GHOST_BANK, -GHOST_BANK_MAX, GHOST_BANK_MAX) - d.pitch) * k;
-  d.roll += (clampf(-side * GHOST_BANK, -GHOST_BANK_MAX, GHOST_BANK_MAX) - d.roll) * k;
-  /* idle yaw wander — a slow sway of the model itself, eased out by speed */
-  const idleF = Math.max(0, 1 - spd / 1.2);
-  d.yaw += (Math.sin(e.bobPhase * 0.35) * 0.14 * idleF - d.yaw) * k;
-  d.model.rotation.y = d.yaw;
+  const cl = (v: number) => Math.max(-GHOST_BANK_MAX, Math.min(GHOST_BANK_MAX, v));
+  d.pitch += (cl(fwd * GHOST_BANK) - d.pitch) * k;
+  d.roll += (cl(-side * GHOST_BANK) - d.roll) * k;
   /* ground wraiths float; flyers bob at the group level already */
   const bobY = e.flying ? 0 : 0.14 + Math.sin(e.bobPhase * 0.8) * 0.1;
   return {
@@ -831,39 +392,8 @@ function updateSlimeHop(e: Enemy, dt: number): { lift: number; sy: number; sxz: 
     sxz
   };
 }
-export const MODEL_FIT: Record<ModelKind, number> = {
-  mage: 2.3 / 2.655,
-  staff: 1,
-  imp: 1.7 / 1.68,
-  puglin: 1.73 / 0.93,
-  slime: 1.1 / 1.948,
-  ghost: 1.49 / 0.89,
-  plant: 1.71 / 0.92,
-  skeleton: 1.9 / 2.59,
-  skeletonmage: 1.9 / 2.63,
-  /* 10-c terrain decor: gameplay scale is ALREADY BAKED into the GLBs — these
-  *  are never enemy bodies; identity so a stray clone renders 1:1. */
-  "terrain-tomb": 1,
-  "terrain-tomb-round": 1,
-  "terrain-tomb-broken": 1,
-  "terrain-cross": 1,
-  "terrain-tree": 1,
-  "terrain-fence": 1,
-  "terrain-crypt": 1,
-  "terrain-sarcophagus": 1,
-  "terrain-pillar": 1,
-  "terrain-lantern": 1
-};
-/* Health-bar height per model kind (group-local, before enemy scale). */
-const MODEL_HPBAR_Y: Partial<Record<ModelKind, number>> = {
-  imp: 2.15,
-  puglin: 2.1,
-  slime: 1.5,
-  ghost: 1.77,
-  plant: 2.12,
-  skeleton: 2.35,
-  skeletonmage: 2.35
-};
+/* v3.0 — MODEL_FIT / MODEL_HPBAR_Y retired with the GLTF bestiary (sprite
+   geometry carries its own height; the hp bar rides spriteHeight+0.35). */
 /* Emissive floor for textured models — their authored albedo carries identity,
    so they need less full-body glow than the flat-shaded procedural kits. */
 const MODEL_EMISSIVE = 0.7;
@@ -877,319 +407,63 @@ const BOSS_BODY: Record<BossDef["brain"], EnemyDef["body"]> = {
 };
 export interface EnemyBody {
   group: THREE.Group;
-  bodyMat: THREE.MeshStandardMaterial;
-  glowMat: THREE.MeshBasicMaterial;
-  /** Acquired itch.io model kind used for the body (null = procedural kit). */
-  modelKind: ModelKind | null;
+  /** v3.0: the chibi pixel billboard (the whole visual body). */
+  sprite: BillboardSprite;
 }
 
-export function buildEnemyBody(def: EnemyDef, colorHex: number, elite: EliteAffix | null, isBoss: boolean, assets?: AssetSystem | null): EnemyBody {
+/* ------------------- v3.0 pixel-billboard bodies ----------------------- */
+/** body kind per EnemyDef.body (concept sheet p2). */
+const BODY_KIND: Record<string, PixelKind> = {
+  imp: "imp",
+  brute: "brute",
+  wraith: "wraith",
+  orb: "ooze",
+  knight: "knight",
+  caster: "caster",
+  swarmlet: "swarm",
+  plant: "plant"
+};
+/** boss sprite per tyrant brain (concept sheet p3 — one silhouette each). */
+const BOSS_SPRITE: Record<BossDef["brain"], PixelKind> = {
+  charger: "regent",
+  juggernaut: "behemoth",
+  dancer: "seraph",
+  fortress: "colossus",
+  storm: "leviathan"
+};
+/** per-kind world heights (chibi proportions, gameplay-readable). */
+function spriteHeight(kind: PixelKind, def: EnemyDef, isBoss: boolean): number {
+  if (isBoss) return 5.5;
+  switch (kind) {
+    case "swarm": return 1.3;
+    case "bat": return 1.55;
+    case "ooze": return 1.95;
+    case "imp": return 2.35;
+    case "plant": return 2.5;
+    case "wraith": return 2.65;
+    default: return 2.15 + def.radius * 0.5;
+  }
+}
+
+export function buildEnemyBody(def: EnemyDef, colorHex: number, elite: EliteAffix | null, isBoss: boolean, assets?: AssetSystem | null, bossBrain?: BossDef["brain"]): EnemyBody {
   const group = new THREE.Group();
   /* body root — the transform layer the anticipation coil drives (audit
-   P2-8). The acquired model AND the procedural kit parts live inside it;
-   floor-pinned discs, elite ring, health bar and orbiting boss halos stay
-   on the group so they never coil/lean with the body. */
+   P2-8). The sprite lives inside it; floor-pinned discs, elite ring and
+   health bar stay on the group so they never coil/lean with the body. */
   const bodyRoot = new THREE.Group();
   group.add(bodyRoot);
   bodyRoots.set(group, bodyRoot);
-  const baseColor = new THREE.Color(colorHex);
-  /* fog:false — foes must NEVER wash out against biome fog: the floor and
-   pillars dissolve into the void for atmosphere, enemies stay crisp and
-   readable at every distance (Hades-style combat clarity). */
-  let bodyMat!: THREE.MeshStandardMaterial;
-  let glowMat: THREE.MeshBasicMaterial;
-  let modelKind: ModelKind | null = null;
-  /* --- acquired itch.io model path (docs/AUDITS.md) — clone the template,
-   normalize its height to the gameplay footprint, tint + glow via ONE cloned
-   material shared by every mesh of the clone (geometry/textures stay shared). --- */
-  const wantKind = assets?.modelFor(def, isBoss) ?? null;
-  if (wantKind && assets) {
-    const model = assets.spawnModel(wantKind);
-    const tintMat = model ? assets.clonePrimaryMat(wantKind, baseColor, MODEL_EMISSIVE) : null;
-    if (model && tintMat) {
-      if (wantKind === "ghost") {
-        tintMat.transparent = true;
-        tintMat.opacity = 0.88;
-      }
-      model.traverse(o => {
-        const m = o as THREE.Mesh;
-        if (m.isMesh) m.material = tintMat;
-      });
-      model.scale.setScalar(MODEL_FIT[wantKind]);
-      bodyRoot.add(model);
-      foeKinds.set(group, wantKind);
-      /* clip-driven foes: KayKit-bank sharers + per-model embedded clip sets
-      (FOE_CLIP_PLANS, audit P2-8 / task 9-e) — every other rig keeps its
-      procedural motion by design. 10-d: bosses get the BOSS_CLIP_PLANS
-      override and the combo offset seeds from the id this foe will
-      receive (nextId is read BEFORE spawn() assigns it — deterministic). */
-      if (FOE_CLIP_PLANS[wantKind] || BOSS_CLIP_PLANS[wantKind]) {
-        setupFoeAnim(group, model, wantKind, assets, isBoss, nextId);
-      }
-      bodyMat = tintMat;
-      modelKind = wantKind;
-    }
-  }
-  if (!modelKind) {
-    bodyMat = new THREE.MeshStandardMaterial({
-      color: baseColor.clone(),
-      roughness: 0.55,
-      metalness: 0.15,
-      flatShading: true,
-      emissive: baseColor.clone().multiplyScalar(0.85),
-      transparent: def.body === "wraith",
-      opacity: def.body === "wraith" ? 0.85 : 1,
-      fog: false
-    });
-  }
-  glowMat = new THREE.MeshBasicMaterial({
-    color: colorHex,
-    transparent: true,
-    opacity: 0.85,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    fog: false
-  });
-  const add = (mesh: THREE.Mesh, y: number): THREE.Mesh => {
-    mesh.position.y = y;
-    bodyRoot.add(mesh);
-    return mesh;
-  };
-  const part = (key: string, make: () => THREE.BufferGeometry): THREE.Mesh => new THREE.Mesh(geo(key, make), bodyMat);
-  const glowPart = (key: string, make: () => THREE.BufferGeometry): THREE.Mesh => new THREE.Mesh(geo(key, make), glowMat);
-  if (!modelKind) switch (def.body) {
-    case "imp":
-      {
-        add(part("imp-body", () => new THREE.IcosahedronGeometry(0.5, 0)), 0.62);
-        for (const side of [1, -1]) {
-          const h1 = add(part("imp-horn", () => new THREE.ConeGeometry(0.075, 0.24, 5)), 1.0);
-          h1.position.x = 0.19 * side;
-          h1.rotation.z = -0.55 * side;
-          const h2 = add(part("imp-horn-tip", () => new THREE.ConeGeometry(0.045, 0.2, 5)), 1.16);
-          h2.position.x = 0.3 * side;
-          h2.rotation.z = -1.05 * side;
-          const eye = add(glowPart("imp-eye", () => new THREE.OctahedronGeometry(0.07, 0)), 0.72);
-          eye.position.x = 0.16 * side;
-          eye.position.z = 0.42;
-        }
-        break;
-      }
-    case "brute":
-      {
-        add(part("brute-body", () => new THREE.BoxGeometry(1.15, 1.3, 0.85)), 1.0);
-        for (const side of [1, -1]) {
-          const s = add(part("brute-shoulder", () => new THREE.BoxGeometry(0.42, 0.42, 0.5)), 1.5);
-          s.position.x = 0.72 * side;
-          const f = add(part("brute-fist", () => new THREE.BoxGeometry(0.34, 0.34, 0.34)), 1.05);
-          f.position.x = 0.78 * side;
-          f.position.z = 0.35;
-        }
-        add(part("brute-head", () => new THREE.BoxGeometry(0.42, 0.36, 0.42)), 1.78);
-        for (let i = 0; i < 3; i++) {
-          const sp = add(part("brute-spike", () => new THREE.ConeGeometry(0.12, 0.4, 5)), 1.75);
-          sp.position.x = (i - 1) * 0.34;
-          sp.position.z = -0.48;
-          sp.rotation.x = -0.55;
-        }
-        const visor = add(glowPart("brute-visor", () => new THREE.BoxGeometry(0.3, 0.07, 0.06)), 1.8);
-        visor.position.z = 0.23;
-        add(glowPart("brute-core", () => new THREE.OctahedronGeometry(0.14, 0)), 1.1).position.z = 0.45;
-        break;
-      }
-    case "wraith":
-      {
-        /* hooded ghost — robe wide at the hem, tapering up to the head */add(part("wraith-body", () => new THREE.ConeGeometry(0.5, 1.5, 8, 1, true)), 0.85);
-        for (let i = 0; i < 5; i++) {
-          const a = i / 5 * Math.PI * 2;
-          const t = add(part("wraith-tatter", () => new THREE.ConeGeometry(0.09, 0.34, 4)), 0.28);
-          t.position.x = Math.cos(a) * 0.42;
-          t.position.z = Math.sin(a) * 0.42;
-        }
-        add(part("wraith-head", () => new THREE.SphereGeometry(0.3, 10, 8)), 1.68);
-        const hood = add(part("wraith-hood", () => new THREE.ConeGeometry(0.24, 0.42, 6)), 1.95);
-        hood.rotation.x = -0.25;
-        for (const side of [1, -1]) {
-          const claw = add(part("wraith-claw", () => new THREE.ConeGeometry(0.07, 0.5, 5)), 1.1);
-          claw.position.x = 0.5 * side;
-          claw.position.z = 0.18;
-          claw.rotation.z = -0.9 * side;
-          claw.rotation.x = 0.5;
-          const eye = add(glowPart("wraith-eye", () => new THREE.OctahedronGeometry(0.06, 0)), 1.7);
-          eye.position.x = 0.11 * side;
-          eye.position.z = 0.27;
-        }
-        break;
-      }
-    case "orb":
-      {
-        add(part("orb-body", () => new THREE.SphereGeometry(0.55, 12, 9)), 0.85);
-        for (let i = 0; i < 6; i++) {
-          const a = i / 6 * Math.PI * 2;
-          const s = add(part("orb-spike", () => new THREE.TetrahedronGeometry(0.2)), 0.85);
-          s.position.x = Math.cos(a) * 0.6;
-          s.position.z = Math.sin(a) * 0.6;
-          s.rotation.set(a, a * 1.3, 0);
-        }
-        add(glowPart("orb-eye", () => new THREE.OctahedronGeometry(0.15, 0)), 0.9).position.z = 0.48;
-        const fuse = add(glowPart("orb-fuse", () => new THREE.ConeGeometry(0.09, 0.3, 5)), 1.48);
-        fuse.rotation.x = -0.15;
-        break;
-      }
-    case "knight":
-      {
-        add(part("knight-body", () => new THREE.BoxGeometry(0.62, 0.85, 0.42)), 0.95);
-        add(part("knight-helm", () => new THREE.BoxGeometry(0.4, 0.34, 0.44)), 1.55);
-        const plume = add(part("knight-plume", () => new THREE.ConeGeometry(0.08, 0.36, 5)), 1.88);
-        plume.rotation.x = -0.35;
-        const shield = add(part("knight-shield", () => new THREE.BoxGeometry(0.72, 1.0, 0.1)), 1.0);
-        shield.position.z = 0.38;
-        add(glowPart("knight-boss", () => new THREE.OctahedronGeometry(0.1, 0)), 1.0).position.z = 0.46;
-        const blade = add(part("knight-blade", () => new THREE.BoxGeometry(0.09, 0.95, 0.16)), 1.05);
-        blade.position.x = 0.52;
-        blade.position.z = 0.28;
-        blade.rotation.x = 0.35;
-        blade.rotation.z = -0.15;
-        for (const side of [1, -1]) {
-          const p = add(part("knight-pauldron", () => new THREE.BoxGeometry(0.26, 0.18, 0.34)), 1.42);
-          p.position.x = 0.42 * side;
-        }
-        const visor = add(glowPart("knight-visor", () => new THREE.BoxGeometry(0.26, 0.06, 0.05)), 1.58);
-        visor.position.z = 0.24;
-        break;
-      }
-    case "caster":
-      {
-        add(part("caster-robe", () => new THREE.ConeGeometry(0.48, 1.5, 9)), 0.75);
-        add(part("caster-head", () => new THREE.SphereGeometry(0.22, 10, 8)), 1.62);
-        const hood = add(part("caster-hood", () => new THREE.ConeGeometry(0.3, 0.44, 7)), 1.86);
-        hood.rotation.x = -0.22;
-        const orb = add(glowPart("caster-orb", () => new THREE.IcosahedronGeometry(0.17, 0)), 1.4);
-        orb.position.z = 0.5;
-        for (const side of [1, -1]) {
-          const crystal = add(glowPart("caster-crystal", () => new THREE.TetrahedronGeometry(0.09)), 1.5);
-          crystal.position.x = 0.4 * side;
-          const eye = add(glowPart("caster-eye", () => new THREE.OctahedronGeometry(0.05, 0)), 1.64);
-          eye.position.x = 0.08 * side;
-          eye.position.z = 0.2;
-        }
-        break;
-      }
-    case "swarmlet":
-      {
-        add(part("swarm-body", () => new THREE.OctahedronGeometry(0.32, 0)), 0.7);
-        for (const side of [1, -1]) {
-          const w = add(part("swarm-wing", () => new THREE.BoxGeometry(0.34, 0.04, 0.16)), 0.82);
-          w.position.x = 0.34 * side;
-          w.rotation.z = 0.5 * side;
-        }
-        add(glowPart("swarm-core", () => new THREE.TetrahedronGeometry(0.13)), 0.7).position.z = 0.3;
-        const sting = add(part("swarm-sting", () => new THREE.ConeGeometry(0.06, 0.26, 4)), 0.66);
-        sting.rotation.x = Math.PI / 2;
-        sting.position.z = 0.42;
-        break;
-      }
-  }
-  /* tyrant regalia — a distinct larger silhouette per boss on top of the kit
-   (generic crown fallback keeps unknown bosses covered) */
-  if (isBoss) {
-    let spinner: THREE.Group | null = null;
-    switch (def.name) {
-      case "Grimm":
-        {
-          /* the Maw — sweeping two-part crown horns + brow spikes
-          (Y retuned ×0.823 with the 9-e puglin fit calibration) */
-          for (const side of [1, -1]) {
-            const h1 = add(part("boss-horn-a", () => new THREE.ConeGeometry(0.14, 0.5, 6)), 1.65);
-            h1.position.x = 0.3 * side;
-            h1.rotation.z = -0.7 * side;
-            const h2 = add(part("boss-horn-b", () => new THREE.ConeGeometry(0.09, 0.42, 6)), 1.88);
-            h2.position.x = 0.55 * side;
-            h2.rotation.z = -1.35 * side;
-            const brow = add(part("boss-brow", () => new THREE.ConeGeometry(0.08, 0.28, 5)), 1.6);
-            brow.position.x = 0.18 * side;
-            brow.position.z = 0.26;
-            brow.rotation.x = 0.5;
-          }
-          break;
-        }
-      case "Cinder":
-        {
-          /* the Pyre — furnace core + ember chimney stack
-          (Y retuned ×0.823 with the 9-e puglin fit calibration) */
-          add(glowPart("boss-furnace", () => new THREE.OctahedronGeometry(0.22, 1)), 1.11).position.z = 0.5;
-          for (let i = 0; i < 3; i++) {
-            const x = (i - 1) * 0.4;
-            const ch = add(part("boss-chimney", () => new THREE.CylinderGeometry(0.09, 0.13, 0.5, 6, 1, true)), 1.69);
-            ch.position.x = x;
-            ch.position.z = -0.5;
-            const ember = add(glowPart("boss-ember", () => new THREE.OctahedronGeometry(0.07, 0)), 1.94);
-            ember.position.x = x;
-            ember.position.z = -0.5;
-          }
-          break;
-        }
-      case "Sable":
-        {
-          /* the Dancer — orbiting blade halo */spinner = new THREE.Group();
-          for (let i = 0; i < 6; i++) {
-            const a = i / 6 * Math.PI * 2;
-            const blade = new THREE.Mesh(geo("boss-blade", () => new THREE.BoxGeometry(0.08, 0.72, 0.2)), bodyMat);
-            blade.position.set(Math.cos(a) * 1.05, 1.25, Math.sin(a) * 1.05);
-            blade.rotation.y = -a;
-            spinner.add(blade);
-          }
-          group.add(spinner);
-          break;
-        }
-      case "Dusk":
-        {
-          /* the Hollow — eye cluster + orbiting shard ring */for (let i = 0; i < 3; i++) {
-            const eye = add(glowPart("boss-eye", () => new THREE.OctahedronGeometry(0.09, 0)), 0.95);
-            eye.position.x = (i - 1) * 0.16;
-            eye.position.z = 0.5;
-          }
-          spinner = new THREE.Group();
-          for (let i = 0; i < 8; i++) {
-            const a = i / 8 * Math.PI * 2;
-            const shard = new THREE.Mesh(geo("boss-shard", () => new THREE.TetrahedronGeometry(0.16)), glowMat);
-            shard.position.set(Math.cos(a) * 0.95, 1.0 + Math.sin(a * 2) * 0.25, Math.sin(a) * 0.95);
-            spinner.add(shard);
-          }
-          group.add(spinner);
-          break;
-        }
-      case "Vex":
-        {
-          /* the Sunder — storm spike crown + orbiting shards
-          (Y retuned ×0.708 with the 9-e ghost fit calibration) */
-          for (let i = 0; i < 3; i++) {
-            const spike = add(part("boss-stormspike", () => new THREE.ConeGeometry(0.11, 0.66, 5)), 1.63);
-            spike.position.x = (i - 1) * 0.3;
-          }
-          spinner = new THREE.Group();
-          for (let i = 0; i < 4; i++) {
-            const a = i / 4 * Math.PI * 2 + Math.PI / 4;
-            const shard = new THREE.Mesh(geo("boss-shard", () => new THREE.TetrahedronGeometry(0.15)), glowMat);
-            shard.position.set(Math.cos(a) * 1.15, 1.2, Math.sin(a) * 1.15);
-            spinner.add(shard);
-          }
-          group.add(spinner);
-          break;
-        }
-      default:
-        {
-          const crownG = geo("boss-crown", () => new THREE.ConeGeometry(0.12, 0.5, 4));
-          for (let i = 0; i < 5; i++) {
-            const c = new THREE.Mesh(crownG, glowMat);
-            const a = i / 5 * Math.PI * 2;
-            c.position.set(Math.cos(a) * 0.28, 2.05, Math.sin(a) * 0.28);
-            group.add(c);
-          }
-          break;
-        }
-    }
-    if (spinner) spinners.set(group, spinner);
-  }
+  /* the pixel kind: bosses by brain, foes by body (flying swarmlets read as
+   bats); elites recolor through the tinted sheet variant. */
+  const kind: PixelKind = isBoss ? BOSS_SPRITE[bossBrain ?? "charger"] : def.flying && BODY_KIND[def.body] === "swarm" ? "bat" : BODY_KIND[def.body] ?? "imp";
+  const sheet = getSheet(kind, elite ? ELITE_DEFS[elite].color : null);
+  const height = spriteHeight(kind, def, isBoss) * (elite ? 1.12 : 1);
+  const sprite = new BillboardSprite(sheet, height);
+  /* a gentle backward lean toward the fixed follow camera — grounds the
+   billboard without a full spherical face (the rig never orbits). */
+  sprite.mesh.rotation.x = -0.1;
+  bodyRoot.add(sprite.mesh);
+  foeKinds.set(group, kind);
   /* underglow + shadow + elite ring — the underglow is a wide soft aura that
    reads as a threat marker on the floor even when the body is small/far */
   const glow = discMesh(colorHex, isBoss ? 0.6 : 0.5, true);
@@ -1239,7 +513,7 @@ export function buildEnemyBody(def: EnemyDef, colorHex: number, elite: EliteAffi
     }));
     fill.position.set(-0.54, 0, 0.002);
     bar.add(bg, fill);
-    bar.position.y = (modelKind && MODEL_HPBAR_Y[modelKind]) ?? 2.45;
+    bar.position.y = height + 0.35;
     bar.rotation.x = HPBAR_TILT;
     bar.visible = false;
     group.add(bar);
@@ -1250,14 +524,13 @@ export function buildEnemyBody(def: EnemyDef, colorHex: number, elite: EliteAffi
   }
   return {
     group,
-    bodyMat,
-    glowMat,
-    modelKind
+    sprite
   };
 }
 function enemyBaseScale(e: Enemy): number {
-  if (e.boss) return e.boss.def.radius / 0.6;
-  return e.def.radius / 0.6 * (e.elite ? 1.12 : 1);
+  /* v3.0: sprite geometry already encodes the kind's height — the group
+   scale only carries the elite bump (and the spawn-in growth curve). */
+  return e.boss ? 1 : e.elite ? 1.1 : 1;
 }
 function easeOutBack(t: number): number {
   const c1 = 1.70158,
@@ -1306,13 +579,13 @@ export class EnemySystem {
   }
   private disposeEnemy(e: Enemy): void {
     this.scene.remove(e.group);
-    disposeFoeAnim(e.group); // mixer teardown before material disposal (audit P2-8)
-    e.bodyMat.dispose();
-    e.glowMat.dispose();
+    attackPulses.delete(e.group);
+    lastPos.delete(e.group);
+    e.sprite?.dispose();
     e.group.traverse(o => {
       if (o instanceof THREE.Mesh) {
         const m = o.material;
-        if (m instanceof THREE.Material && m !== e.bodyMat && m !== e.glowMat) m.dispose();
+        if (m instanceof THREE.Material) m.dispose();
       }
     });
   }
@@ -1442,10 +715,8 @@ export class EnemySystem {
       stallSide: foeId % 2 === 0 ? 1 : -1,
       recoverT: 0,
       group: body.group,
-      bodyMat: body.bodyMat,
-      glowMat: body.glowMat,
+      sprite: body.sprite,
       baseColor: new THREE.Color(colorHex),
-      baseEmissive: body.modelKind ? MODEL_EMISSIVE : 0.85,
       boss: null
     };
     this.enemies.push(e);
@@ -1463,7 +734,7 @@ export class EnemySystem {
       damage: def.damage,
       body: BOSS_BODY[def.brain] ?? "brute"
     };
-    const body = buildEnemyBody(fakeDef, hexNum(def.color), null, true, this.assets);
+    const body = buildEnemyBody(fakeDef, hexNum(def.color), null, true, this.assets, def.brain);
     body.group.scale.setScalar(def.radius / 0.6 * 0.05);
     body.group.position.set(x, 0, z);
     this.scene.add(body.group); // ← without this the tyrant exists in the sim but is INVISIBLE
@@ -1531,10 +802,8 @@ export class EnemySystem {
       stallSide: bossId % 2 === 0 ? 1 : -1,
       recoverT: 0,
       group: body.group,
-      bodyMat: body.bodyMat,
-      glowMat: body.glowMat,
+      sprite: body.sprite,
       baseColor: new THREE.Color(def.color),
-      baseEmissive: body.modelKind ? MODEL_EMISSIVE : 0.85,
       boss: {
         def,
         brain: def.brain,
@@ -1683,8 +952,7 @@ export class EnemySystem {
         pdz = player.z - e.z;
       const pd = Math.hypot(pdx, pdz);
       if (!e.boss && !player.dead && e.touchCd <= 0 && pd < e.radius + FOE_MELEE_RANGE) {
-        const anim = foeAnims.get(e.group);
-        if (anim?.attack && anim.current !== "attack") foeAttackWindup(anim, FOE_MELEE_LEAD);
+        if (!((attackPulses.get(e.group) ?? 0) > 0)) attackPulses.set(e.group, FOE_MELEE_LEAD + 0.18);
       }
       /* visuals */
       this.syncVisual(e, dt, player);
@@ -2026,12 +1294,8 @@ export class EnemySystem {
     /* boss regalia spin (blade halos / shard rings) */
     const spin = spinners.get(e.group);
     if (spin) spin.rotation.y += dt * 2.2;
-    /* face the player */
-    const target = Math.atan2(player.x - e.x, player.z - e.z);
-    let diff = target - e.group.rotation.y;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    e.group.rotation.y += diff * Math.min(1, dt * 10);
+    /* face the player — billboards mirror horizontally (no group yaw) */
+    const faceRight: 1 | -1 = player.x >= e.x ? 1 : -1;
     /* squash + spawn-in scale */
     const grow = 0.05 + 0.95 * easeOutBack(e.spawnT);
     const sq = e.squash;
@@ -2057,25 +1321,23 @@ export class EnemySystem {
         tellGlow = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(left * 40));
       }
     }
-    const em = e.baseEmissive + e.hitFlash * 2.2 + tellGlow * 1.7;
-    e.bodyMat.emissive.copy(e.baseColor).multiplyScalar(em);
-    /* ghost opacity breathes (9-e): each ghost clone owns its tint material,
-    so the pulse cannot leak to other foes; hit/tell glows stay readable
-    through it (emissive is opacity-independent) */
-    if (mk === "ghost" && e.bodyMat.transparent) {
-      e.bodyMat.opacity = 0.84 + 0.07 * Math.sin(e.bobPhase * 0.9);
-    }
-    /* phase-2 enrage surge: the body flashes crimson for ~1s after the flip */
-    if (e.boss) {
-      const enr = enrageT.get(e.boss);
-      if (enr !== undefined) {
-        const left = enr - dt;
-        if (left <= 0) enrageT.delete(e.boss);else {
-          enrageT.set(e.boss, left);
-          const pulse = 0.5 + 0.5 * Math.sin((1 - left) * 18);
-          e.bodyMat.emissive.lerp(CRIMSON, 0.35 + 0.5 * pulse);
+    /* v3.0 sprite driving: hit/tell flash, wraith breathing, enrage pulse */
+    const spr = e.sprite;
+    if (spr) {
+      let fl = Math.min(1, e.hitFlash * 1.6 + tellGlow * 0.3);
+      if (e.boss) {
+        const enr = enrageT.get(e.boss);
+        if (enr !== undefined) {
+          const left = enr - dt;
+          if (left <= 0) enrageT.delete(e.boss);else {
+            enrageT.set(e.boss, left);
+            const pulse = 0.5 + 0.5 * Math.sin((1 - left) * 18);
+            fl = Math.max(fl, pulse * 0.75);
+          }
         }
       }
+      spr.flash = fl;
+      if (mk === "wraith") spr.setOpacity(0.84 + 0.08 * Math.sin(e.bobPhase * 0.9));
     }
     /* anticipation coil → release (audit P2-8): during the tell the body
     root scales down + leans toward the shot; on expiry it snaps back
@@ -2110,17 +1372,17 @@ export class EnemySystem {
         rollZ = 0,
         sy = 1,
         sxz = 1;
-      if (mk === "ghost") {
+      if (mk === "wraith") {
         const g = updateGhostDrift(e, dt);
         lean += g.pitch;
         rollZ = g.roll;
         liftY = g.bobY;
-      } else if (mk === "slime" && !e.flying) {
+      } else if ((mk === "ooze" || mk === "swarm") && !e.flying) {
         const h = updateSlimeHop(e, dt);
         liftY = h.lift;
         sy = h.sy;
         sxz = h.sxz;
-      } else if (mk === "plant" && !foeAnims.has(e.group)) {
+      } else if (mk === "plant") {
         /* rooted-plant idle (9-e): a gentle sway + slow breathing pulse.
         Only while the plant has no clip plan — a clip-driven myconid gets
         its life from the skeletal clips instead (layers would double up). */
@@ -2133,21 +1395,26 @@ export class EnemySystem {
       bodyRoot.rotation.z = rollZ;
       bodyRoot.position.y = liftY;
     }
-    /* clip-driven foes: advance the clip stack — locomotion blended by the
-    ACTUAL speed the AI produced (u = spd / worldH for the 4-gait models,
-    ratio for the legacy KayKit pair), attack wind-ups keyed to the tell,
-    hit one-shot on fresh damage (audit P2-8: visuals mirror the sim,
-    they never drive it) */
-    const anim = foeAnims.get(e.group);
-    if (anim) updateFoeAnim(anim, e, dt);
+    /* v3.0 sprite state machine — locomotion from the ACTUAL displacement
+    the AI produced, attack pulses from the tells/melee windups, hurt on
+    fresh damage (visuals mirror the sim, they never drive it) */
+    if (spr) {
+      const atkT = attackPulses.get(e.group) ?? 0;
+      if (atkT > 0) attackPulses.set(e.group, atkT - dt);
+      const last = lastPos.get(e.group);
+      const moved = last ? Math.hypot(e.x - last.x, e.z - last.z) : 0;
+      lastPos.set(e.group, { x: e.x, z: e.z });
+      spr.face = faceRight;
+      spr.state = e.hp <= 0 ? "death" : e.hitFlash > FOE_HIT_TRIGGER ? "hurt" : atkT > 0 ? "attack" : moved > 0.02 ? "walk" : "idle";
+      spr.update(dt);
+    }
     /* vitals bar — visible once the foe has taken a hit (elites always).
     The body group YAWS to face the player, which would swing the bar
     edge-on to the camera; cancel the yaw, then re-apply the fixed tilt
     so the bar always reads flat toward the eye. */
     const hb = healthBars.get(e.group);
     if (hb) {
-      hb.bar.rotation.set(0, -e.group.rotation.y, 0);
-      hb.bar.rotateX(HPBAR_TILT);
+      hb.bar.rotation.set(HPBAR_TILT, 0, 0);
       hb.bar.visible = !!e.elite || e.hp < e.hpMax - 0.5;
       hb.fill.scale.x = Math.max(0.001, Math.min(1, e.hp / e.hpMax));
     }
