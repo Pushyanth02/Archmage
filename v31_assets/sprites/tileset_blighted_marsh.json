@@ -1,0 +1,121 @@
+{
+  "assetId": "tileset_blighted_marsh",
+  "name": "Blighted Marsh Tileset & Props",
+  "category": "environment",
+  "subtitle": "Overgrown mossy ruins, viridian marsh trees, spore crystals & Rift Portal",
+  "sheetUrl": "/assets/sprites/tileset_blighted_marsh.png",
+  "manifestUrl": "/assets/sprites/tileset_blighted_marsh.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 5,
+  "rows": 4,
+  "animations": [
+    {
+      "state": "floor_tiles",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 5,
+      "fps": 2,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "hurtbox": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "events": []
+    },
+    {
+      "state": "ruins_and_flora",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 5,
+      "fps": 2,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 8,
+        "y": 20,
+        "w": 48,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 8,
+        "y": 20,
+        "w": 48,
+        "h": 38
+      },
+      "events": []
+    },
+    {
+      "state": "crystals_braziers_portal",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 5,
+      "fps": 5,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 18,
+        "w": 44,
+        "h": 40
+      },
+      "hurtbox": {
+        "x": 10,
+        "y": 18,
+        "w": 44,
+        "h": 40
+      },
+      "events": []
+    },
+    {
+      "state": "portal_statue_banner",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 5,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 56
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 12,
+        "w": 44,
+        "h": 48
+      },
+      "hurtbox": {
+        "x": 10,
+        "y": 12,
+        "w": 44,
+        "h": 48
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "environment",
+    "batch-2",
+    "64x64",
+    "blighted-marsh"
+  ],
+  "integratedInDemo": true
+}

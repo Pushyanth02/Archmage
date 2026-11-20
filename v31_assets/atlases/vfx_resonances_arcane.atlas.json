@@ -1,0 +1,1839 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "vfx_resonances_arcane",
+    "name": "Arcane Resonance Detonations (8 Archetypes)",
+    "category": "vfx",
+    "subtitle": "Nova, Vortex, Chain, Chrono, Siphon, Hazard, Shrapnel & Fracture VFX",
+    "image": "../sprites/vfx_resonances_arcane.png",
+    "size": {
+      "w": 384,
+      "h": 512
+    },
+    "tileSize": {
+      "w": 64,
+      "h": 64
+    },
+    "grid": {
+      "columns": 6,
+      "rows": 8
+    },
+    "totalFrames": 48
+  },
+  "animations": [
+    {
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "id": "vfx_resonances_arcane_nova_down_00",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_nova_down_01",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_nova_down_02",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_nova_down_03",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_nova_down_04",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_nova_down_05",
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_00",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_01",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_02",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_03",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_04",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_vortex_down_05",
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_00",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_01",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_02",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_03",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_04",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chain_down_05",
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_00",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_01",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_02",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_03",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_04",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_chrono_down_05",
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_00",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_01",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_02",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_03",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_04",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_siphon_down_05",
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_00",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_01",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_02",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_03",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_04",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_hazard_down_05",
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_00",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_01",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_02",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_03",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_04",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_shrapnel_down_05",
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_00",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_01",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_02",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_03",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_04",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_resonances_arcane_fracture_down_05",
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "384x512",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 7.79,
+    "outlinePerimeterCoverage": 100,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 0,
+    "hurtboxContainmentPct": 100
+  }
+}

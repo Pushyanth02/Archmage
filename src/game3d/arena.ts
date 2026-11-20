@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { ActDef, RNG, TerrainId, ArenaLayoutKind } from "./content";
 import type { ModelKind } from "./assets";
+import { v31Sheet, TILESET_FOR_TERRAIN, type V31Sheet } from "./v31sheets";
 import { ARENA_RADIUS, GROUND_RADIUS, FENCE_HEIGHT, FENCE_STUD_COUNT, OBSTACLE_R_MIN, OBSTACLE_R_MAX } from "./arena-config";
 
 /* F-05: legacy-terrain → layout-kind fallback (old callers passing a
@@ -95,8 +96,9 @@ export interface ArenaVisuals {
    arena-config.ts — this module (the renderer) re-declares NOTHING. */
 const SKY_RADIUS = 220;
 /* mote density scales with arena area so the atmosphere reads the same at
-   any radius (legacy: 180 motes on the r=42 disc) */
-const MOTE_BASE_COUNT = Math.round(180 * (ARENA_RADIUS / 42) ** 2);
+   any radius (legacy: 180 motes on the r=42 disc). v3.1: trimmed ~40% —
+   over the tileset floor the old swarm read as texture noise, not air. */
+const MOTE_BASE_COUNT = Math.round(105 * (ARENA_RADIUS / 42) ** 2);
 const MOTE_Y_MIN = 0.5;
 const MOTE_Y_MAX = 10;
 /* ---- rune rubble (obstacles, plan §7 + task 9-c terrain options) ----
@@ -382,6 +384,8 @@ interface ArenaCtx {
   colors: ArenaColors;
   /** Normalized floor albedo — luma-matched across acts for readability. */
   groundColor: THREE.Color;
+  /** v3.1: the terrain id — picks the environment tileset family. */
+  terrain: string;
   /** 10-e decor dressing: the arena group + the model-clone accessor + the
    *  clone tracker (teardown detaches without disposing shared resources). */
   group: THREE.Group;
@@ -440,7 +444,102 @@ function bucketGeometry(b: Bucket): THREE.BufferGeometry {
   return g;
 }
 /* ------------------------------ ground ---------------------------------- */
-/** v3.0 — pixel-cobble canvas texture. Chunky 8×8 stone grid on a 128px
+/* v3.1 tileset floor — the validated environment art as the plaza. Compose
+ *  the tileset's floor row (5 variants of 64px flagstones, transparent
+ *  margins) over a dark mortar bed; the act ground color tints the mortar
+ *  so every act keeps its palette identity while the validated pixel art
+ *  carries the stones. Returns null when the tileset hasn't settled (the
+ *  procedural cobble stays). */
+/* v3.1 floor composition profiles — per tileset, which sheet columns are
+ * calm walking ground (weighted heavily), which are decorated variants
+ * (sparse accent), and which are special centerpieces that must NEVER
+ * scatter (the cursed grove's golden summoning sigil reads as noise when
+ * tiled across the field — it belongs to the arena heart, which the
+ * summon-circle decal already owns). */
+const TILESET_FLOOR_PROFILE: Record<string, { ground: number[]; decor: number[] }> = {
+  tileset_cursed_grove: { ground: [0, 1, 2, 3], decor: [] },
+  tileset_undead_crypt: { ground: [0, 1, 2, 3, 4], decor: [] },
+  tileset_blighted_marsh: { ground: [0, 1, 2], decor: [3, 4] },
+};
+
+function composeTilesetFloor(sheet: V31Sheet, ground: THREE.Color): THREE.Texture | null {
+  if (typeof document === "undefined") return null;
+  const img = sheet.texture.image as HTMLImageElement | HTMLCanvasElement | undefined;
+  if (!img || !(img.width > 0)) return null;
+  const T = sheet.manifest.frameWidth;
+  const N = 4; /* 4×4 flagstones per repeat — calmer than the old 6×6 cobble */
+  const S = T * N;
+  const cvs = document.createElement("canvas");
+  cvs.width = S;
+  cvs.height = S;
+  const ctx = cvs.getContext("2d")!;
+  /* mortar bed — the act's normalized ground color, darkened so seams read
+   * as soft shadow gaps between flagstones (0.5 keeps depth without the
+   * harsh checker the 0.42 bed produced) */
+  const gSRGB = ground.clone().convertLinearToSRGB();
+  ctx.fillStyle = `rgb(${Math.round(Math.min(255, gSRGB.r * 255 * 0.5))},${Math.round(Math.min(255, gSRGB.g * 255 * 0.5))},${Math.round(Math.min(255, gSRGB.b * 255 * 0.5))})`;
+  ctx.fillRect(0, 0, S, S);
+  /* composition profile: calm ground weighted 88%, decorated variants 12%,
+   * special tiles (sigils) never scatter. Falls back to "all calm" for
+   * unknown sheets. */
+  const profile = TILESET_FLOOR_PROFILE[sheet.assetId] ?? { ground: sheet.manifest.animations.find(a => a.state === "floor_tiles")?.frameCount ? [0, 1, 2, 3] : [0], decor: [] };
+  const pool: Array<{ col: number; w: number }> = [
+    ...profile.ground.map(col => ({ col, w: 0.88 / Math.max(1, profile.ground.length) })),
+    ...profile.decor.map(col => ({ col, w: 0.12 / Math.max(1, profile.decor.length) })),
+  ];
+  const totalW = pool.reduce((s, p) => s + p.w, 0) || 1;
+  /* deterministic per-tile variant + 1px jitter + quarter-turn rotation +
+   * micro luminance wash so the repeat breathes without breaking the pixel
+   * art's hand-painted shading */
+  let seed = 0x5eed17;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  for (let ty = 0; ty < N; ty++) {
+    for (let tx = 0; tx < N; tx++) {
+      let pick = rnd() * totalW;
+      let col = pool[0]?.col ?? 0;
+      for (const p of pool) {
+        pick -= p.w;
+        if (pick <= 0) {
+          col = p.col;
+          break;
+        }
+      }
+      const jx = Math.round((rnd() - 0.5) * 2);
+      const jy = Math.round((rnd() - 0.5) * 2);
+      /* quarter-turn rotations square tiles survive losslessly and kill
+       * the grid's directional monotony */
+      const rot = Math.floor(rnd() * 4); // 0..3 quarter turns
+      const lum = rnd();
+      ctx.save();
+      ctx.translate(tx * T + jx + T / 2, ty * T + jy + T / 2);
+      ctx.rotate(rot * Math.PI / 2);
+      ctx.drawImage(img as CanvasImageSource, col * T, 0, T, T, -T / 2, -T / 2, T, T);
+      /* micro luminance wash — ±6% per tile, drawn as overlay so the sheet
+       * palette stays intact */
+      if (lum < 0.3) {
+        ctx.fillStyle = `rgba(0,0,0,${0.04 + lum * 0.08})`;
+        ctx.fillRect(-T / 2, -T / 2, T, T);
+      } else if (lum > 0.82) {
+        ctx.fillStyle = "rgba(255,255,255,0.04)";
+        ctx.fillRect(-T / 2, -T / 2, T, T);
+      }
+      ctx.restore();
+    }
+  }
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestMipmapLinearFilter;
+  tex.generateMipmaps = true;
+  tex.anisotropy = 8;
+  return tex;
+}
+
+/** v3.0 — pixel-cobble canvas texture (procedural fallback, kept verbatim
+ *  for offline/headless and the window before the tilesets settle).
+ *  Chunky 8×8 stone grid on a 128px
  *  canvas (16px stones, 1px mortar), nearest-neighbor filtering so the
  *  floor reads as pixel-art from the concept boards. Tinted by the act's
  *  normalized ground albedo + accent stones; the material color stays the
@@ -587,17 +686,26 @@ function makeSummonCircleTexture(): THREE.Texture {
 function buildGround(c: ArenaCtx): THREE.Mesh {
   const geo = new THREE.CircleGeometry(GROUND_RADIUS, 96);
   geo.rotateX(-Math.PI / 2);
+  /* v3.1 tileset floor when the biome sheet has settled — 64px flagstones
+   * at ~2.6 world units (calmer, quieter read than the old 8u cobble
+   * repeat); the procedural cobble keeps its 8u planar scale. */
+  const tileset = v31Sheet(TILESET_FOR_TERRAIN[c.terrain] ?? "tileset_cursed_grove", "tilesets");
+  const tilesetTex = tileset ? composeTilesetFloor(tileset, c.groundColor) : null;
+  const tileScale = tilesetTex ? 2.6 : 8;
   const pos = geo.getAttribute("position");
   const uv = geo.getAttribute("uv");
   // planar world-space UVs (tile repeat already world-scaled in the texture)
   for (let i = 0; i < pos.count; i++) {
-    uv.setXY(i, pos.getX(i) / 8, pos.getZ(i) / 8);
+    uv.setXY(i, pos.getX(i) / tileScale, pos.getZ(i) / tileScale);
   }
   uv.needsUpdate = true;
   const col = new Float32Array(pos.count * 3);
   for (let i = 0; i < pos.count; i++) {
     const r = Math.hypot(pos.getX(i), pos.getZ(i)) / GROUND_RADIUS;
-    const v = 1 - 0.42 * THREE.MathUtils.smoothstep(r, 0.62, 1.0);
+    /* v3.1 cohesion: deeper, earlier vignette — the flat bright floor stole
+     * focus from sprites and spell light; falloff starts sooner and lands
+     * darker so the arena heart owns the light */
+    const v = 1 - 0.52 * THREE.MathUtils.smoothstep(r, 0.5, 1.0);
     col[i * 3] = v;
     col[i * 3 + 1] = v;
     col[i * 3 + 2] = v;
@@ -605,7 +713,7 @@ function buildGround(c: ArenaCtx): THREE.Mesh {
   geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
   const mat = new THREE.MeshStandardMaterial({
     color: 0xffffff,
-    map: makeCobbleTexture(c.groundColor, c.colors.accent),
+    map: tilesetTex ?? makeCobbleTexture(c.groundColor, c.colors.accent),
     vertexColors: true,
     roughness: 0.95,
     metalness: 0
@@ -631,7 +739,7 @@ function scatterPatches(c: ArenaCtx, rock: Bucket, spec: TerrainGroundSpec): voi
     rng,
     colors
   } = c;
-  const count = Math.round((40 + 40 * c.quality) * spec.countMul); // 60..80 at rubble
+  const count = Math.round((14 + 18 * c.quality) * spec.countMul); // v3.1: sparser — the tileset floor carries the detail now (23..32 at rubble)
   for (let i = 0; i < count; i++) {
     const a = rng.range(0, TAU);
     const r = Math.sqrt(rng.next()) * (ARENA_RADIUS + 1.5); // uniform over the disc (F-04-derived)
@@ -640,15 +748,17 @@ function scatterPatches(c: ArenaCtx, rock: Bucket, spec: TerrainGroundSpec): voi
     const y = 0.05 + i / count * 0.02; // micro-stagger avoids coplanar z-fight
     let g;
     if (rng.chance(0.55)) {
-      g = new THREE.CircleGeometry(rng.range(0.35, 1.9) * spec.sizeMul, rng.int(7, 10)); // stain
+      g = new THREE.CircleGeometry(rng.range(0.22, 1.25) * spec.sizeMul, rng.int(7, 10)); // stain — v3.1: smaller, reads as wet stone not tar
     } else {
-      const rr = rng.range(0.5, 2.3) * spec.sizeMul;
+      const rr = rng.range(0.35, 1.55) * spec.sizeMul;
       g = new THREE.RingGeometry(rr, rr + rng.range(0.05, 0.16) * spec.sizeMul, rng.int(20, 30)); // crack
     }
     g.rotateX(-Math.PI / 2);
     _cB.copy(rng.chance(0.5) ? colors.accent : colors.pillarLo);
     if (spec.hueMix > 0) _cB.lerp(colors.pillarHi, spec.hueMix); // subtle stone-tone lift
-    _cB.multiplyScalar(rng.range(0.45, 0.85) + spec.bright);
+    /* v3.1 cohesion: the old 0.45 floor read as tar spills against the
+     * tileset floor — lifted so stains read as wet stone, not holes */
+    _cB.multiplyScalar(rng.range(0.75, 1.0) + spec.bright);
     addPart(rock, g, x, y, z, 0, rng.range(0, TAU), 0, 1, _cB, _cB, 0, 1);
   }
 }
@@ -1371,6 +1481,7 @@ export function buildArena(
     quality,
     colors,
     groundColor,
+    terrain,
     group,
     decor: opts.decor,
     decorClones
@@ -1399,7 +1510,11 @@ export function buildArena(
   const rockMat = new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.9,
-    metalness: 0.04
+    metalness: 0.04,
+    /* v3.1: ambient lift so rubble reads as moonlit stone, not holes —
+     * the tileset floor brightened the arena and the rocks followed the
+     * old cobble's dark palette, reading as rendering artifacts */
+    color: new THREE.Color(1.35, 1.32, 1.42)
   });
   const rockMesh = new THREE.Mesh(bucketGeometry(rock), rockMat);
   rockMesh.matrixAutoUpdate = false;
@@ -1426,14 +1541,14 @@ export function buildArena(
    *  ground runes. Additive + depthWrite:false, drawn under the glow rings. */
   const circleMat = new THREE.MeshBasicMaterial({
     map: makeSummonCircleTexture(),
-    color: colors.rune.clone().multiplyScalar(0.82), // eased — full additive saturates to white
+    color: colors.rune.clone().multiplyScalar(0.6), // v3.1: eased further — additive over the tileset floor blooms hard
     transparent: true,
-    opacity: 0.36,
+    opacity: 0.22,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
     side: THREE.DoubleSide
   });
-  const circle = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), circleMat);
+  const circle = new THREE.Mesh(new THREE.PlaneGeometry(11, 11), circleMat);
   circle.rotation.x = -Math.PI / 2;
   circle.position.y = 0.05;
   circle.renderOrder = 2;
@@ -1627,7 +1742,7 @@ export function buildArena(
     glowMat.opacity = 0.22 + 0.1 * (0.5 + 0.5 * Math.sin(t * 0.8 + 1.6));
     // v3.0: the summoning circle breathes with the runes and drifts a slow
     // quarter-turn per minute — a living seal, never a static decal
-    circleMat.opacity = 0.3 + 0.12 * (0.5 + 0.5 * Math.sin(t * 0.8 + 1.6));
+    circleMat.opacity = 0.18 + 0.08 * (0.5 + 0.5 * Math.sin(t * 0.8 + 1.6));
     circle.rotation.z = t * 0.026;
     // center rune light flicker (normalized base per act)
     runeLight.intensity = runeIntensity * (0.9 + 0.1 * Math.sin(t * 2.1));

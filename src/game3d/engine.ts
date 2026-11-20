@@ -3,6 +3,8 @@ import { TERRAINS, mulberry32, STARTER_SPELLS, hashSeed, streamRng, poolBias, BO
 import { EnemySystem } from "./entities";
 import { AssetSystem } from "./assets";
 import { BillboardSprite, loadPlayerSheet, type SpriteState } from "./pixelsprites";
+import { V31Sprite, preloadV31, preloadV31Tilesets, v31Sheet, MAGE_BY_ELEMENT, MAGE_DEFAULT, V31_COMBAT_SHEETS, type V31Sheet } from "./v31sheets";
+import type { EntitySprite } from "./entities";
 import { SpellSystem } from "./spells";
 
 /** Minimal Battery Status API surface (v2.2) — event-driven only. */
@@ -575,8 +577,12 @@ export class RiftEngine {
    until (or unless) its model/texture arrives. Public so the shell can
    read load progress for the pre-run attunement veil (plan §4 loading). */
   assets;
-  /** v3.0: the player's chibi pixel billboard + pose timer. */
-  playerSprite: BillboardSprite | null;
+  /** v3.1: the player's mage billboard (validated sheet when loaded, else
+   *  the procedural chibi painter) + pose timer. */
+  playerSprite: EntitySprite | null;
+  /** current V3.1 mage asset id ("mage_stormcaller"…) — null while the
+   *  procedural fallback renders. */
+  playerMageAsset: string | null;
   playerPoseT;
   playerPoseLock: boolean;
   throwAnimCd;
@@ -692,6 +698,7 @@ export class RiftEngine {
     this.playerGroup = new THREE.Group();
     this.assets = new AssetSystem();
     this.playerSprite = null;
+    this.playerMageAsset = null;
     this.playerPoseT = 0;
     this.playerPoseLock = false;
     this.throwAnimCd = 0;
@@ -867,6 +874,16 @@ export class RiftEngine {
       this.buildPlayerModel();
       this.buildAimRing();
     });
+    /* v3.1: the validated bestiary + the six archmage sheets stream in
+       behind the same veil — enemies + the player hot-swap to them the
+       moment each settles (procedural painters hold the line until then).
+       The three environment tilesets ride along for the arena floors. */
+    preloadV31(V31_COMBAT_SHEETS).then(() => {
+      if (this.disposed) return;
+      this.disposePlayerModel();
+      this.buildPlayerModel();
+    });
+    preloadV31Tilesets();
     this.assets.load().then(() => {
       if (this.disposed) return;
       this.applyVfxSprites();
@@ -1692,6 +1709,12 @@ export class RiftEngine {
           this.opts.sfx.play("blink", {
             intensity: 0.6
           });
+          /* v3.1 blink pose — the mage's short teleport flourish, driven by
+           * the engine pose timer so locomotion can't stomp it */
+          if (this.playerSprite instanceof V31Sprite) {
+            this.playerSprite.state = "blink";
+            this.playerPoseT = Math.max(this.playerPoseT, 0.3);
+          }
         }
         /* plan === null → no aim intent and no movement: the blink is
          * silently dropped WITHOUT spending the cooldown or i-frames (a
@@ -2623,15 +2646,34 @@ export class RiftEngine {
   buildPlayerModel() {
     const g = this.playerGroup;
     g.clear();
-    loadPlayerSheet().then(sheet => {
-      if (this.disposed) return;
-      const spr = new BillboardSprite(sheet, 3.4);
+    /* v3.1: the validated archmage sheets first — the element-matched mage
+     *  (stormcaller until a dominant element emerges from the loadout).
+     *  Falls back to the v3.0 chibi painter while the sheet streams in. */
+    const mageAsset = this.mageAssetForLoadout();
+    const v31: V31Sheet | null = v31Sheet(mageAsset);
+    if (v31) {
+      const spr = new V31Sprite(v31, { bodyHeight: 3.3 });
+      spr.preferCast = true; /* mages pose "cast" on spell throws */
+      /* hero readability: a gentle HDR lift (material color > 1) + cool bias
+       * so the robe separates from the purple floor without washing out */
+      spr.tint(new THREE.Color(1.14, 1.14, 1.26));
       spr.mesh.rotation.x = -0.1;
-      spr.tint("#c9b8ff");
       g.add(spr.mesh);
       this.playerSprite = spr;
+      this.playerMageAsset = mageAsset;
       this.resetPlayerAnim();
-    });
+    } else {
+      loadPlayerSheet().then(sheet => {
+        if (this.disposed) return;
+        const spr = new BillboardSprite(sheet, 3.4);
+        spr.mesh.rotation.x = -0.1;
+        spr.tint("#c9b8ff");
+        g.add(spr.mesh);
+        this.playerSprite = spr;
+        this.playerMageAsset = null;
+        this.resetPlayerAnim();
+      });
+    }
     /* recolorable staff-orb — floats where the sprite's staff crystal sits */
     const orbGeo = new THREE.OctahedronGeometry(0.16, 0);
     orbGeo.scale(1, 1.5, 1);
@@ -2642,37 +2684,67 @@ export class RiftEngine {
       opacity: 0.95,
       depthWrite: false
     }));
-    this.staffOrb.position.set(0.62, 2.45, 0.2);
+    this.staffOrb.position.set(0.55, 2.25, 0.12);
     g.add(this.staffOrb);
     this.addPlayerAuraFx(g);
     this.scene.add(g);
   }
+  /** The archmage identity for the current loadout — the dominant equipped
+   *  element picks its mage (ember→pyromancer…), defaulting to the brand
+   *  stormcaller. Used by buildPlayerModel + the selection-change hot-swap. */
+  mageAssetForLoadout(): string {
+    const counts = new Map<string, number>();
+    for (const slot of this.equipped) {
+      const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
+      if (el) counts.set(el, (counts.get(el) ?? 0) + 1);
+    }
+    let best: string | null = null;
+    let bestN = 0;
+    for (const [el, n] of counts) {
+      if (n > bestN && MAGE_BY_ELEMENT[el]) {
+        best = el;
+        bestN = n;
+      }
+    }
+    return best ? MAGE_BY_ELEMENT[best] : MAGE_DEFAULT;
+  }
+  /** Hot-swap the mage billboard when the dominant element changes (spell
+   *  draft / merge). No-op unless the target sheet has settled. */
+  refreshPlayerMage() {
+    const target = this.mageAssetForLoadout();
+    if (target === this.playerMageAsset) return;
+    const sheet = v31Sheet(target);
+    if (!sheet || !(this.playerSprite instanceof V31Sprite)) return;
+    this.playerSprite.setSheet(sheet, { bodyHeight: 3.3 });
+    this.playerMageAsset = target;
+  }
   /** Shared living-detail fx for both player bodies: orbiting rune shards,
   *  ground glow + blob shadow, surge aura ring. */
   addPlayerAuraFx(g) {
-    /* three small rune shards orbiting the mage */this.runeShards = new THREE.Group();
+    /* three small rune shards orbiting the mage — v3.1: tucked closer +
+    dimmed so the validated sprite art stays the read */this.runeShards = new THREE.Group();
     this.runeShards.name = "runeShards";
-    this.runeShards.position.y = 1.35;
-    const shardGeo = new THREE.TetrahedronGeometry(0.09);
+    this.runeShards.position.y = 1.5;
+    const shardGeo = new THREE.TetrahedronGeometry(0.07);
     const shardMat = new THREE.MeshBasicMaterial({
       color: 0x9a7bff,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.5,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
     for (let i = 0; i < 3; i++) {
       const a = i / 3 * Math.PI * 2;
       const shard = new THREE.Mesh(shardGeo, shardMat);
-      shard.position.set(Math.cos(a) * 0.95, Math.sin(a * 2) * 0.18, Math.sin(a) * 0.95);
+      shard.position.set(Math.cos(a) * 0.72, Math.sin(a * 2) * 0.14, Math.sin(a) * 0.72);
       this.runeShards.add(shard);
     }
     g.add(this.runeShards);
-    /* ground glow + shadow */
-    const glow = new THREE.Mesh(new THREE.CircleGeometry(0.9, 24), new THREE.MeshBasicMaterial({
+    /* ground glow + shadow — v3.1: softer so the floor art breathes */
+    const glow = new THREE.Mesh(new THREE.CircleGeometry(0.72, 24), new THREE.MeshBasicMaterial({
       color: 0x9a7bff,
       transparent: true,
-      opacity: 0.34,
+      opacity: 0.22,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     }));
@@ -2718,6 +2790,7 @@ export class RiftEngine {
   disposePlayerModel() {
     this.playerSprite?.dispose();
     this.playerSprite = null;
+    this.playerMageAsset = null;
     this.scene.remove(this.playerGroup);
     this.scene.remove(this.aimRing);
     this.playerGroup.traverse(o => {
@@ -2734,7 +2807,7 @@ export class RiftEngine {
     this.aimRing = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.75, 28), new THREE.MeshBasicMaterial({
       color: 0xf5c96b,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.4,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       side: THREE.DoubleSide
@@ -2751,6 +2824,9 @@ export class RiftEngine {
     const color = hexNum(css);
     this.staffOrb.material.color.setHex(color);
     this.aimRing.material.color.setHex(color);
+    /* v3.1: the loadout's dominant element also picks the archmage body —
+     * hot-swap when a draft/merge changed the identity. */
+    this.refreshPlayerMage();
   }
   updatePlayerVisual(dt) {
     const p = this.player;
@@ -2759,15 +2835,23 @@ export class RiftEngine {
     this.playerGroup.rotation.y = 0; // billboards never yaw — the sprite mirrors
     /* living details: rune shards orbit + breathe, staff crystal spins + pulses */
     this.runeShards.rotation.y += dt * 1.5;
-    this.runeShards.position.y = 1.35 + Math.sin(this.time * 2.2 + 0.8) * 0.08;
+    this.runeShards.position.y = 1.5 + Math.sin(this.time * 2.2 + 0.8) * 0.08;
     this.staffOrb.rotation.y += dt * 1.1;
     this.staffOrb.scale.setScalar(1 + Math.sin(this.time * 5.4) * 0.08);
     /* the sprite mirrors to face the aim and steps through its poses:
     idle/run from input intent, one-shots (cast/hit/death) overlay */
     const movingNow = !p.dead && (this.input.moveX !== 0 || this.input.moveZ !== 0);
     const spr = this.playerSprite;
+    /* the orb mirrors with the sprite's facing so it always hovers over the
+     * staff hand side */
+    this.staffOrb.position.x = (spr ? spr.face : 1) * 0.55;
     if (spr) {
       spr.face = p.aimX >= p.x ? 1 : -1;
+      /* v3.1 four-direction art — horizontal intent picks the side rows,
+      vertical intent the down/up rows; idle keeps the last facing. */
+      if (spr instanceof V31Sprite && movingNow) {
+        spr.setMotion(this.input.moveX, this.input.moveZ);
+      }
       if (!this.playerPoseLock) {
         if (this.playerPoseT > 0) {
           this.playerPoseT -= dt;

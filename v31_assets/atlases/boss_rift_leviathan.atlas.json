@@ -1,0 +1,6159 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "boss_rift_leviathan",
+    "name": "Rift Leviathan",
+    "category": "boss",
+    "subtitle": "Undead Crypt Tyrant — Tentacled Void Eye Sovereign",
+    "image": "../sprites/boss_rift_leviathan.png",
+    "size": {
+      "w": 768,
+      "h": 4096
+    },
+    "tileSize": {
+      "w": 128,
+      "h": 128
+    },
+    "grid": {
+      "columns": 6,
+      "rows": 32
+    },
+    "totalFrames": 160
+  },
+  "animations": [
+    {
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "void_breath"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "void_breath"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "void_breath"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "void_breath"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "abyssal_surge"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "abyssal_surge"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "abyssal_surge"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "abyssal_surge"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "singularity_collapse"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "singularity_collapse"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "singularity_collapse"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "singularity_collapse"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "down",
+      "row": 24,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "up",
+      "row": 25,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "left",
+      "row": 26,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "right",
+      "row": 27,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "leviathan_shatter"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "leviathan_shatter"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "leviathan_shatter"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "leviathan_shatter"
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "id": "boss_rift_leviathan_idle_down_00",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_down_01",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_down_02",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_down_03",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 0,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_up_00",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_up_01",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_up_02",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_up_03",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 128,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_left_00",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_left_01",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_left_02",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_left_03",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 256,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_right_00",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 384,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_right_01",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 384,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_right_02",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 384,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_idle_right_03",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 384,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_00",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_01",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_02",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "hover_pulse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_03",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_04",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_down_05",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 512,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_00",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_01",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_02",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "hover_pulse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_03",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_04",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_up_05",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 640,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_00",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_01",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_02",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "hover_pulse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_03",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_04",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_left_05",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 768,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_00",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_01",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_02",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "hover_pulse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_03",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_04",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_walk_right_05",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 896,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_down_00",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1024,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": [
+        "telegraph_rune"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_windup_down_01",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1024,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_down_02",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1024,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_down_03",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1024,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_up_00",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1152,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": [
+        "telegraph_rune"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_windup_up_01",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1152,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_up_02",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1152,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_up_03",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1152,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_left_00",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1280,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": [
+        "telegraph_rune"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_windup_left_01",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1280,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_left_02",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1280,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_left_03",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1280,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_right_00",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1408,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": [
+        "telegraph_rune"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_windup_right_01",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1408,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_right_02",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1408,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_windup_right_03",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1408,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_down_00",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1536,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_down_01",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1536,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_down_02",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1536,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": [
+        "void_breath"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_attack_down_03",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1536,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_down_04",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 1536,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_up_00",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1664,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_up_01",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1664,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_up_02",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1664,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": [
+        "void_breath"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_attack_up_03",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1664,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_up_04",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 1664,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_left_00",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1792,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_left_01",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1792,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_left_02",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1792,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": [
+        "void_breath"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_attack_left_03",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1792,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_left_04",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 1792,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_right_00",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1920,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_right_01",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 1920,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_right_02",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 1920,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": [
+        "void_breath"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_attack_right_03",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 1920,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_attack_right_04",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 1920,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 91,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_00",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_01",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_02",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "abyssal_surge"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_03",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_04",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_down_05",
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2048,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "phase2_active"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_00",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_01",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_02",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "abyssal_surge"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_03",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_04",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_up_05",
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2176,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "phase2_active"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_00",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_01",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_02",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "abyssal_surge"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_03",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_04",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_left_05",
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2304,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "phase2_active"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_00",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_01",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_02",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "abyssal_surge"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_03",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_04",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_phase_transition_right_05",
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2432,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 125,
+      "events": [
+        "phase2_active"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_00",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_01",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_02",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_03",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": [
+        "singularity_collapse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_04",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_down_05",
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2560,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_00",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_01",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_02",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_03",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": [
+        "singularity_collapse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_04",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_up_05",
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2688,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_00",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_01",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_02",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_03",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": [
+        "singularity_collapse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_04",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_left_05",
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2816,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_00",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_01",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_02",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_03",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": [
+        "singularity_collapse"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_04",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_signature_right_05",
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 2944,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_down_00",
+      "state": "hit",
+      "direction": "down",
+      "row": 24,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3072,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_down_01",
+      "state": "hit",
+      "direction": "down",
+      "row": 24,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3072,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_down_02",
+      "state": "hit",
+      "direction": "down",
+      "row": 24,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3072,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_up_00",
+      "state": "hit",
+      "direction": "up",
+      "row": 25,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3200,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_up_01",
+      "state": "hit",
+      "direction": "up",
+      "row": 25,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3200,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_up_02",
+      "state": "hit",
+      "direction": "up",
+      "row": 25,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3200,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_left_00",
+      "state": "hit",
+      "direction": "left",
+      "row": 26,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3328,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_left_01",
+      "state": "hit",
+      "direction": "left",
+      "row": 26,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3328,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_left_02",
+      "state": "hit",
+      "direction": "left",
+      "row": 26,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3328,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_right_00",
+      "state": "hit",
+      "direction": "right",
+      "row": 27,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3456,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_right_01",
+      "state": "hit",
+      "direction": "right",
+      "row": 27,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3456,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_hit_right_02",
+      "state": "hit",
+      "direction": "right",
+      "row": 27,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3456,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_00",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_01",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_02",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_03",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_04",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": [
+        "leviathan_shatter"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_death_down_05",
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 3584,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_00",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_01",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_02",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_03",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_04",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": [
+        "leviathan_shatter"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_death_up_05",
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 3712,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_00",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_01",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_02",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_03",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_04",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": [
+        "leviathan_shatter"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_death_left_05",
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 3840,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_00",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_01",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 128,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_02",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 256,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_03",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 384,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_04",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 512,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": [
+        "leviathan_shatter"
+      ]
+    },
+    {
+      "id": "boss_rift_leviathan_death_right_05",
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 640,
+        "y": 3968,
+        "w": 128,
+        "h": 128
+      },
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "durationMs": 143,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "768x4096",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 5.23,
+    "outlinePerimeterCoverage": 78.9,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 8,
+    "hurtboxContainmentPct": 49.9
+  }
+}

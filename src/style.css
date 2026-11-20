@@ -4,7 +4,7 @@
    units (cqw/cqh) so the HUD scales 1:1 with the game viewport at any
    window size. */
 
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Nunito+Sans:wght@400;600;700;800;900&display=swap");
 
 :root {
   --gold: #d4af37;
@@ -21,7 +21,17 @@
   --text-dim: #b090c8;
   --lavender: #c9a0f0;
   --font-display: var(--font-cinzel), "Cinzel", "Times New Roman", serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-body: "Nunito Sans", "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+/* Pixel art from /assets/v31 always renders crisp. */
+img.px-img,
+.avatar-img,
+.pill-icon img,
+.dock-icon img,
+.hex-emblem img {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 /* ------------------------------------------------------------------ */
@@ -64,13 +74,14 @@
   opacity: 1;
 }
 
-/* No-WebGL fallback: a painted static vista behind the HUD. */
+/* No-WebGL fallback: the painted vista itself, graded toward the night
+   palette, behind the HUD. */
 .stage.no-webgl {
   background:
-    radial-gradient(ellipse 22% 30% at 50% 36%, rgba(255, 154, 60, 0.35) 0%, transparent 70%),
-    radial-gradient(ellipse 34% 40% at 50% 36%, rgba(208, 64, 255, 0.30) 0%, transparent 75%),
-    radial-gradient(ellipse 90% 60% at 50% 115%, rgba(42, 26, 94, 0.9) 0%, transparent 70%),
-    linear-gradient(180deg, #150b2e 0%, #241245 52%, #1a1026 100%);
+    radial-gradient(ellipse 60% 46% at 50% 38%, rgba(122, 40, 180, 0.25) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(6, 3, 14, 0.30), rgba(6, 3, 14, 0.55)),
+    url("/assets/v31/menu-backdrop-clean.webp") center / cover no-repeat,
+    #0a0616;
 }
 
 /* Shared helpers ---------------------------------------------------- */
@@ -178,20 +189,27 @@ button[disabled] {
   min-width: 12.5cqw;
 }
 .avatar {
-  width: 2.5cqw;
-  height: 2.5cqw;
-  min-width: 40px;
-  min-height: 40px;
+  width: 2.7cqw;
+  height: 2.7cqw;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0.18cqw;
   background: var(--panel-3);
   border: 2px solid var(--gold);
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 .avatar svg {
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #120a1f;
 }
 .profile-meta {
   display: flex;
@@ -199,7 +217,7 @@ button[disabled] {
   gap: 0.28cqw;
 }
 .profile-name {
-  font-size: 1.05cqw;
+  font-size: max(1.05cqw, 13px);
   font-weight: 800;
   letter-spacing: 0.04em;
   color: var(--text);
@@ -211,7 +229,7 @@ button[disabled] {
   gap: 0.55cqw;
 }
 .lv {
-  font-size: 0.82cqw;
+  font-size: max(0.82cqw, 11px);
   font-weight: 700;
   color: var(--gold-bright);
   white-space: nowrap;
@@ -341,7 +359,7 @@ button[disabled] {
 .title-riftbound {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.28cqw;
+  font-size: max(1.28cqw, 13px);
   letter-spacing: 0.38em;
   margin-right: -0.38em; /* optically recenter the tracked word */
   white-space: nowrap;
@@ -367,21 +385,27 @@ button[disabled] {
   padding: 0.32cqw 0.4cqw 0.32cqw 0.7cqw;
 }
 .pill-icon {
-  width: 1.35cqw;
-  height: 1.35cqw;
-  min-width: 20px;
-  min-height: 20px;
+  width: 1.5cqw;
+  height: 1.5cqw;
+  min-width: 22px;
+  min-height: 22px;
   display: grid;
   place-items: center;
   background: rgba(10, 6, 20, 0.65);
   border: 1px solid rgba(212, 175, 55, 0.45);
+  padding: 0.1cqw;
 }
 .pill-icon svg {
   width: 78%;
   height: 78%;
 }
+.pill-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .pill-value {
-  font-size: 0.95cqw;
+  font-size: max(0.95cqw, 12px);
   font-weight: 800;
   letter-spacing: 0.03em;
   min-width: 3.6cqw;
@@ -419,7 +443,7 @@ button[disabled] {
   position: absolute;
   right: 0.6cqw;
   top: -0.3cqw;
-  font-size: 0.8cqw;
+  font-size: max(0.8cqw, 11px);
   font-weight: 800;
   color: var(--gold-bright);
   text-shadow: 0 0 0.4cqw rgba(255, 190, 60, 0.8);
@@ -438,58 +462,130 @@ button[disabled] {
 
 .hud-center {
   position: absolute;
-  top: 41%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4.6cqh;
+  /* Tight: the seed-link tether spans most of the run, so buttons + seed
+     forge read as one framed gateway unit (orphaned-bar critique). */
+  gap: 1.2cqh;
+}
+
+/* The gold tether linking the action buttons to the seed plate. */
+.seed-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35cqh;
+  pointer-events: none;
+}
+.seed-link-stem {
+  width: 2px;
+  height: 1.7cqh;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.38), rgba(255, 214, 110, 1));
+  box-shadow: 0 0 0.35cqw rgba(255, 190, 60, 0.35);
+}
+.seed-link-gem {
+  width: 0.52cqw;
+  height: 0.52cqw;
+  min-width: 7px;
+  min-height: 7px;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold-deep));
+  transform: rotate(45deg);
+  box-shadow: 0 0 0.45cqw rgba(255, 190, 60, 0.55);
 }
 
 .menu-actions {
   display: flex;
+  align-items: center;
   gap: 3.2cqw;
 }
 
-/* Elongated hexagons: flat top/bottom, pointed left/right. */
+/* Elongated hexagons: flat top/bottom, pointed left/right. The hex is
+   painted by two clipped pseudo layers (gold frame + fill) so the button
+   itself stays UNclipped — the crest emblem rides above the hexagon,
+   outside any clip region. */
 .hex-btn {
   --edge: var(--amber-glow);
   --fill: #241436;
-  --glow: rgba(255, 174, 0, 0.55);
+  --glow: rgba(255, 174, 0, 0.62);
   position: relative;
   width: 16.5cqw;
   min-width: 150px;
   height: 4.3cqw;
   min-height: 46px;
   border: none;
-  background: var(--fill);
-  clip-path: polygon(0 50%, 5.5% 0, 94.5% 0, 100% 50%, 94.5% 100%, 5.5% 100%);
+  background: transparent;
   transition: transform 0.16s ease, filter 0.16s ease;
   filter: drop-shadow(0 0 0.9cqw var(--glow));
   animation: hex-breathe 3.2s ease-in-out infinite;
 }
 .hex-btn::before {
+  /* Gold outer hex — the button's frame. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 45%, var(--gold-deep));
+  clip-path: polygon(0 50%, 5.5% 0, 94.5% 0, 100% 50%, 94.5% 100%, 5.5% 100%);
+}
+.hex-btn::after {
+  /* Inner fill hex with a top sheen and an edge-colored hairline. */
   content: "";
   position: absolute;
   inset: 2.5px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 40%), var(--fill);
-  clip-path: inherit;
-}
-.hex-btn::after {
-  /* Inner neon line, following the same hexagon inset further. */
-  content: "";
-  position: absolute;
-  inset: 5.5px;
-  border: none;
-  background: transparent;
-  clip-path: polygon(0 50%, 6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 38%), var(--fill);
+  clip-path: polygon(0 50%, 5.9% 0, 94.1% 0, 100% 50%, 94.1% 100%, 5.9% 100%);
   box-shadow: inset 0 0 0 1.5px var(--edge);
 }
+.hex-btn > * {
+  position: relative;
+  z-index: 1;
+}
 .hex-party {
+  /* Secondary action — violet, never indigo, and a half-step dimmer than
+     the primary gate so the hierarchy is instant. */
   --edge: var(--neon-bright);
-  --fill: #1e1b4b;
-  --glow: rgba(184, 69, 255, 0.55);
+  --fill: #241232;
+  --glow: rgba(184, 69, 255, 0.42);
+}
+/* Primary gate: SOLO RUN outranks ONLINE PARTY in size, label heat and
+   amber burn — same family, unmistakable hierarchy. */
+.hex-solo {
+  --edge: #ffc24d;
+  --fill: #2c1a10;
+  --glow: rgba(255, 174, 0, 0.85);
+  width: 18.8cqw;
+  min-width: 172px;
+  height: 4.9cqw;
+  min-height: 52px;
+  animation: hex-solo-breathe 3.2s ease-in-out infinite;
+}
+/* The primary fill carries an amber wash + warm gradient — it must read as
+   a lit gateway, not a dark slab (V3.1 critique: primary = amber #ffae00). */
+.hex-solo::after {
+  background:
+    radial-gradient(130% 95% at 50% 6%, rgba(255, 190, 80, 0.38), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%),
+    linear-gradient(180deg, #50300f 0%, #3a2410 52%, #28160a 100%);
+}
+.hex-solo .hex-label {
+  font-size: 1.42cqw;
+  letter-spacing: 0.18em;
+  color: #ffedb8;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.75),
+    0 0 0.5cqw rgba(255, 214, 120, 0.95),
+    0 0 1.4cqw rgba(255, 174, 0, 0.85);
+}
+.hex-solo .hex-emblem {
+  width: 3.9cqw;
+  height: 3.9cqw;
+  min-width: 46px;
+  min-height: 46px;
+  filter: drop-shadow(0 0.1cqw 0.35cqw rgba(5, 2, 12, 0.85))
+    drop-shadow(0 0 0.75cqw rgba(255, 190, 60, 0.8));
 }
 .hex-btn:hover:not([disabled]) {
   transform: translateY(-0.35cqw) scale(1.02);
@@ -503,6 +599,11 @@ button[disabled] {
   0%, 100% { filter: drop-shadow(0 0 0.7cqw var(--glow)); }
   50% { filter: drop-shadow(0 0 1.25cqw var(--glow)); }
 }
+/* The primary gate burns brighter than the standard breathe. */
+@keyframes hex-solo-breathe {
+  0%, 100% { filter: drop-shadow(0 0 1.05cqw var(--glow)); }
+  50% { filter: drop-shadow(0 0 2cqw var(--glow)); }
+}
 
 .hex-label {
   position: relative;
@@ -513,26 +614,97 @@ button[disabled] {
   letter-spacing: 0.16em;
   color: #f7f0dc;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 0.7cqw var(--glow);
+  white-space: nowrap;
 }
 
-/* Emblem crest rising above the hexagon's top edge. */
+/* Emblem crest — a chamfered gold-rimmed badge STRADDLING the hexagon's
+   top edge (per the mockup's shield-notch), so the crest is unmistakably
+   part of its button instead of a stray floater. */
 .hex-emblem {
   position: absolute;
-  top: -115%;
+  top: -62%;
   left: 50%;
   transform: translateX(-50%);
   width: 3.4cqw;
   height: 3.4cqw;
   min-width: 42px;
   min-height: 42px;
+  box-sizing: border-box;
+  padding: 0.22cqw;
   display: grid;
   place-items: center;
   pointer-events: none;
-  filter: drop-shadow(0 0 0.5cqw var(--glow));
+  background: linear-gradient(180deg, #33203f 0%, #1c1128 100%);
+  border: 2px solid var(--gold);
+  clip-path: polygon(0 24%, 24% 0, 76% 0, 100% 24%, 100% 76%, 76% 100%, 24% 100%, 0 76%);
+  filter: drop-shadow(0 0.1cqw 0.35cqw rgba(5, 2, 12, 0.85)) drop-shadow(0 0 0.55cqw var(--glow));
+  z-index: 2;
 }
-.hex-emblem svg {
+.hex-emblem svg,
+.hex-emblem img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
+}
+
+/* Seed plate — the ornate gold frame that welds the seed forge to the gate
+   actions (fixes the orphaned-bar critique). Chamfered panel, inner hairline,
+   a gold rivet on the top edge and a diamond-flanked tag. */
+.seed-plate {
+  --cut: 0.7cqw;
+  --fill: rgba(26, 15, 42, 0.92);
+  display: flex;
+  align-items: stretch;
+  gap: 0.7cqw;
+  padding: 0.42cqw 0.85cqw 0.42cqw 0.55cqw;
+  box-shadow:
+    0 0.5cqw 1.8cqw rgba(5, 2, 12, 0.6),
+    0 0 1.1cqw rgba(212, 175, 55, 0.16);
+}
+.seed-plate::before {
+  /* frame-gold's fill layer gains an inner gold hairline + warm sheen. */
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 175, 55, 0.30),
+    inset 0 0 1.4cqw rgba(255, 190, 60, 0.08);
+}
+.seed-plate::after {
+  /* Gold rivet riding the top edge, dead center. */
+  content: "";
+  position: absolute;
+  top: -0.27cqw;
+  left: 50%;
+  width: 0.54cqw;
+  height: 0.54cqw;
+  min-width: 7px;
+  min-height: 7px;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold-deep));
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: 0 0 0.45cqw rgba(255, 190, 60, 0.55);
+  z-index: 2;
+}
+.seed-plate-tag {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42cqw;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: max(0.6cqw, 9px);
+  letter-spacing: 0.22em;
+  color: var(--gold-bright);
+  text-shadow: 0 0 0.5cqw rgba(255, 190, 60, 0.35);
+  white-space: nowrap;
+}
+.seed-plate-tag::before,
+.seed-plate-tag::after {
+  content: "";
+  width: 0.28cqw;
+  height: 0.28cqw;
+  min-width: 4px;
+  min-height: 4px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.9;
 }
 
 /* Seed bar. */
@@ -541,10 +713,9 @@ button[disabled] {
   display: flex;
   align-items: center;
   gap: 0.65cqw;
-  padding: 0.3cqw 0.4cqw 0.3cqw 0.95cqw;
-  background: rgba(20, 16, 31, 0.88);
-  border: 1.5px solid #8a6aa8;
-  border-radius: 999px;
+  padding: 0.26cqw 0.4cqw 0.26cqw 0.85cqw;
+  background: rgba(10, 6, 20, 0.58);
+  border: 1px solid rgba(138, 106, 168, 0.4);
 }
 .seed-icon {
   width: 1.15cqw;
@@ -600,7 +771,7 @@ button[disabled] {
   background: transparent;
   border: none;
   border-radius: 50%;
-  opacity: 0.75;
+  opacity: 0.9;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 .seed-edit svg {
@@ -685,9 +856,11 @@ button[disabled] {
   min-width: 20px;
   min-height: 20px;
 }
-.dock-icon svg {
+.dock-icon svg,
+.dock-icon img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
 .dock-label {
   font-family: var(--font-display);
@@ -820,7 +993,7 @@ button[disabled] {
 .modal-panel {
   --cut: 1.1cqw;
   --fill: rgba(24, 14, 38, 0.86);
-  width: min(30cqw, 480px);
+  width: clamp(280px, 30cqw, 480px);
   max-width: 92cqw;
   max-height: 72cqh;
   display: flex;
@@ -829,6 +1002,11 @@ button[disabled] {
   box-shadow: 0 1cqw 3cqw rgba(0, 0, 0, 0.55), 0 0 1.6cqw rgba(184, 69, 255, 0.18);
   animation: panel-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.15);
   overflow: hidden;
+}
+/* Catalogue modals (VAULT / RUNES / CODEX) carry wide asset grids. */
+.modal-panel.modal-wide {
+  width: clamp(320px, 58cqw, 920px);
+  max-height: 80cqh;
 }
 @keyframes panel-in {
   from { opacity: 0; transform: translateY(0.8cqw) scale(0.96); }
@@ -887,6 +1065,134 @@ button[disabled] {
 }
 .modal-body::-webkit-scrollbar-track {
   background: rgba(10, 6, 20, 0.5);
+}
+
+/* Small-caps section headers inside modal bodies, flanked by gold rules. */
+.modal-section {
+  display: flex;
+  align-items: center;
+  gap: 0.8cqw;
+  margin: 0.3cqw 0 0.05cqw;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: max(0.72cqw, 10px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  text-shadow: 0 0 0.5cqw rgba(255, 190, 60, 0.3);
+  white-space: nowrap;
+}
+.modal-section::before,
+.modal-section::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.55));
+}
+.modal-section::after {
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.55), transparent);
+}
+
+/* ---- V3.1 asset grids (VAULT relics / RUNES crests / CODEX bestiary) ---- */
+
+.relic-grid,
+.crest-grid,
+.bestiary-grid {
+  display: grid;
+  gap: 0.6cqw;
+}
+.relic-grid {
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+.crest-grid {
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+}
+.bestiary-grid.bm-6 {
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+}
+.bestiary-grid.bm-4 {
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+}
+
+.relic-tile,
+.crest-tile,
+.bestiary-tile {
+  --cut: 0.45cqw;
+  --fill: rgba(12, 7, 22, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.22cqw;
+  padding: 0.55cqw 0.35cqw 0.45cqw;
+  text-align: center;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.relic-tile img,
+.crest-tile img,
+.bestiary-tile img {
+  object-fit: contain;
+}
+.relic-tile img {
+  width: 3.3cqw;
+  height: 3.3cqw;
+  min-width: 40px;
+  min-height: 40px;
+}
+.crest-tile img {
+  width: 2.7cqw;
+  height: 2.7cqw;
+  min-width: 34px;
+  min-height: 34px;
+}
+.bestiary-tile img {
+  width: 4.1cqw;
+  height: 4.1cqw;
+  min-width: 48px;
+  min-height: 48px;
+}
+.relic-tile:hover,
+.crest-tile:hover,
+.bestiary-tile:hover {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 0.55cqw rgba(255, 190, 60, 0.4)) brightness(1.14);
+}
+
+.relic-name,
+.crest-name,
+.bestiary-name {
+  font-size: max(0.6cqw, 9px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  line-height: 1.3;
+}
+.relic-tag,
+.bestiary-tier {
+  font-size: max(0.52cqw, 8px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--gold-bright);
+  text-shadow: 0 0 0.4cqw rgba(255, 190, 60, 0.4);
+}
+
+/* Sealed (unowned) relics — dimmed, desaturated, gold falls to bronze. */
+.relic-tile.locked {
+  --edge: #5a4326;
+  --fill: rgba(10, 6, 18, 0.38);
+}
+.relic-tile.locked img {
+  filter: grayscale(0.8) brightness(0.5);
+}
+.relic-tile.locked .relic-name {
+  color: #6a5a80;
+}
+.relic-tile.locked .relic-tag {
+  color: #8a6a4a;
+  text-shadow: none;
+}
+.relic-tile.locked:hover {
+  filter: none;
 }
 
 .stat-row {
@@ -1133,6 +1439,88 @@ input:checked + .switch::after {
   line-height: 1.5;
   color: #8a7ab0;
   text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Compact staging — very short letterboxed stages (portrait phones).
+   The stage is a size container, so this queries the STAGE height, not
+   the window's. Pixel minimums that keep desktop controls finger-sized
+   would otherwise push the seed plate down onto the mage at ~219px of
+   stage height; here everything re-proportions so the courtyard cast
+   (mage + ring) keeps its band below the gate cluster.                     */
+/* ------------------------------------------------------------------ */
+
+@container (max-height: 300px) {
+  .hud-top {
+    padding: 7px 9px;
+    gap: 4px;
+  }
+  .profile {
+    min-width: 0;
+    padding: 3px 6px 3px 3px;
+    gap: 4px;
+  }
+  .avatar {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    padding: 2px;
+  }
+  .profile-name { font-size: 9px; }
+  .lv { font-size: 8.5px; }
+  .xp-track { width: 40px; min-width: 40px; height: 6px; min-height: 6px; }
+  .title-block { padding-top: 2px; gap: 2px; }
+  .title-archmage { font-size: max(3.9cqw, 14px); letter-spacing: 0.04em; }
+  .title-sub-row { gap: 5px; }
+  .title-riftbound { font-size: max(1.28cqw, 8px); letter-spacing: 0.3em; margin-right: -0.3em; }
+  .divider { flex-basis: 5cqw; }
+  .title-star { width: 12px; height: 12px; min-width: 12px; min-height: 12px; top: -16%; }
+  .pill { padding: 2px 3px 2px 4px; gap: 3px; }
+  .pill-icon { width: 12px; height: 12px; min-width: 12px; min-height: 12px; padding: 1px; }
+  .pill-value { font-size: 8.5px; min-width: 0; }
+  .pill-plus { width: 16px; height: 16px; min-width: 16px; min-height: 16px; }
+
+  .hud-center { top: 40.5%; gap: 6px; }
+  .menu-actions { gap: 8px; }
+  /* Content-sized hexes: fixed cqw widths are narrower than the labels on
+     a 390px stage, which wrapped "ONLINE PARTY" onto the seed plate. */
+  .hex-btn {
+    width: auto;
+    min-width: 0;
+    min-height: 30px;
+    padding-inline: 5cqw;
+  }
+  .hex-solo { min-width: 0; min-height: 34px; }
+  /* Tight letterbox: keep the glow compact so it never kisses the wordmark
+     or the seed plate above/below. */
+  .hex-btn { animation: none; filter: drop-shadow(0 0 4px var(--glow)); }
+  .hex-label { font-size: 9px; letter-spacing: 0.12em; }
+  .hex-solo .hex-label { font-size: 10px; }
+  /* The floating crest has nowhere to rise at this stage height without
+     colliding with the wordmark — the labels carry the buttons alone. */
+  .hex-emblem { display: none; }
+  /* No room for the tether at this height — the plate sits close enough
+     to the buttons to read as one cluster on its own. */
+  .seed-link { display: none; }
+
+  .seed-plate { padding: 2px 6px 2px 5px; gap: 5px; }
+  .seed-plate-tag { font-size: 8px; letter-spacing: 0.16em; gap: 3px; }
+  .seed-bar { padding: 2px 3px 2px 6px; gap: 4px; }
+  .seed-icon { width: 12px; height: 12px; min-width: 12px; min-height: 12px; }
+  .seed-label { display: none; }
+  .seed-input { width: 28cqw; min-width: 0; font-size: 10px; }
+  .seed-edit { width: 20px; height: 20px; min-width: 20px; min-height: 20px; }
+  .seed-shuffle { width: 22px; height: 22px; min-width: 22px; min-height: 22px; --cut: 3px; }
+
+  .dock { gap: 5px; bottom: 6px; }
+  .dock-btn { width: 21.5cqw; min-width: 0; height: 26px; min-height: 26px; gap: 3px; padding: 0 4px; }
+  .dock-icon { width: 13px; height: 13px; min-width: 13px; min-height: 13px; }
+  .dock-label { font-size: 8px; letter-spacing: 0.07em; }
+
+  .gain-pop { font-size: 9px; }
+  .modal-panel { width: 92cqw; max-height: 88cqh; }
+  .modal-panel.modal-wide { width: 94cqw; }
 }
 
 /* ------------------------------------------------------------------ */

@@ -181,7 +181,7 @@ export function TouchControls({
   return <div className="tc-root safe-b safe-x fixed inset-0 z-20 select-none [-webkit-touch-callout:none]" data-mirrored={mirrored ? "1" : "0"} onContextMenu={e => e.preventDefault()}>{<div ref={zoneRef} className="pointer-events-auto absolute bottom-0 left-0 h-[45%] w-[40%] touch-none" onPointerDown={onStickDown} onPointerMove={onStickMove} onPointerUp={releaseStick} onPointerCancel={releaseStick}>{<div ref={hintElRef} className="pointer-events-none absolute bottom-16 left-6 flex items-center justify-center rounded-full border border-dashed border-white/15 opacity-100 transition-opacity duration-300" style={{
         width: "var(--tc-hint)",
         height: "var(--tc-hint)"
-      }}>{<span className="text-[9px] uppercase tracking-[0.35em] text-white/25">{tapToCast ? "Move · Aim" : "Move"}</span>}</div>}{<div ref={stickElRef} className="pointer-events-none absolute opacity-0 transition-opacity duration-200" style={{
+      }}>{<span className="text-[9px] uppercase tracking-[0.35em] text-white/40">{tapToCast ? "Move · Aim" : "Move"}</span>}</div>}{<div ref={stickElRef} className="pointer-events-none absolute opacity-0 transition-opacity duration-200" style={{
         left: stickPos.x - STICK_BASE / 2,
         top: stickPos.y - STICK_BASE / 2,
         width: STICK_BASE,
@@ -196,12 +196,12 @@ export function TouchControls({
       }} {...holdHandlers("castHeld")}>{<div className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">{<div className="absolute inset-x-0 top-0 rounded-full bg-black/75" style={{
             height: `${veil * 100}%`,
             opacity: veil > 0.02 ? 1 : 0
-          }} />}</div>}{<Crosshair className="relative size-8 text-[#f5c96b]" />}{<span className="relative text-[8px] font-bold uppercase tracking-[0.2em] text-[#f5c96b]/80">Cast</span>}</TouchButton>}{<TouchButton label="Hold to volley" className="border-[#9a7bff]/60" style={{
+          }} />}</div>}{<Crosshair className="relative size-8 text-[#f5c96b] [filter:drop-shadow(0_0_6px_rgba(245,201,107,0.5))]" />}{<span className="relative text-[8px] font-bold uppercase tracking-[0.2em] text-[#f5c96b]/90">Cast</span>}</TouchButton>}{<TouchButton label="Hold to volley" className="border-[#9a7bff]/60" style={{
         right: `calc(${COL2} + ${SAFE_R})`,
         bottom: `calc(${EDGE} + 4px + ${SAFE_B})`,
         width: "var(--tc-btn)",
         height: "var(--tc-btn)"
-      }} {...holdHandlers("volleyHeld")}>{<Zap className="size-6 text-[#9a7bff]" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#9a7bff]/80">Volley</span>}</TouchButton>}{<TouchButton label="Blink" className="border-[#43e8d8]/60" style={{
+      }} {...holdHandlers("volleyHeld")}>{<Zap className="size-6 text-[#9a7bff]" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#9a7bff]/90">Volley</span>}</TouchButton>}{<TouchButton label="Blink" className="border-[#43e8d8]/60" style={{
         right: `calc(${EDGE} + ${SAFE_R})`,
         bottom: `calc(${EDGE} + var(--tc-cast) + 14px + ${SAFE_B})`,
         width: "var(--tc-btn)",
@@ -209,23 +209,23 @@ export function TouchControls({
         opacity: blinkCd >= 1 ? 1 : 0.4
       }} {...tapHandlers(() => {
         fireEdge(input, "blink");
-      })}>{<Wind className="size-6 text-[#43e8d8]" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#43e8d8]/80">Blink</span>}</TouchButton>}{<TouchButton label="Surge" className={cn("border-white/10", surgeReady && "border-[#43e8d8]/70 shadow-[0_0_26px_rgba(67,232,216,0.35)]")} style={{
+      })}>{<Wind className="size-6 text-[#43e8d8]" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#43e8d8]/90">Blink</span>}</TouchButton>}{<TouchButton label="Surge" className={cn("border-white/10", surgeReady && "border-[#43e8d8]/70 shadow-[0_0_26px_rgba(67,232,216,0.35)]")} style={{
         right: `calc(${COL2} + ${SAFE_R})`,
         bottom: `calc(${EDGE} + var(--tc-cast) + 20px + ${SAFE_B})`,
         width: "var(--tc-btn)",
         height: "var(--tc-btn)"
       }} {...tapHandlers(() => {
         fireEdge(input, "surge");
-      })}>{<svg viewBox="0 0 68 68" className="pointer-events-none absolute inset-0 -rotate-90">{<circle cx="34" cy="34" r="30" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3" />}{<circle cx="34" cy="34" r="30" fill="none" stroke="#43e8d8" strokeWidth="3" strokeLinecap="round" strokeDasharray={2 * Math.PI * 30} strokeDashoffset={2 * Math.PI * 30 * (1 - Math.min(1, Math.max(0, surge)))} style={{
+      })}>{<svg viewBox="0 0 68 68" className="pointer-events-none absolute inset-0 -rotate-90">{<circle cx="34" cy="34" r="30" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="3" />}{<circle cx="34" cy="34" r="30" fill="none" stroke="#43e8d8" strokeWidth="3" strokeLinecap="round" strokeDasharray={2 * Math.PI * 30} strokeDashoffset={2 * Math.PI * 30 * (1 - Math.min(1, Math.max(0, surge)))} style={{
             filter: surgeReady ? "drop-shadow(0 0 6px #43e8d8)" : undefined
-          }} />}</svg>}{<Sparkles className={cn("relative size-6 text-[#43e8d8]", surgeReady && "animate-pulse")} />}{<span className="relative text-[8px] font-bold uppercase tracking-[0.2em] text-[#43e8d8]/80">Surge</span>}</TouchButton>}{<TouchButton label="Cycle spell" className="border-white/25" style={{
+          }} />}</svg>}{<Sparkles className={cn("relative size-6 text-[#43e8d8]", surgeReady && "animate-pulse")} />}{<span className="relative text-[8px] font-bold uppercase tracking-[0.2em] text-[#43e8d8]/90">Surge</span>}</TouchButton>}{<TouchButton label="Cycle spell" className="border-white/25" style={{
         right: `calc(${COL2} + ${SAFE_R})`,
         bottom: `calc(${EDGE} + var(--tc-cast) + var(--tc-btn) + 34px + ${SAFE_B})`,
         width: "var(--tc-mini)",
         height: "var(--tc-mini)"
       }} {...tapHandlers(() => {
         fireCycle(input);
-      })}>{<Repeat className="size-5 text-white/70" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/50">Spell</span>}</TouchButton>}</div>}</div>;
+      })}>{<Repeat className="size-5 text-white/70" />}{<span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/60">Spell</span>}</TouchButton>}</div>}</div>;
 }
 /** Round translucent touch button — ≥56px target, scales down while active. */function TouchButton({
   className,

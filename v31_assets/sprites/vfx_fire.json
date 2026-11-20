@@ -1,0 +1,125 @@
+{
+  "assetId": "vfx_fire",
+  "name": "Fire Spell VFX",
+  "category": "vfx",
+  "subtitle": "Pyre Bolt cast, projectile, explosion & fire ring embers",
+  "sheetUrl": "/assets/sprites/vfx_fire.png",
+  "manifestUrl": "/assets/sprites/vfx_fire.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 5,
+  "rows": 4,
+  "animations": [
+    {
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 12,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 5,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "vfx",
+    "64x64",
+    "transparent"
+  ],
+  "integratedInDemo": true
+}

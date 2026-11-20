@@ -652,8 +652,8 @@ export class BillboardSprite {
     this.applyFrameUV();
   }
 
-  tint(color: string | number): void {
-    this.baseColor.set(color as THREE.ColorRepresentation);
+  tint(color: THREE.ColorRepresentation): void {
+    this.baseColor.set(color);
   }
 
   private applyFrameUV(): void {

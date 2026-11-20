@@ -88,6 +88,8 @@ export function startTitleScreen(root: HTMLElement, hooks: TitleHooks = {}): Tit
      (or land on the standalone seed splash when no host hook is wired). */
   let runBusy = false;
   function beginRun(seed: string): void {
+    /* TEMP FORENSICS: who called beginRun without a click? */
+    console.warn("[FORENSICS] beginRun called seed=", seed, "\nSTACK:\n", new Error().stack ?? "n/a");
     if (runBusy) return;
     runBusy = true;
     ui.setTransitionLock(true);

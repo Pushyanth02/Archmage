@@ -2,7 +2,13 @@ import * as THREE from "three";
 import { hexNum, ENEMY_DEFS, scaleEnemy, ELITE_DEFS, FOE_MOVE_SPEED_SCALE, MERCY_HP, MERCY_SPD, type EliteAffix, type EnemyDef, type EnemyType, type BossDef } from "./content";
 import type { AssetSystem } from "./assets";
 import { BillboardSprite, getSheet, type PixelKind } from "./pixelsprites";
+import { V31Sprite, v31Sheet, V31_BOSS_BY_BRAIN, V31_ENEMY_BY_BODY, V31_ENEMY_BY_TYPE, type V31Sheet } from "./v31sheets";
 import type { BossState, Enemy, SimContext, Hazard } from "./sim";
+
+/** Any billboard the engine may drive — the v3.1 validated sheets (V31Sprite)
+ *  or the procedural canvas fallbacks (BillboardSprite). Both expose the
+ *  same surface: state/face/flash + update/faceCamera/tint/setOpacity. */
+export type EntitySprite = BillboardSprite | V31Sprite;
 
 /* ARCHMAGE: RIFTBOUND (3D Edition) — EnemySystem: 19 foe types (8 AI archetypes) + 5 tyrant brains.
    Owns enemy entities, their 3D bodies, status effects (burn/poison/slow),
@@ -136,6 +142,32 @@ const FOE_MELEE_LEAD = 0.15; // strike lands this far ahead of the wind-up
 /* v3.0 — the shared maps/types the pixel-sprite system still needs
    (formerly interleaved with the retired clip machinery). */
 const foeKinds = new WeakMap<THREE.Group, PixelKind>();
+/** V3.1 asset id per foe group ("enemy_wraith"…) — null for procedural kinds. */
+const v31Ids = new WeakMap<THREE.Group, string | null>();
+
+/** V3.1 world-space BODY heights (the plane is sized via each manifest's
+ *  body fraction, so these match the old chibi scale language). */
+const V31_HEIGHTS: Record<string, number> = {
+  enemy_skeleton_warrior: 2.3,
+  enemy_cultist_acolyte: 2.3,
+  enemy_shieldbone_knight: 2.5,
+  enemy_necromancer: 2.4,
+  enemy_wraith: 2.2,
+  enemy_bone_archer: 2.3,
+  enemy_plaguebearer: 2.2,
+  enemy_flesh_construct: 2.75,
+  boss_bone_regent: 5.4,
+  boss_rift_leviathan: 5.0,
+  boss_blight_colossus: 5.8,
+};
+
+/** Pick the V3.1 asset id for a foe: type overrides first (flavored picks),
+ *  then the generic body map. "swarmlet" bodies have no V3.1 equivalent —
+ *  the procedural bat reads better at that size — so they map to null. */
+function v31AssetFor(def: EnemyDef, isBoss: boolean, bossBrain?: BossDef["brain"]): string | null {
+  if (isBoss) return V31_BOSS_BY_BRAIN[bossBrain ?? "charger"] ?? null;
+  return V31_ENEMY_BY_TYPE[def.type] ?? V31_ENEMY_BY_BODY[def.body] ?? null;
+}
 interface DyingBody {
   e: Enemy;
   anim: null;
@@ -184,10 +216,12 @@ function dyingDuration(e: Enemy, style: string): number {
 function beginDyingBody(sys: EnemySystem, e: Enemy): void {
   /* cap: oldest finishes instantly when the pool would overflow */while (sys.dyingCount() >= MAX_DYING) sys.finishOldestDying();
   const mk = foeKinds.get(e.group) ?? null;
-  /* death style by pixel kind: wraiths disperse, oozes deflate, plants wilt,
-   everything else topples — the sprite's death frames play underneath */
+  const vid = v31Ids.get(e.group) ?? null;
+  /* death style by kind: wraiths (both sprite families) disperse, oozes
+   deflate, plants wilt, everything else topples — the sprite's death
+   frames play underneath */
   let style: DyingBody["style"] = "fall";
-  if (mk === "wraith") style = "ghost";else if (mk === "ooze" || mk === "swarm") style = "slime";else if (mk === "plant") style = "plant";
+  if (mk === "wraith" || vid === "enemy_wraith" || vid === "boss_rift_leviathan") style = "ghost";else if (mk === "ooze" || mk === "swarm") style = "slime";else if (mk === "plant") style = "plant";
   /* clear the interaction layers so no tell/coil/bar survives on the corpse */
   fireTells.delete(e.group);
   coils.delete(e.group);
@@ -410,8 +444,9 @@ const BOSS_BODY: Record<BossDef["brain"], EnemyDef["body"]> = {
 };
 export interface EnemyBody {
   group: THREE.Group;
-  /** v3.0: the chibi pixel billboard (the whole visual body). */
-  sprite: BillboardSprite;
+  /** the pixel billboard — a V3.1 validated sheet when loaded, else the
+   *  procedural canvas painter (seamless swap-in, identical surface). */
+  sprite: EntitySprite;
 }
 
 /* ------------------- v3.0 pixel-billboard bodies ----------------------- */
@@ -456,12 +491,39 @@ export function buildEnemyBody(def: EnemyDef, colorHex: number, elite: EliteAffi
   const bodyRoot = new THREE.Group();
   group.add(bodyRoot);
   bodyRoots.set(group, bodyRoot);
-  /* the pixel kind: bosses by brain, foes by body (flying swarmlets read as
-   bats); elites recolor through the tinted sheet variant. */
-  const kind: PixelKind = isBoss ? BOSS_SPRITE[bossBrain ?? "charger"] : def.flying && BODY_KIND[def.body] === "swarm" ? "bat" : BODY_KIND[def.body] ?? "imp";
-  const sheet = getSheet(kind, elite ? ELITE_DEFS[elite].color : null);
-  const height = spriteHeight(kind, def, isBoss) * (elite ? 1.12 : 1);
-  const sprite = new BillboardSprite(sheet, height);
+  /* the pixel kind: V3.1 validated sheet when it has settled (bosses by
+   *  brain, foes by type/body flavor), else the procedural painter
+   *  (flying swarmlets always read as bats). Elites recolor — V3.1 via a
+   *  material tint, procedural via the tinted sheet variant. */
+  const v31Id = v31AssetFor(def, isBoss, bossBrain);
+  const v31: V31Sheet | null = v31Id ? v31Sheet(v31Id) : null;
+  let sprite: EntitySprite;
+  let kind: PixelKind;
+  /* sprite height in world units — set by both branches below; the HP bar
+   * and any later flourishes hang off this single number (fix: it used to
+   * live only in the procedural branch, so V3.1-sheet spawns crashed with
+   * `height is not defined`). */
+  let height: number;
+  if (v31 && v31Id) {
+    const bodyH = (V31_HEIGHTS[v31Id] ?? (isBoss ? 5.4 : 2.3)) * (elite ? 1.12 : 1);
+    height = bodyH;
+    const spr = new V31Sprite(v31, { bodyHeight: bodyH });
+    if (elite) {
+      /* elite wash: the affix hue lerped well toward white so the pixel
+       * art stays readable under the recolor */
+      const c = new THREE.Color(ELITE_DEFS[elite].color).lerp(new THREE.Color(0xffffff), 0.45);
+      spr.tint(c);
+    }
+    sprite = spr;
+    kind = "imp"; /* unused for V31 foes — flourishes key off v31Ids */
+    v31Ids.set(group, v31Id);
+  } else {
+    kind = isBoss ? BOSS_SPRITE[bossBrain ?? "charger"] : def.flying && BODY_KIND[def.body] === "swarm" ? "bat" : BODY_KIND[def.body] ?? "imp";
+    const sheet = getSheet(kind, elite ? ELITE_DEFS[elite].color : null);
+    height = spriteHeight(kind, def, isBoss) * (elite ? 1.12 : 1);
+    sprite = new BillboardSprite(sheet, height);
+    v31Ids.set(group, null);
+  }
   /* a gentle backward lean toward the fixed follow camera — grounds the
    billboard without a full spherical face (the rig never orbits). */
   sprite.mesh.rotation.x = -0.1;
@@ -1340,7 +1402,8 @@ export class EnemySystem {
         }
       }
       spr.flash = fl;
-      if (mk === "wraith") spr.setOpacity(0.84 + 0.08 * Math.sin(e.bobPhase * 0.9));
+      const ghostly = mk === "wraith" || v31Ids.get(e.group) === "enemy_wraith";
+      if (ghostly) spr.setOpacity(0.84 + 0.08 * Math.sin(e.bobPhase * 0.9));
     }
     /* anticipation coil → release (audit P2-8): during the tell the body
     root scales down + leans toward the shot; on expiry it snaps back
@@ -1375,7 +1438,8 @@ export class EnemySystem {
         rollZ = 0,
         sy = 1,
         sxz = 1;
-      if (mk === "wraith") {
+      const ghostDrift = mk === "wraith" || v31Ids.get(e.group) === "enemy_wraith";
+      if (ghostDrift) {
         const g = updateGhostDrift(e, dt);
         lean += g.pitch;
         rollZ = g.roll;
@@ -1406,6 +1470,10 @@ export class EnemySystem {
       if (atkT > 0) attackPulses.set(e.group, atkT - dt);
       const last = lastPos.get(e.group);
       const moved = last ? Math.hypot(e.x - last.x, e.z - last.z) : 0;
+      /* V3.1 directional art needs the pre-mutation velocity — capture the
+       * displacement before `last` absorbs the new position. */
+      const velX = last ? (e.x - last.x) / dt : 0;
+      const velZ = last ? (e.z - last.z) / dt : 0;
       /* mutate the WeakMap entry in place — one small object per foe per
          LIFETIME, not per frame (~1,800 fresh literals/s at the 30-foe cap) */
       if (last) {
@@ -1416,6 +1484,11 @@ export class EnemySystem {
       }
       spr.face = faceRight;
       spr.state = e.hp <= 0 ? "death" : e.hitFlash > FOE_HIT_TRIGGER ? "hurt" : atkT > 0 ? "attack" : moved > 0.02 ? "walk" : "idle";
+      /* V3.1 sheets carry four-direction art — feed the locomotion intent so
+       * the correct row plays (idle keeps the last facing). */
+      if (spr instanceof V31Sprite && moved > 0.02) {
+        spr.setMotion(velX, velZ);
+      }
       spr.update(dt);
     }
     /* vitals bar — visible once the foe has taken a hit (elites always).

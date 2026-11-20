@@ -1085,7 +1085,7 @@ export class VfxSystem {
       ls.bottom = "0";
       ls.overflow = "hidden";
       ls.pointerEvents = "none";
-      ls.zIndex = "70";
+      ls.zIndex = "25";
       ls.userSelect = "none";
       for (let i = 0; i < DMG_POOL; i++) {
         const el = document.createElement("div");

@@ -1,0 +1,417 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "portraits_classes_tyrants",
+    "name": "Archmage & Tyrant Portraits",
+    "category": "icons",
+    "subtitle": "6 Playable Archmage classes, 3 Active Tyrants & Archmage Hero portrait",
+    "image": "../sprites/portraits_classes_tyrants.png",
+    "size": {
+      "w": 320,
+      "h": 128
+    },
+    "tileSize": {
+      "w": 64,
+      "h": 64
+    },
+    "grid": {
+      "columns": 5,
+      "rows": 2
+    },
+    "totalFrames": 10
+  },
+  "animations": [
+    {
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 5,
+      "fps": 2,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "events": []
+    },
+    {
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 5,
+      "fps": 2,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "events": []
+    }
+  ],
+  "frames": [
+    {
+      "id": "portraits_classes_tyrants_archmage_classes_a_down_00",
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_archmage_classes_a_down_01",
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_archmage_classes_a_down_02",
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_archmage_classes_a_down_03",
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_archmage_classes_a_down_04",
+      "state": "archmage_classes_a",
+      "direction": "down",
+      "row": 0,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_chrono_and_tyrants_down_00",
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_chrono_and_tyrants_down_01",
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_chrono_and_tyrants_down_02",
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_chrono_and_tyrants_down_03",
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    },
+    {
+      "id": "portraits_classes_tyrants_chrono_and_tyrants_down_04",
+      "state": "chrono_and_tyrants",
+      "direction": "down",
+      "row": 1,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "durationMs": 500,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "320x128",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 4.23,
+    "outlinePerimeterCoverage": 100,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 0,
+    "hurtboxContainmentPct": 100
+  }
+}

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BatteryCharging, Cross, Flame, Gem, Heart, Shield, Sparkles, Target, Timer, Zap, type LucideIcon } from "lucide-react";
 import { useRiftStore } from "@/game3d/store";
-import { SPELLS, elementColor, evolvedSpellDef, type ElementId } from "@/game3d/content";
+import { SPELLS, comboKey, elementColor, evolvedSpellDef, type ElementId } from "@/game3d/content";
 import { sfx } from "@/game3d/audio";
 import { assetPath } from "@/lib/asset-path";
 import type { EvolveOfferPayload, GateChoice, MergeOfferPayload } from "@/game3d/types";
@@ -13,16 +13,54 @@ import { Badge } from "@/components/ui/badge";
 import { PxPanel, PxBannerTab, PxDiamond, PxFiligree } from "@/components/game3d/pixel";
 import { cn } from "@/lib/utils";
 
-/* ARCHMAGE: RIFTBOUND — v3.0 Pixel Reforged in-run overlays: Banner, Tribute
+/* ARCHMAGE: RIFTBOUND — v3.1 Pixel Reforged in-run overlays: Banner, Tribute
    Gate, Spell Tear Offer, Sacrifice Merge, Evolution. These sit over the
    canvas while the engine holds the sim paused. Props carry engine
    callbacks — GameShell wires them.
    Art direction (concept 07): cards are enchanted panels with notched
    banner tabs (SPELL UPGRADE / BOON / EVOLUTION), hexagonal icon
    medallions, inset stat boxes, trait callouts with roundel icons, diamond
-   finials, and the wizard-sanctum rift vista reading through the veil. */
+   finials, and the wizard-sanctum rift vista reading through the veil.
+   v3.1 pass: pixel element/relic icons, a preview sidebar with the live
+   build, a bottom action bar, and NEW-resonance badges driven by the codex. */
 
 const GOLD = "#f5c96b";
+
+/* ------------------------------------------------------------------ */
+/*  v3.1 ASSET MAP — code element ids → deployed pixel icon files.    */
+/*  (mirrors HUD.tsx; blood/sonic fall back to the legacy 64px set)   */
+/* ------------------------------------------------------------------ */
+const V31_ELEMENT: Record<string, string> = {
+  fire: "ember",
+  ice: "frost",
+  lightning: "volt",
+  nature: "vitality"
+};
+const V31_ONE_TO_ONE = new Set(["earth", "shadow", "light", "time", "void", "arcane", "wind"]);
+function elementIconSrc(el: string): string {
+  if (!el) return "";
+  if (V31_ONE_TO_ONE.has(el)) return assetPath(`/assets/v31/icons/element-${el}.png`);
+  const renamed = V31_ELEMENT[el];
+  if (renamed) return assetPath(`/assets/v31/icons/element-${renamed}.png`);
+  return assetPath(`/assets/icons/element-${el}.png`);
+}
+/** first (primary) element of an equipped slot — "a" or {merged:[a,b]}[0] */
+function primaryElement(slot: string | { merged: string[] } | null | undefined): string | null {
+  if (!slot) return null;
+  return typeof slot === "string" ? slot : slot.merged[0] ?? null;
+}
+/* Pixel icon swap for tribute boons — hex medallions carry the v3.1 art
+ * wherever a boon maps cleanly onto a deployed icon; the rest stay lucide. */
+const GATE_PIXMAP: Record<string, string> = {
+  heart: "/assets/v31/icons/heart.png",
+  cross: "/assets/v31/icons/flask.png",
+  flame: "/assets/v31/icons/element-ember.png",
+  sparkles: "/assets/v31/icons/element-arcane.png",
+  zap: "/assets/v31/icons/element-volt.png",
+  timer: "/assets/v31/icons/element-time.png",
+  gem: "/assets/v31/icons/crystal.png",
+  shield: "/assets/v31/relics/amulet.png"
+};
 
 /* ------------------------------------------------------------------ */
 /*  SPELL TRADE-OFF COPY — one honest mechanical line per element      */
@@ -178,6 +216,7 @@ export function TributeGateOverlay({
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-5">
           {choices.map((c, idx) => {
             const Icon = GATE_ICONS[c.icon] ?? Sparkles;
+            const pix = GATE_PIXMAP[c.icon];
             return (
               <motion.button
                 type="button"
@@ -194,7 +233,12 @@ export function TributeGateOverlay({
                 <PxBannerTab color="gold">Boon</PxBannerTab>
                 {c.tier > 0 && <Badge className="absolute right-3 top-3 border-[#d9a441]/40 bg-[#241a3a]/90 font-mono text-[10px] text-[#f0c060]">HELD ×{c.tier}</Badge>}
                 <div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(circle at 50% 15%, ${c.color}1e, transparent 70%)` }} />
-                <HexMedallion color={c.color} icon={<Icon className="size-7" />} />
+                <HexMedallion
+                  color={c.color}
+                  icon={pix
+                    ? <img src={assetPath(pix)} alt="" width={30} height={30} draggable={false} className="size-[30px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${c.color}aa)` }} />
+                    : <Icon className="size-7" />}
+                />
                 <div className="relative text-center">
                   <div className="font-serif text-base font-bold uppercase tracking-[0.16em]" style={{ color: c.color, textShadow: `0 0 16px ${c.color}44` }}>{c.name}</div>
                   <div className="mt-1.5 text-xs leading-relaxed text-[#d8cfe8]/75">{c.desc}</div>
@@ -232,7 +276,9 @@ interface SlotInfo {
 }
 
 /** Compact equip slot plate — a SELECTABLE destination in the spell offer
- *  (R-07). Styled as the concept-07 "YOUR BUILD (SO FAR)" rune circles. */
+ *  (R-07). Styled as the concept-07 "YOUR BUILD (SO FAR)" rune circles:
+ *  a hex-rimmed pixel icon + spell name + fused badge, vertical and tidy
+ *  enough for the preview sidebar. */
 function EquipSlotPlate({
   index,
   slot,
@@ -245,7 +291,7 @@ function EquipSlotPlate({
   onSelect: (i: number) => void;
 }) {
   const info = slotInfo(slot);
-  const primary = info.empty ? null : typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
+  const primary = primaryElement(slot);
   return (
     <button
       type="button"
@@ -253,22 +299,39 @@ function EquipSlotPlate({
       aria-pressed={selected}
       aria-label={`Destination slot ${index + 1}${info.empty ? ", empty" : `, replacing ${info.name}`}`}
       className={cn(
-        "relative flex min-h-11 flex-1 cursor-pointer flex-col items-center gap-1.5 rounded-lg border bg-[#0e0817]/85 px-3 py-2.5 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c060]",
-        selected ? "-translate-y-0.5" : "hover:-translate-y-0.5"
+        "relative flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-lg border bg-[#0e0817]/85 px-3 py-2.5 text-left transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c060]",
+        selected ? "-translate-y-0.5 border-2" : "hover:-translate-y-0.5"
       )}
       style={{
         borderColor: selected ? "rgba(240,192,96,0.95)" : info.empty ? "rgba(58,44,104,0.8)" : `${info.colors[0]}66`,
         boxShadow: selected ? "0 0 22px rgba(240,192,96,0.28)" : "none"
       }}
     >
-      <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#9a8fb5]/70">Slot {index + 1}</span>
-      {primary ? (
-        <img src={assetPath(`/assets/icons/element-${primary}.png`)} alt="" width={30} height={30} className="h-[30px] w-[30px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 7px ${info.colors[0]}aa)` }} />
-      ) : (
-        <div className="flex h-[30px] items-center justify-center"><span className="text-lg font-black text-white/20">+</span></div>
-      )}
-      {info.fused && <Badge className="border-[#d9a441]/40 bg-[#d9a441]/10 px-1.5 text-[8px] font-bold uppercase tracking-wider text-[#f0c060]">Fused</Badge>}
-      <span className={cn("text-center text-[11px] font-semibold leading-tight", info.empty ? "text-[#9a8fb5]/50" : "text-[#f2e8c9]")}>{info.empty ? "Empty — bind here" : info.name}</span>
+      <span
+        aria-hidden
+        className="flex size-11 shrink-0 items-center justify-center bg-[#100a1e]"
+        style={{
+          clipPath: "polygon(50% 0,94% 26%,94% 74%,50% 100%,6% 74%,6% 26%)",
+          background: info.empty ? "rgba(58,44,104,0.6)" : `linear-gradient(180deg, ${info.colors[0]}, ${info.colors[info.colors.length - 1]}88)`,
+          padding: 2,
+          boxShadow: info.empty ? undefined : `0 0 16px ${info.colors[0]}44`
+        }}
+      >
+        {primary ? (
+          <img src={elementIconSrc(primary)} alt="" width={26} height={26} draggable={false} className="size-[26px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 6px ${info.colors[0]}aa)` }} />
+        ) : (
+          <span className="text-lg font-black text-white/20">+</span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2">
+          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#9a8fb5]/70">Slot {index + 1}</span>
+          {info.fused && <Badge className="border-[#d9a441]/40 bg-[#d9a441]/10 px-1.5 text-[8px] font-bold uppercase tracking-wider text-[#f0c060]">Fused</Badge>}
+        </span>
+        <span className={cn("mt-0.5 block truncate text-[12px] font-semibold leading-tight", info.empty ? "text-[#9a8fb5]/50" : "text-[#f2e8c9]")}>
+          {info.empty ? "Empty — bind here" : info.name}
+        </span>
+      </span>
       {selected && <Badge className="absolute -top-2 right-2 bg-[#f0c060] text-[8px] font-bold uppercase tracking-wider text-[#1e1430]">Destination</Badge>}
     </button>
   );
@@ -327,7 +390,7 @@ export function SpellOfferOverlay({
     <div className="dark fixed inset-0 z-40 flex items-center justify-center overflow-y-auto px-4 safe-b-4 pt-4 max-sm:items-end">
       <SanctumBackdrop />
       <motion.div
-        className="relative my-auto flex max-sm:my-0 max-sm:pb-2 w-full max-w-4xl flex-col items-center gap-5 py-2"
+        className="relative my-auto flex max-sm:my-0 max-sm:pb-2 w-full max-w-5xl flex-col items-center gap-5 py-2"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
@@ -337,73 +400,83 @@ export function SpellOfferOverlay({
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl sm:tracking-[0.14em]">Rift Upgrade</h2>
           <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9a8fb5]">The rift offers new power — bind it, or leave it to the dark.</p>
         </div>
-        {/* YOUR BUILD (SO FAR) — destination plates */}
-        <div className="flex w-full max-w-2xl flex-col gap-2">
-          <div className="flex items-center justify-center gap-3">
-            <PxFiligree width="w-8" />
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#f0c060]">Your build (so far)</span>
-            <PxFiligree width="w-8" />
-          </div>
-          <div className="flex w-full flex-wrap gap-2">
-            {equipped.slice(0, 3).map((slot, i) => <EquipSlotPlate index={i} slot={slot} selected={target === i} onSelect={setTarget} key={i} />)}
-          </div>
-          <p role="status" aria-live="polite" className="min-h-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9a8fb5]">
-            {target < 0 ? "All three slots are bound — choose which spell to replace" : replacing ? `Replacing ${targetInfo.name} in Slot ${target + 1}` : `Binding to Slot ${target + 1} — an empty slot`}
-          </p>
-        </div>
-        {/* the three spell cards */}
-        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
-          {pool.map((el, i) => {
-            const d = SPELLS[el as ElementId];
-            if (!d) return null;
-            const elementId = el as ElementId;
-            const col = elementColor(el);
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.09, duration: 0.3, ease: "easeOut" }}
-                className="px-panel relative flex flex-col gap-3 p-4 pt-7"
-                style={{ borderColor: `${col}80` }}
-                key={el}
-              >
-                <PxBannerTab color="gold">Spell Upgrade</PxBannerTab>
-                <div aria-hidden className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full opacity-20 blur-2xl" style={{ backgroundColor: col }} />
-                <div className="flex items-center gap-3">
-                  <HexMedallion color={col} icon={<img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={34} height={34} className="h-[34px] w-[34px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${col}aa)` }} />} />
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-serif truncate text-lg font-bold leading-tight text-[#f2e8c9]">{d.name}</h3>
-                    <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: col }}>{el} · {d.tagline}</p>
-                  </div>
-                </div>
-                <p className="flex-1 text-xs leading-relaxed text-[#d8cfe8]/70">{d.desc}</p>
-                <TraitCallout color={col} icon={<Sparkles className="size-3.5" />} text={ELEMENT_HINTS[elementId]} />
-                <div className="grid grid-cols-3 gap-2">
-                  <StatBox label="Aether" value={`${d.manaCost}`} color={col} />
-                  <StatBox label="Cooldown" value={`${d.cooldown}s`} />
-                  <StatBox label="Damage" value={d.baseDamage > 0 ? `${d.baseDamage}` : "—"} />
-                </div>
-                <div className="flex justify-center gap-1.5" aria-hidden>
-                  <PxDiamond small /><PxDiamond small /><PxDiamond small />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => pick(el)}
-                  disabled={target < 0}
-                  aria-label={target >= 0 ? `Take ${d.name} into slot ${target + 1}` : `Choose a destination slot for ${d.name} first`}
-                  className="mt-auto h-11 w-full rounded-lg border-2 text-xs font-extrabold uppercase tracking-[0.22em] transition-all active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{ borderColor: `${col}80`, backgroundColor: `${col}16`, color: col, boxShadow: `0 0 18px ${col}22` }}
+        {/* main row: the three spell cards + the preview sidebar (concept 07) */}
+        <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
+          {/* the three spell cards */}
+          <div className="order-2 grid w-full flex-1 grid-cols-1 gap-4 sm:grid-cols-3 lg:order-1">
+            {pool.map((el, i) => {
+              const d = SPELLS[el as ElementId];
+              if (!d) return null;
+              const elementId = el as ElementId;
+              const col = elementColor(el);
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.09, duration: 0.3, ease: "easeOut" }}
+                  className="px-panel relative flex flex-col gap-3 p-4 pt-7"
+                  style={{ borderColor: `${col}80`, boxShadow: `inset 0 0 0 1px rgba(240,192,96,0.18), 0 0 24px ${col}14` }}
+                  key={el}
                 >
-                  {target < 0 ? "Choose a slot above" : replacing ? `Replace Slot ${target + 1}` : `Bind to Slot ${target + 1}`}
-                </button>
-                <span aria-hidden className="px-finial" style={{ borderColor: col, background: `linear-gradient(135deg, ${col}, ${col}88)` }} />
-              </motion.div>
-            );
-          })}
+                  <PxBannerTab color="gold">Spell Upgrade</PxBannerTab>
+                  <div aria-hidden className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full opacity-20 blur-2xl" style={{ backgroundColor: col }} />
+                  <div className="flex items-center gap-3">
+                    <HexMedallion color={col} icon={<img src={elementIconSrc(el)} alt="" width={34} height={34} draggable={false} className="h-[34px] w-[34px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${col}aa)` }} />} />
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-serif truncate text-lg font-bold leading-tight text-[#f2e8c9]">{d.name}</h3>
+                      <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: col }}>{el} · {d.tagline}</p>
+                    </div>
+                  </div>
+                  <p className="flex-1 text-xs leading-relaxed text-[#d8cfe8]/70">{d.desc}</p>
+                  <TraitCallout color={col} icon={<Sparkles className="size-3.5" />} text={ELEMENT_HINTS[elementId]} />
+                  <div className="grid grid-cols-3 gap-2">
+                    <StatBox label="Aether" value={`${d.manaCost}`} color={col} />
+                    <StatBox label="Cooldown" value={`${d.cooldown}s`} />
+                    <StatBox label="Damage" value={d.baseDamage > 0 ? `${d.baseDamage}` : "—"} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => pick(el)}
+                    disabled={target < 0}
+                    aria-label={target >= 0 ? `Take ${d.name} into slot ${target + 1}` : `Choose a destination slot for ${d.name} first`}
+                    className="mt-auto h-11 w-full rounded-lg border-2 text-xs font-extrabold uppercase tracking-[0.22em] transition-all active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
+                    style={{ borderColor: `${col}80`, backgroundColor: `${col}16`, color: col, boxShadow: `0 0 18px ${col}22` }}
+                  >
+                    {target < 0 ? "Choose a slot" : replacing ? `Replace Slot ${target + 1}` : `Bind to Slot ${target + 1}`}
+                  </button>
+                  <span aria-hidden className="px-finial" style={{ borderColor: col, background: `linear-gradient(135deg, ${col}, ${col}88)` }} />
+                </motion.div>
+              );
+            })}
+          </div>
+          {/* preview sidebar — your build (so far) + destination state */}
+          <aside className="order-1 flex w-full flex-col gap-2.5 lg:order-2 lg:w-64 lg:shrink-0">
+            <PxPanel className="flex flex-col gap-2 p-3 pt-4">
+              <PxBannerTab color="violet">Your Build</PxBannerTab>
+              <div className="flex flex-col gap-2">
+                {equipped.slice(0, 3).map((slot, i) => <EquipSlotPlate index={i} slot={slot} selected={target === i} onSelect={setTarget} key={i} />)}
+              </div>
+              <p role="status" aria-live="polite" className="min-h-5 text-center text-[10px] font-semibold uppercase tracking-[0.14em] leading-snug text-[#9a8fb5]">
+                {target < 0 ? "All three slots bound — choose which spell to replace" : replacing ? `Replacing ${targetInfo.name} in Slot ${target + 1}` : `Binding to Slot ${target + 1} — an empty slot`}
+              </p>
+            </PxPanel>
+            <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3 py-2.5">
+              <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#9a8fb5]">
+                <PxDiamond small className="opacity-70" />
+                Keys — 1 · 2 · 3 pick the destination
+              </div>
+              <p className="mt-1 text-[10px] leading-relaxed text-[#9a8fb5]/70">A bound spell fights beside you until the rift offers its replacement.</p>
+            </div>
+          </aside>
         </div>
-        <button type="button" onClick={skip} className="min-h-11 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]/60 transition-colors hover:text-[#d8cfe8]">
-          Leave it to the dark
-        </button>
+        {/* bottom action bar (concept 07) */}
+        <div className="flex w-full items-center justify-center gap-4">
+          <PxFiligree width="w-16" />
+          <button type="button" onClick={skip} className="min-h-11 rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-5 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]/70 transition-colors hover:border-[#9a8fb5]/50 hover:text-[#d8cfe8]">
+            Leave it to the dark
+          </button>
+          <PxFiligree width="w-16" />
+        </div>
       </motion.div>
     </div>
   );
@@ -418,7 +491,13 @@ export function MergeOverlay({
 }) {
   const [selected, setSelected] = useState<number[]>([]);
   const reduceMotion = useReducedMotion() ?? false; // gate the idle orb pulse loop
+  /* the codex knows every resonance ever woven — when the pair on the table
+   * would weave something UNSEEN, the orb earns its NEW badge (concept 07) */
+  const combosFound = useRiftStore(s => s.meta.combosFound);
   const ready = selected.length === 2;
+  const elA = ready ? primaryElement(offer.equipped[selected[0]]) : null;
+  const elB = ready ? primaryElement(offer.equipped[selected[1]]) : null;
+  const isNewResonance = !!(elA && elB && !combosFound.includes(comboKey(elA, elB)));
   const toggle = (i: number) => {
     sfx.hover();
     setSelected(prev => prev.includes(i) ? prev.filter(x => x !== i) : prev.length >= 2 ? [prev[1], i] : [...prev, i]);
@@ -450,11 +529,20 @@ export function MergeOverlay({
             <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#c9b8e8]">The sacrifice merge</span>
             <PxFiligree width="w-10" />
           </div>
-          <div className="relative mt-2 font-serif text-xl font-bold text-[#c9a0ff] [text-shadow:0_0_22px_rgba(166,107,240,0.5)]">{offer.resonanceName}</div>
+          <div className="relative mt-2 flex items-center justify-center gap-2 font-serif text-xl font-bold text-[#c9a0ff] [text-shadow:0_0_22px_rgba(166,107,240,0.5)]">
+            {offer.resonanceName}
+            {ready && isNewResonance && (
+              <Badge className="border-[#f0c060]/70 bg-gradient-to-b from-[#4a3410] to-[#2a1c06] text-[9px] font-black uppercase tracking-[0.18em] text-[#ffd97a]">New</Badge>
+            )}
+          </div>
           <p className="relative mt-1 text-xs italic text-[#9a8fb5]">{offer.resonanceLore}</p>
         </div>
-        {/* the resonance orb */}
-        <div className="flex h-24 items-center justify-center">
+        {/* the resonance orb — double-ringed (gold over violet) when the
+         * pair weaves something the codex has never seen */}
+        <div className="relative flex h-28 items-center justify-center">
+          {ready && isNewResonance && (
+            <span aria-hidden className="absolute size-[104px] rounded-full border-2 border-[#f0c060]/60" style={{ boxShadow: "0 0 26px rgba(240,192,96,0.35), inset 0 0 18px rgba(166,107,240,0.25)" }} />
+          )}
           <motion.div
             className="relative size-20 rounded-full border-2"
             animate={ready && !reduceMotion ? {
@@ -477,6 +565,7 @@ export function MergeOverlay({
             const info = slotInfo(slot);
             const isSel = selected.includes(i);
             const canSelect = !info.empty;
+            const el = primaryElement(slot);
             return (
               <motion.button
                 type="button"
@@ -493,9 +582,13 @@ export function MergeOverlay({
                 key={i}
               >
                 <PxBannerTab color={isSel ? "gold" : "violet"}>{isSel ? "Sacrifice" : `Slot ${i + 1}`}</PxBannerTab>
-                <div className="flex items-center gap-1.5">
-                  {info.colors.map((c, ci) => <span className="size-2.5 rotate-45" style={{ backgroundColor: c, boxShadow: `0 0 8px ${c}` }} key={ci} />)}
-                </div>
+                {el ? (
+                  <img src={elementIconSrc(el)} alt="" width={34} height={34} draggable={false} className="size-[34px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${info.colors[0]}aa)` }} />
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    {info.colors.map((c, ci) => <span className="size-2.5 rotate-45" style={{ backgroundColor: c, boxShadow: `0 0 8px ${c}` }} key={ci} />)}
+                  </div>
+                )}
                 <span className={cn("text-center font-serif text-xs font-bold leading-tight sm:text-sm", info.empty ? "text-[#9a8fb5]/50" : "text-[#f2e8c9]")}>{info.name}</span>
                 {info.fused && <Badge className="border-[#d9a441]/40 bg-[#d9a441]/10 px-1.5 text-[8px] font-bold uppercase tracking-wider text-[#f0c060]">Fused</Badge>}
               </motion.button>
@@ -553,7 +646,7 @@ export function EvolveOverlay({
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl sm:tracking-[0.14em]">Evolution</h2>
           <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9a8fb5]">{base.name} has drunk deep of the rift — choose its final form</p>
         </div>
-        <HexMedallion color={col} size={56} icon={<img src={assetPath(`/assets/icons/element-${offer.element}.png`)} alt="" width={36} height={36} className="h-9 w-9 [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 9px ${col}aa)` }} />} />
+        <HexMedallion color={col} size={56} icon={<img src={elementIconSrc(offer.element)} alt="" width={36} height={36} draggable={false} className="h-9 w-9 [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 9px ${col}aa)` }} />} />
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
           {offer.cards.map((evo, i) => {
             const def = evolvedSpellDef(elementId, evo.id);

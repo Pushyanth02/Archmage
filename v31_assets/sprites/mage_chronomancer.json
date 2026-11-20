@@ -1,0 +1,1094 @@
+{
+  "assetId": "mage_chronomancer",
+  "name": "Chronomancer",
+  "category": "mage",
+  "subtitle": "Haloed keeper of Rift time",
+  "sheetUrl": "/assets/sprites/mage_chronomancer.png",
+  "manifestUrl": "/assets/sprites/mage_chronomancer.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 6,
+  "rows": 36,
+  "animations": [
+    {
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "down",
+      "row": 16,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "up",
+      "row": 17,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "left",
+      "row": 18,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "right",
+      "row": 19,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "downed",
+      "direction": "down",
+      "row": 24,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "up",
+      "row": 25,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "left",
+      "row": 26,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "right",
+      "row": 27,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "playable",
+    "64x64",
+    "4-dir",
+    "9-states",
+    "cielab-v3.1"
+  ],
+  "integratedInDemo": true
+}

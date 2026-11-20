@@ -1,0 +1,698 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "icons_pickups_schools",
+    "name": "Pickups & 13 Elemental Schools",
+    "category": "icons",
+    "subtitle": "Vials, Arcane Shards, Gold, Relic Chest & all 13 hexagonal elemental school crests",
+    "image": "../sprites/icons_pickups_schools.png",
+    "size": {
+      "w": 192,
+      "h": 96
+    },
+    "tileSize": {
+      "w": 32,
+      "h": 32
+    },
+    "grid": {
+      "columns": 6,
+      "rows": 3
+    },
+    "totalFrames": 18
+  },
+  "animations": [
+    {
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    },
+    {
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    },
+    {
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    }
+  ],
+  "frames": [
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_00",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_01",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 32,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_02",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_03",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 96,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_04",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_pickups_and_fire_down_05",
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 160,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_00",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_01",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 32,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_02",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 64,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_03",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 96,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_04",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 128,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_a_down_05",
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 160,
+        "y": 32,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_00",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_01",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 32,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_02",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_03",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 96,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_04",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    },
+    {
+      "id": "icons_pickups_schools_elemental_schools_b_down_05",
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 160,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "durationMs": 333,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "192x96",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 4.54,
+    "outlinePerimeterCoverage": 100,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 0,
+    "hurtboxContainmentPct": 100
+  }
+}

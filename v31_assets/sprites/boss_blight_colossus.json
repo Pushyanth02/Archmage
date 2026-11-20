@@ -1,0 +1,958 @@
+{
+  "assetId": "boss_blight_colossus",
+  "name": "Blight Colossus",
+  "category": "boss",
+  "subtitle": "Blighted Marsh Tyrant — Moss-Armored Colossus",
+  "sheetUrl": "/assets/sprites/boss_blight_colossus.png",
+  "manifestUrl": "/assets/sprites/boss_blight_colossus.json",
+  "frameWidth": 128,
+  "frameHeight": 128,
+  "columns": 6,
+  "rows": 32,
+  "animations": [
+    {
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "hover_pulse"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_rune"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "fissure_slam"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "fissure_slam"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "fissure_slam"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "frameCount": 5,
+      "fps": 11,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "fissure_slam"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "down",
+      "row": 16,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "blight_overgrowth"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "up",
+      "row": 17,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "blight_overgrowth"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "left",
+      "row": 18,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "blight_overgrowth"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "phase_transition",
+      "direction": "right",
+      "row": 19,
+      "frameCount": 6,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "blight_overgrowth"
+        },
+        {
+          "frame": 5,
+          "name": "phase2_active"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "down",
+      "row": 20,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "spore_cataclysm"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "up",
+      "row": 21,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "spore_cataclysm"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "left",
+      "row": 22,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "spore_cataclysm"
+        }
+      ]
+    },
+    {
+      "state": "signature",
+      "direction": "right",
+      "row": 23,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "spore_cataclysm"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "down",
+      "row": 24,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "up",
+      "row": 25,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "left",
+      "row": 26,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "right",
+      "row": 27,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": []
+    },
+    {
+      "state": "death",
+      "direction": "down",
+      "row": 28,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "colossus_crumble"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "up",
+      "row": 29,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "colossus_crumble"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "left",
+      "row": 30,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "colossus_crumble"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "right",
+      "row": 31,
+      "frameCount": 6,
+      "fps": 7,
+      "loop": false,
+      "pivot": {
+        "x": 64,
+        "y": 104
+      },
+      "hitbox": {
+        "x": 30,
+        "y": 24,
+        "w": 68,
+        "h": 82
+      },
+      "hurtbox": {
+        "x": 34,
+        "y": 28,
+        "w": 60,
+        "h": 76
+      },
+      "events": [
+        {
+          "frame": 4,
+          "name": "colossus_crumble"
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "tyrant",
+    "batch-2",
+    "128x128",
+    "phase-transition",
+    "blighted-marsh"
+  ],
+  "integratedInDemo": true
+}

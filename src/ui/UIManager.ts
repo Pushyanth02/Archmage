@@ -225,6 +225,82 @@ const MODAL_TITLES: Record<ModalKind, string> = {
 };
 
 /* ------------------------------------------------------------------ */
+/* V3.1 pixel-asset catalogues (served from /assets/v31)                */
+/* ------------------------------------------------------------------ */
+
+interface CatalogEntry {
+  src: string;
+  name: string;
+}
+
+/** Vault relics. Note: the sheet's `amulet.png` draws a ring and its
+    `ring.png` draws a pendant — the labels below follow the art. */
+const VAULT_RELICS: Array<CatalogEntry & { owned: boolean }> = [
+  { src: "/assets/v31/relics/staff_storm.png", name: "Staff of the Tempest", owned: true },
+  { src: "/assets/v31/relics/grimoire.png", name: "Grimoire of Rifts", owned: true },
+  { src: "/assets/v31/relics/amulet.png", name: "Ring of the Ruby Oath", owned: true },
+  { src: "/assets/v31/relics/chalice.png", name: "Chalice of Dawn", owned: true },
+  { src: "/assets/v31/relics/staff_fire.png", name: "Staff of Embers", owned: false },
+  { src: "/assets/v31/relics/staff_ice.png", name: "Staff of Deep Frost", owned: false },
+  { src: "/assets/v31/relics/staff_void.png", name: "Staff of the Hollow Star", owned: false },
+  { src: "/assets/v31/relics/staff_aether.png", name: "Staff of Aether Winds", owned: false },
+  { src: "/assets/v31/relics/staff_chrono.png", name: "Staff of Counted Hours", owned: false },
+  { src: "/assets/v31/relics/ring.png", name: "Amulet of the Rift", owned: false },
+  { src: "/assets/v31/relics/crown.png", name: "Crown of the Pale King", owned: false },
+  { src: "/assets/v31/relics/tome.png", name: "Tome of Forgotten Names", owned: false },
+];
+
+/** Rune crest elements (icons/element-*). */
+const RUNE_ELEMENTS: Array<CatalogEntry> = [
+  { src: "/assets/v31/icons/element-ember.png", name: "Ember" },
+  { src: "/assets/v31/icons/element-frost.png", name: "Frost" },
+  { src: "/assets/v31/icons/element-volt.png", name: "Volt" },
+  { src: "/assets/v31/icons/element-arcane.png", name: "Arcane" },
+  { src: "/assets/v31/icons/element-void.png", name: "Void" },
+  { src: "/assets/v31/icons/element-vitality.png", name: "Vitality" },
+  { src: "/assets/v31/icons/element-wind.png", name: "Wind" },
+  { src: "/assets/v31/icons/element-time.png", name: "Time" },
+  { src: "/assets/v31/icons/element-water.png", name: "Water" },
+  { src: "/assets/v31/icons/element-shadow.png", name: "Shadow" },
+  { src: "/assets/v31/icons/element-light.png", name: "Light" },
+  { src: "/assets/v31/icons/element-earth.png", name: "Earth" },
+];
+
+/** Codex bestiary — playable masters plus the tyrants that seal the rift. */
+const CODEX_MASTERS: Array<CatalogEntry> = [
+  { src: "/assets/v31/portraits/pyromancer.png", name: "Pyromancer" },
+  { src: "/assets/v31/portraits/cryomancer.png", name: "Cryomancer" },
+  { src: "/assets/v31/portraits/stormcaller.png", name: "Stormcaller" },
+  { src: "/assets/v31/portraits/voidweaver.png", name: "Voidweaver" },
+  { src: "/assets/v31/portraits/aethermancer.png", name: "Aethermancer" },
+  { src: "/assets/v31/portraits/chronomancer.png", name: "Chronomancer" },
+];
+const CODEX_TYRANTS: Array<CatalogEntry> = [
+  { src: "/assets/v31/portraits/tyrant_grave.png", name: "Tyrant of the Grave" },
+  { src: "/assets/v31/portraits/bone_regent.png", name: "Bone Regent" },
+  { src: "/assets/v31/portraits/blight_colossus.png", name: "Blight Colossus" },
+  { src: "/assets/v31/portraits/rift_leviathan.png", name: "Rift Leviathan" },
+];
+
+/** Crisp pixel <img> — style.css enforces image-rendering: pixelated. */
+function pixelImg(src: string, alt: string): HTMLImageElement {
+  const img = document.createElement("img");
+  img.src = src;
+  img.alt = alt;
+  img.decoding = "async";
+  img.className = "px-img";
+  return img;
+}
+
+/** Small caps section header inside a modal body. */
+function sectionHeader(text: string): HTMLHeadingElement {
+  const h = document.createElement("h3");
+  h.className = "modal-section";
+  h.textContent = text;
+  return h;
+}
+
+/* ------------------------------------------------------------------ */
 /* UIManager                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -512,6 +588,10 @@ export class UIManager {
 
     const panel = document.createElement("div");
     panel.className = "modal-panel frame-gold ch-tlbr";
+    /* Grid-heavy catalogues (vault / runes / codex) get the wide body. */
+    if (kind === "vault" || kind === "runes" || kind === "codex") {
+      panel.classList.add("modal-wide");
+    }
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
     panel.setAttribute("aria-label", MODAL_TITLES[kind]);
@@ -628,6 +708,24 @@ export class UIManager {
           row("Gems", fmt.format(this.currency.gems)),
           row("Gold", fmt.format(this.currency.gold)),
         );
+        body.appendChild(sectionHeader("Relic Cabinet"));
+        const grid = document.createElement("div");
+        grid.className = "relic-grid";
+        for (const relic of VAULT_RELICS) {
+          const tile = document.createElement("div");
+          tile.className = `relic-tile frame-gold ch-tlbr${relic.owned ? "" : " locked"}`;
+          tile.appendChild(pixelImg(relic.src, relic.name));
+          const name = document.createElement("span");
+          name.className = "relic-name";
+          name.textContent = relic.name;
+          const tag = document.createElement("span");
+          tag.className = "relic-tag";
+          tag.textContent = relic.owned ? "OWNED" : "SEALED";
+          tile.append(name, tag);
+          tile.title = relic.owned ? relic.name : `${relic.name} — sealed`;
+          grid.appendChild(tile);
+        }
+        body.appendChild(grid);
         const claim = actionBtn("CLAIM DAILY TRIBUTE", () => {
           const from = this.currency.gold;
           this.currency.gold = from + 250;
@@ -643,25 +741,7 @@ export class UIManager {
         body.append(row("Active seed", this.seed.value, "mono"));
         const sigilRow = document.createElement("div");
         sigilRow.className = "sigil-row";
-        for (const s of seedSigils(this.seed.value)) {
-          const tile = document.createElement("div");
-          tile.className = "sigil-tile frame-gold ch-tlbr";
-          const glyph = document.createElement("span");
-          glyph.className = "sigil-glyph";
-          glyph.textContent = s.glyph;
-          const name = document.createElement("span");
-          name.className = "sigil-name";
-          name.textContent = s.name;
-          tile.append(glyph, name);
-          tile.title = s.name;
-          sigilRow.appendChild(tile);
-        }
-        body.appendChild(sigilRow);
-        actionBtn("FORGE NEW SEED", () => {
-          this.setSeedValue(generateSeed());
-          this.sfx.success();
-          const seedRow = body.querySelector<HTMLElement>(".stat-row .stat-value");
-          if (seedRow) seedRow.textContent = this.seed.value;
+        const buildSigils = (): void => {
           sigilRow.replaceChildren();
           for (const s of seedSigils(this.seed.value)) {
             const tile = document.createElement("div");
@@ -673,8 +753,33 @@ export class UIManager {
             name.className = "sigil-name";
             name.textContent = s.name;
             tile.append(glyph, name);
+            tile.title = s.name;
             sigilRow.appendChild(tile);
           }
+        };
+        buildSigils();
+        body.appendChild(sigilRow);
+        body.appendChild(sectionHeader("Elemental Attunements"));
+        const crestGrid = document.createElement("div");
+        crestGrid.className = "crest-grid";
+        for (const el of RUNE_ELEMENTS) {
+          const tile = document.createElement("div");
+          tile.className = "crest-tile frame-gold ch-tlbr";
+          tile.appendChild(pixelImg(el.src, el.name));
+          const name = document.createElement("span");
+          name.className = "crest-name";
+          name.textContent = el.name;
+          tile.appendChild(name);
+          tile.title = el.name;
+          crestGrid.appendChild(tile);
+        }
+        body.appendChild(crestGrid);
+        actionBtn("FORGE NEW SEED", () => {
+          this.setSeedValue(generateSeed());
+          this.sfx.success();
+          const seedRow = body.querySelector<HTMLElement>(".stat-row .stat-value");
+          if (seedRow) seedRow.textContent = this.seed.value;
+          buildSigils();
         });
         footnote("The same seed always walks the same ground — rerolls rewrite the rift.");
         break;
@@ -687,6 +792,30 @@ export class UIManager {
           "elements, discover resonances by casting two within a breath, and spend your " +
           "surge when the gate crowds close. This is the gate itself — the menu build of ARCHMAGE: RIFTBOUND.";
         body.appendChild(lore);
+        const buildBestiary = (entries: Array<CatalogEntry>, tier: string, cols: number): HTMLElement => {
+          const grid = document.createElement("div");
+          grid.className = `bestiary-grid bm-${cols}`;
+          for (const entry of entries) {
+            const tile = document.createElement("div");
+            tile.className = "bestiary-tile frame-gold ch-tlbr";
+            tile.appendChild(pixelImg(entry.src, entry.name));
+            const name = document.createElement("span");
+            name.className = "bestiary-name";
+            name.textContent = entry.name;
+            const tag = document.createElement("span");
+            tag.className = "bestiary-tier";
+            tag.textContent = tier;
+            tile.append(name, tag);
+            tile.title = entry.name;
+            grid.appendChild(tile);
+          }
+          return grid;
+        };
+        body.appendChild(sectionHeader("Masters of the Rift"));
+        body.appendChild(buildBestiary(CODEX_MASTERS, "MASTER", 6));
+        body.appendChild(sectionHeader("Tyrants of the Deep Waves"));
+        body.appendChild(buildBestiary(CODEX_TYRANTS, "TYRANT", 4));
+        body.appendChild(sectionHeader("Rites & Bindings"));
         const table = document.createElement("div");
         table.className = "codex-table";
         const controls: Array<[string, string]> = [
@@ -743,12 +872,14 @@ export class UIManager {
         dLabel.textContent = "Particles";
         const seg = document.createElement("div");
         seg.className = "segmented frame-gold ch-tlbr";
-        const options: Array<[string, number]> = [["LOW", 0.35], ["MEDIUM", 0.7], ["HIGH", 1]];
+        /* Resting density is 0.75 (the scene boots there) — the segmented
+           control mirrors it so the UI never lies about the live setting. */
+        const options: Array<[string, number]> = [["LOW", 0.35], ["MEDIUM", 0.75], ["HIGH", 1]];
         for (const [name, value] of options) {
           const b = document.createElement("button");
           b.type = "button";
           b.textContent = name;
-          if (value === 1) b.classList.add("active");
+          if (value === 0.75) b.classList.add("active");
           b.addEventListener("click", () => {
             this.sfx.click();
             this.scene.setParticleDensity(value);

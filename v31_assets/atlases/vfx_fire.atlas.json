@@ -1,0 +1,698 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "vfx_fire",
+    "name": "Fire Spell VFX",
+    "category": "vfx",
+    "subtitle": "Pyre Bolt cast, projectile, explosion & fire ring embers",
+    "image": "../sprites/vfx_fire.png",
+    "size": {
+      "w": 320,
+      "h": 256
+    },
+    "tileSize": {
+      "w": 64,
+      "h": 64
+    },
+    "grid": {
+      "columns": 5,
+      "rows": 4
+    },
+    "totalFrames": 17
+  },
+  "animations": [
+    {
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 12,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 5,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    }
+  ],
+  "frames": [
+    {
+      "id": "vfx_fire_cast_down_00",
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_cast_down_01",
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_cast_down_02",
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_cast_down_03",
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_projectile_down_00",
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_projectile_down_01",
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_projectile_down_02",
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_projectile_down_03",
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_impact_down_00",
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_impact_down_01",
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": [
+        "vfx_peak"
+      ]
+    },
+    {
+      "id": "vfx_fire_impact_down_02",
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_impact_down_03",
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_impact_down_04",
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_linger_down_00",
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_linger_down_01",
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_linger_down_02",
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "vfx_fire_linger_down_03",
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "320x256",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 8.45,
+    "outlinePerimeterCoverage": 100,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 0,
+    "hurtboxContainmentPct": 100
+  }
+}

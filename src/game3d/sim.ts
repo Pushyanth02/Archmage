@@ -109,8 +109,10 @@ export interface Enemy {
   recoverT: number;
   group: THREE.Group;
   baseColor: THREE.Color;
-  /** v3.0: the pixel-billboard visual (null in headless tests). */
-  sprite: import("./pixelsprites").BillboardSprite | null;
+  /** v3.0: the pixel-billboard visual (null in headless tests).
+   *  v3.1: widened to the EntitySprite union — V3.1-validated sheets
+   *  replace the procedural billboards once they settle. */
+  sprite: import("./entities").EntitySprite | null;
   boss: BossState | null;
 }
 

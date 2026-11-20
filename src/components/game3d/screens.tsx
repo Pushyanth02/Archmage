@@ -59,6 +59,156 @@ function fmtDuration(sec) {
 }
 const fmtNum = n => n.toLocaleString("en-US");
 const pct = mult => `+${Math.round((mult - 1) * 100)}%`;
+/* Gold diamond-thumb slider skin (concept 11) — one class string shared by
+ * every settings slider: gold range, beveled diamond thumb on the track. */
+const GOLD_SLIDER = "h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#f0c060] [&_[data-slot=slider-thumb]]:size-4 [&_[data-slot=slider-thumb]]:rounded-[3px] [&_[data-slot=slider-thumb]]:rotate-45 [&_[data-slot=slider-thumb]]:border-2 [&_[data-slot=slider-thumb]]:border-[#b8822e] [&_[data-slot=slider-thumb]]:bg-[#f0c060] [&_[data-slot=slider-thumb]]:shadow-[0_0_10px_rgba(240,192,96,0.55)]";
+/* ================================================================== */
+/*  v3.1 PIXEL ASSET MAP (mirrors HUD.tsx / overlays.tsx)             */
+/* ================================================================== */
+const V31_ELEMENT: Record<string, string> = {
+  fire: "ember",
+  ice: "frost",
+  lightning: "volt",
+  nature: "vitality"
+};
+const V31_ONE_TO_ONE = new Set(["earth", "shadow", "light", "time", "void", "arcane", "wind"]);
+function elementIconSrc(el: string): string {
+  if (!el) return "";
+  if (V31_ONE_TO_ONE.has(el)) return assetPath(`/assets/v31/icons/element-${el}.png`);
+  const renamed = V31_ELEMENT[el];
+  if (renamed) return assetPath(`/assets/v31/icons/element-${renamed}.png`);
+  return assetPath(`/assets/icons/element-${el}.png`);
+}
+const V31_PORTRAIT = {
+  player: () => assetPath("/assets/v31/portraits/stormcaller.png"),
+  boss: (id: string) => assetPath(`/assets/v31/portraits/${id}.png`),
+  relic: (id: string) => assetPath(`/assets/v31/relics/${id}.png`),
+  icon: (id: string) => assetPath(`/assets/v31/icons/${id}.png`)
+};
+/* Tyrant portrait rules — the five act bosses onto the four deployed
+ * busts (Void Seraph and Rift Colossus share the blight bust; neither
+ * can appear on the same results screen). */
+const BOSS_PORTRAIT_RULES: [RegExp, string][] = [
+  [/bone regent/i, "bone_regent"],
+  [/pyre behemoth/i, "tyrant_grave"],
+  [/void seraph/i, "blight_colossus"],
+  [/rift colossus/i, "blight_colossus"],
+  [/frost leviathan/i, "rift_leviathan"]
+];
+function bossPortraitFor(name: string | null | undefined): string | null {
+  if (!name) return null;
+  for (const [re, id] of BOSS_PORTRAIT_RULES) if (re.test(name)) return V31_PORTRAIT.boss(id);
+  return null;
+}
+/** The player's class identity (concept 05/09): the stormcaller brand mage. */
+const PLAYER_CLASS = { name: "Stormcaller", epithet: "Voice of the Rift" };
+/** One equipped spell as an ornate tile — pixel icon, element rim, optional
+ *  fused pair + evolution star. Shared by the results screens' build panel. */
+function SpellTile({ slot, size = 46 }: { slot: string | { merged: string[] } | null; size?: number }) {
+  const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
+  const el2 = slot && typeof slot !== "string" ? slot.merged[1] ?? null : null;
+  const col = el ? elementColor(el) : "#9a8fb5";
+  if (!el) {
+    return (
+      <span className="flex flex-col items-center gap-1">
+        <span className="flex items-center justify-center rounded-md border border-[#3a2545] bg-[#1a0e22]" style={{ width: size, height: size }}>
+          <span className="text-lg font-black text-white/15">+</span>
+        </span>
+        <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#9a8fb5]/50">Empty</span>
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-col items-center gap-1">
+      <span
+        className="relative flex items-center justify-center rounded-md border-2 bg-[#1a0e22]"
+        style={{ width: size, height: size, borderColor: `${col}66`, boxShadow: `0 0 14px ${col}22, inset 0 0 0 1px rgba(240,192,96,0.12)` }}
+      >
+        <img src={elementIconSrc(el)} alt="" width={size - 14} height={size - 14} draggable={false} className="[image-rendering:pixelated]" style={{ width: size - 14, height: size - 14, filter: `drop-shadow(0 0 6px ${col}aa)` }} />
+        {el2 && (
+          <img src={elementIconSrc(el2)} alt="" width={18} height={18} draggable={false} className="absolute -bottom-1 -right-1 rounded border border-[#d9a441]/70 bg-[#0e0817] p-[2px]! [image-rendering:pixelated]" style={{ width: 18, height: 18 }} />
+        )}
+      </span>
+      <span className="max-w-[72px] truncate text-[9px] font-bold uppercase tracking-[0.1em] text-[#d8cfe8]/80">
+        {el2 ? "Fused" : SPELLS[el as keyof typeof SPELLS]?.name ?? el}
+      </span>
+    </span>
+  );
+}
+/** YOUR BUILD panel — stormcaller bust + three spell tiles + the run's
+ *  resonances as element-pair chips (concepts 05/09). */
+function BuildPanel({ stats, epithet, icon }: { stats: { equipped: (string | { merged: string[] } | null)[]; newCombos: string[] }; epithet: string; icon: React.ReactNode }) {
+  return (
+    <PxPanel className="w-full p-3 sm:p-4">
+      <PxHeader icon={icon}>Your Build</PxHeader>
+      <div className="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="flex items-center gap-2.5">
+          <span aria-hidden className="relative block size-[52px] shrink-0 [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-gradient-to-b from-[#f0c060] to-[#b8822e] p-[2px]">
+            <span className="block size-full [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-[#1e1430]">
+              <img src={V31_PORTRAIT.player()} alt="" width={52} height={52} draggable={false} className="size-full object-cover [image-rendering:pixelated]" />
+            </span>
+          </span>
+          <span>
+            <span className="font-display block text-base font-bold text-[#f2ead8]">{PLAYER_CLASS.name}</span>
+            <span className="block text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#f0c060]">{epithet}</span>
+          </span>
+        </div>
+        <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Spells</div>
+          <div className="mt-1 flex gap-2.5">
+            {[0, 1, 2].map(i => <SpellTile key={i} slot={stats.equipped?.[i] ?? null} />)}
+          </div>
+        </div>
+        <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Resonances ({stats.newCombos.length})</div>
+          <div className="mt-1 flex max-w-md flex-wrap gap-1.5">
+            {stats.newCombos.length === 0 ? (
+              <span className="rounded-md border border-dashed border-[#3a2545] px-2.5 py-1 text-[10px] italic text-[#a898b0]">None woven this run</span>
+            ) : (
+              stats.newCombos.slice(0, 6).map(k => {
+                const parts = k.split("+");
+                return (
+                  <span key={k} className="flex items-center gap-1.5 rounded-md border border-[#a66bf0]/40 bg-[#241740]/80 py-0.5 pl-1 pr-2">
+                    {parts[0] && <img src={elementIconSrc(parts[0])} alt="" width={16} height={16} draggable={false} className="size-4 [image-rendering:pixelated]" />}
+                    {parts[1] && <img src={elementIconSrc(parts[1])} alt="" width={16} height={16} draggable={false} className="size-4 [image-rendering:pixelated]" />}
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-[#c9a0ff]">{COMBOS[k]?.name ?? k}</span>
+                  </span>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    </PxPanel>
+  );
+}
+/** One results-screen stat cell — pixel/relic icon + tracked caps + value. */
+function StatCell({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-2.5 bg-[#160e22]/85 px-2.5 py-2.5">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-[#d9a441]/35 bg-[#0e0817]/90">{icon}</span>
+      <span className="min-w-0">
+        <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">{label}</span>
+        <span className="font-display block truncate text-base font-black leading-tight text-[#f2ead8]">{value}</span>
+      </span>
+    </div>
+  );
+}
+/** A reward tile — pixel relic art with a ×N badge (concept 09). */
+function RewardTile({ src, count, label, tone = "gold" }: { src: string; count: string; label: string; tone?: "gold" | "violet" }) {
+  const col = tone === "gold" ? "#f0c060" : "#c9a0ff";
+  return (
+    <span className="relative flex flex-col items-center gap-1 rounded-lg border bg-[#1a0e22] px-3 pb-2 pt-2.5" style={{ borderColor: `${col}55`, boxShadow: `0 0 16px ${col}18` }}>
+      <span className="relative">
+        <img src={src} alt="" width={36} height={36} draggable={false} className="size-9 [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${col}88)` }} />
+        <span className="absolute -bottom-1.5 -right-2 rounded border px-1 text-[9px] font-black tabular-nums leading-tight" style={{ borderColor: `${col}88`, background: "#0e0817", color: col }}>×{count}</span>
+      </span>
+      <span className="max-w-[86px] text-center text-[8px] font-bold uppercase leading-tight tracking-[0.12em] text-[#a898b0]">{label}</span>
+    </span>
+  );
+}
 /** Ambient radial glows shared by full-screen menus. */
 function AmbientGlows({
   variant = "gold"
@@ -924,20 +1074,20 @@ export function SettingsModal() {
                   <div className="flex min-h-11 items-center gap-3">
                     <Gauge className="size-4 shrink-0 text-[#9a8fb5]" />
                     <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Quality</span>
-                    <Slider value={[Math.round(st.quality * 100)]} min={50} max={100} step={5} aria-label="Render quality" onValueChange={v => apply({ quality: v[0] / 100 })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#58d6c2] [&_[data-slot=slider-thumb]]:border-[#58d6c2] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
-                    <span className="w-9 text-right font-mono text-xs text-[#58d6c2]">{Math.round(st.quality * 100)}</span>
+                    <Slider value={[Math.round(st.quality * 100)]} min={50} max={100} step={5} aria-label="Render quality" onValueChange={v => apply({ quality: v[0] / 100 })} className={GOLD_SLIDER} />
+                    <span className="w-9 text-right font-mono text-xs text-[#f0c060]">{Math.round(st.quality * 100)}</span>
                   </div>
                   <div className="flex min-h-11 items-center gap-3">
                     <Sun className="size-4 shrink-0 text-[#9a8fb5]" />
                     <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Brightness</span>
-                    <Slider value={[st.brightness]} min={50} max={250} step={5} aria-label="Brightness" onValueChange={v => apply({ brightness: v[0] })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#f0c060] [&_[data-slot=slider-thumb]]:border-[#f0c060] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
+                    <Slider value={[st.brightness]} min={50} max={250} step={5} aria-label="Brightness" onValueChange={v => apply({ brightness: v[0] })} className={GOLD_SLIDER} />
                     <span className="w-9 text-right font-mono text-xs text-[#f0c060]">{st.brightness}</span>
                   </div>
                   <div className="flex min-h-11 items-center gap-3">
                     <Scan className="size-4 shrink-0 text-[#9a8fb5]" />
                     <span className="w-20 shrink-0 text-xs uppercase tracking-wider text-[#d8cfe8]">Field of view</span>
-                    <Slider value={[st.fov]} min={45} max={80} step={1} aria-label="Field of view in degrees" onValueChange={v => apply({ fov: v[0] })} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-[#3a2c52] [&_[data-slot=slider-range]]:bg-[#58d6c2] [&_[data-slot=slider-thumb]]:border-[#58d6c2] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />
-                    <span className="w-9 text-right font-mono text-xs text-[#58d6c2]">{st.fov}°</span>
+                    <Slider value={[st.fov]} min={45} max={80} step={1} aria-label="Field of view in degrees" onValueChange={v => apply({ fov: v[0] })} className={GOLD_SLIDER} />
+                    <span className="w-9 text-right font-mono text-xs text-[#f0c060]">{st.fov}°</span>
                   </div>
                 </section>
                 <section className="flex flex-col gap-2">
@@ -963,7 +1113,7 @@ export function SettingsModal() {
                         <div className="text-xs uppercase tracking-wider text-[#d8cfe8]">Display mode</div>
                         <div className="text-[10px] text-[#9a8fb5]">Fullscreen — the whole screen, edge to edge</div>
                       </div>
-                      <Switch checked={fs.isFs} onCheckedChange={fs.toggle} aria-label="Toggle fullscreen" className="data-[state=checked]:bg-[#58d6c2]" />
+                      <Switch checked={fs.isFs} onCheckedChange={fs.toggle} aria-label="Toggle fullscreen" className="data-[state=checked]:bg-[#f0c060]" />
                     </div>
                     <p className={`mt-1 text-[10px] leading-relaxed ${fs.blocked ? "text-[#ff8fa3]" : "text-[#9a8fb5]"}`}>
                       {fs.blocked ? "Fullscreen is blocked here — this view will not hand over the screen." : "A live view state, not a saved setting — your browser asks for a tap each visit."}
@@ -1055,22 +1205,25 @@ export function SettingsModal() {
                   <MercyChip key={v} active={st.hudDensity === v} onClick={() => apply({ hudDensity: v })}>{label}</MercyChip>
                 ))}
               </div>
-              {/* HUD preview mock (concept 11) */}
+              {/* HUD preview mock (concept 11) — mirrors the live v3.1 HUD:
+                  stormcaller bust, violet aether, ember/frost/volt pixel icons */}
               <div className="mt-3 rounded-md border border-[#d9a441]/40 bg-[#0e0817]/90 p-2">
                 <div className="flex items-center gap-2">
-                  <span aria-hidden className="block size-9 overflow-hidden rounded-md border border-[#a66bf0]/60 bg-[#1e1430]">
-                    <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={36} height={36} className="size-full object-contain [image-rendering:pixelated]" />
+                  <span aria-hidden className="relative block size-9 shrink-0 [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-gradient-to-b from-[#f0c060] to-[#b8822e] p-[2px]">
+                    <span className="block size-full [clip-path:polygon(30%_0,70%_0,100%_30%,100%_70%,70%_100%,30%_100%,0_70%,0_30%)] bg-[#1e1430]">
+                      <img src={V31_PORTRAIT.player()} alt="" width={36} height={36} draggable={false} className="size-full object-cover [image-rendering:pixelated]" />
+                    </span>
                   </span>
                   <span className="flex-1 space-y-1">
                     <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-5/6 rounded-full bg-gradient-to-r from-[#e02040] to-[#ff5a7a]" /></span>
-                    <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-3/4 rounded-full bg-gradient-to-r from-[#2a6ff0] to-[#6fa8ff]" /></span>
+                    <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-3/4 rounded-full bg-gradient-to-r from-[#6a3df0] to-[#a66bf0]" /></span>
                     <span className="block h-1.5 w-full rounded-full bg-[#0a0712]"><span className="block h-full w-1/2 rounded-full bg-gradient-to-r from-[#e8940a] to-[#ffd24a]" /></span>
                   </span>
                 </div>
                 <div className="mt-2 flex justify-center gap-1.5">
                   {["fire", "ice", "lightning"].map(el => (
                     <span key={el} className="flex size-8 items-center justify-center rounded-md border border-[#d9a441]/50 bg-[#171026]">
-                      <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={22} height={22} className="size-[22px] [image-rendering:pixelated]" />
+                      <img src={elementIconSrc(el)} alt="" width={22} height={22} className="size-[22px] [image-rendering:pixelated]" />
                     </span>
                   ))}
                 </div>
@@ -1191,7 +1344,7 @@ function SliderRow({
   return (
     /* 44px-tall row; the slider root is h-11 so its whole strip is a touch
     target (the thumb keeps the app-wide 16px bead). */
-    <div className="flex min-h-11 items-center gap-3">{<Icon className="size-4 shrink-0 text-white/40" />}{<span className="w-16 shrink-0 text-xs uppercase tracking-wider text-white/60">{label}</span>}{<Slider value={[Math.round(value * 100)]} min={0} max={100} step={step} disabled={disabled} aria-label={`${label} volume`} onValueChange={v => onChange(v[0] / 100)} className="h-11 flex-1 [&_[data-slot=slider-track]]:bg-white/10 [&_[data-slot=slider-range]]:bg-[#f5c96b] [&_[data-slot=slider-thumb]]:border-[#f5c96b] [&_[data-slot=slider-thumb]]:bg-[#14101f]" />}{<span className="w-8 text-right font-mono text-xs text-[#f5c96b]">{Math.round(value * 100)}</span>}</div>
+    <div className="flex min-h-11 items-center gap-3">{<Icon className="size-4 shrink-0 text-white/40" />}{<span className="w-16 shrink-0 text-xs uppercase tracking-wider text-white/60">{label}</span>}{<Slider value={[Math.round(value * 100)]} min={0} max={100} step={step} disabled={disabled} aria-label={`${label} volume`} onValueChange={v => onChange(v[0] / 100)} className={GOLD_SLIDER} />}{<span className="w-8 text-right font-mono text-xs text-[#f5c96b]">{Math.round(value * 100)}</span>}</div>
   );
 }
 function ToggleRow({
@@ -1273,13 +1426,22 @@ function GameOverContent() {
         {/* cause of death + fell at */}
         <div className="flex w-full flex-col gap-3 sm:flex-row">
           <PxPanel variant="crimson" className="flex flex-1 items-center gap-3 p-3 sm:p-4">
-            <span className="px-socket !size-11 border-2 border-[#e05060]/50" style={{ boxShadow: "0 0 14px rgba(224,80,96,0.35)" }}>
-              <Skull className="size-5 text-[#e05060]" />
-            </span>
+            {(() => {
+              const bossArt = bossPortraitFor(stats.killedBy);
+              return bossArt ? (
+                <span aria-hidden className="relative block size-14 shrink-0 overflow-hidden rounded-lg border-2 border-[#e05060]/60 bg-[#1a0e22] shadow-[0_0_18px_rgba(224,80,96,0.3)]">
+                  <img src={bossArt} alt="" width={56} height={56} draggable={false} className="size-full object-cover [image-rendering:pixelated]" />
+                </span>
+              ) : (
+                <span className="px-socket !size-11 border-2 border-[#e05060]/50" style={{ boxShadow: "0 0 14px rgba(224,80,96,0.35)" }}>
+                  <Skull className="size-5 text-[#e05060]" />
+                </span>
+              );
+            })()}
             <span className="min-w-0 flex-1">
               <span className="block text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#e05060]">Cause of Death</span>
-              <span className="font-serif mt-0.5 block truncate text-lg font-bold text-[#f2ead8]">Slain by {stats.killedBy ?? "the rift's aftermath"}</span>
-              {lastHit && (
+              <span className="font-display mt-0.5 block truncate text-lg font-bold text-[#f2ead8]">Slain by {stats.killedBy ?? "the rift's aftermath"}</span>
+              {lastHit && lastHit.amount > 0 && (
                 <span className="mt-0.5 block text-[11px] leading-snug text-[#a898b0]">
                   A final strike that dealt <span className="font-bold text-[#e84858]">{lastHit.amount}</span> damage.
                 </span>
@@ -1296,80 +1458,23 @@ function GameOverContent() {
           </PxPanel>
         </div>
         {/* your build */}
-        <PxPanel className="w-full p-3 sm:p-4">
-          <PxHeader icon={<Sparkles className="size-3.5" />}>Your Build</PxHeader>
-          <div className="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <div className="flex items-center gap-2.5">
-              <span aria-hidden className="block size-12 overflow-hidden rounded-md border-2 border-[#a66bf0]/60 bg-[#1e1430]">
-                <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={48} height={48} className="size-full object-contain [image-rendering:pixelated]" />
-              </span>
-              <span>
-                <span className="font-serif block text-base font-bold text-[#f2ead8]">Archmage</span>
-                <span className="block text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#f0c060]">The Last Magus</span>
-              </span>
-            </div>
-            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
-            <div className="min-w-0">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Spells</div>
-              <div className="mt-1 flex gap-2">
-                {[0, 1, 2].map(i => {
-                  const slot = stats.equipped?.[i];
-                  const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
-                  return (
-                    <span key={i} className="flex size-11 items-center justify-center rounded-md border bg-[#1a0e22]" style={{ borderColor: el ? `${elementColor(el)}66` : "rgba(58,37,69,0.9)" }}>
-                      {el ? <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={30} height={30} className="h-[30px] w-[30px] [image-rendering:pixelated]" /> : <span className="text-lg font-black text-white/15">+</span>}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Resonances ({stats.newCombos.length})</div>
-              <div className="mt-1 flex max-w-xs flex-wrap gap-1.5">
-                {stats.newCombos.length === 0 ? (
-                  <span className="text-[11px] italic text-[#a898b0]/70">None woven this run</span>
-                ) : (
-                  stats.newCombos.slice(0, 6).map(k => (
-                    <span key={k} className="rounded-md border border-[#a66bf0]/40 bg-[#241740]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#c9a0ff]">
-                      {COMBOS[k]?.name ?? k}
-                    </span>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </PxPanel>
-        {/* stats strip */}
+        <BuildPanel stats={stats} epithet="The Last Magus" icon={<Sparkles className="size-3.5" />} />
+        {/* stats strip — the run's combat facts in one place (concept 09's
+            5-6 stat cells; the summary below no longer repeats them) */}
         <PxPanel className="grid w-full grid-cols-3 gap-px overflow-hidden !rounded-lg sm:grid-cols-6" corners={false}>
-          {[
-            ["Damage Dealt", fmtNum(Math.round(stats.damage)), Swords],
-            ["Kills", fmtNum(stats.kills), Skull],
-            ["Score", fmtNum(stats.score), Trophy],
-            ["Time Survived", fmtTime(stats.timeSec), Clock],
-            ["Resonances", String(stats.newCombos.length), Sparkles],
-            ["Tyrants Slain", String(stats.bossesSlain.length), Crown]
-          ].map(([label, value, Icon]) => {
-            const I = Icon as typeof Swords;
-            return (
-              <div key={label as string} className="flex items-center gap-2 bg-[#160e22]/80 px-2.5 py-2.5">
-                <I className="size-4 shrink-0 text-[#f0c060]" />
-                <span className="min-w-0">
-                  <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">{label as string}</span>
-                  <span className="font-display block text-base font-black leading-tight text-[#f2ead8]">{value as string}</span>
-                </span>
-              </div>
-            );
-          })}
+          <StatCell icon={<Swords className="size-4 text-[#f0c060]" />} label="Damage Dealt" value={fmtNum(Math.round(stats.damage))} />
+          <StatCell icon={<Skull className="size-4 text-[#f0c060]" />} label="Kills" value={fmtNum(stats.kills)} />
+          <StatCell icon={<img src={V31_PORTRAIT.icon("coins")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Score" value={fmtNum(stats.score)} />
+          <StatCell icon={<img src={V31_PORTRAIT.relic("crown")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Tyrants Slain" value={String(stats.bossesSlain.length)} />
+          <StatCell icon={<img src={V31_PORTRAIT.relic("tome")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Resonances" value={String(stats.newCombos.length)} />
+          <StatCell icon={<Clock className="size-4 text-[#f0c060]" />} label="Time Survived" value={fmtTime(stats.timeSec)} />
         </PxPanel>
-        {/* run summary */}
+        {/* run summary — only the facts the strip above does not carry */}
         <PxPanel className="w-full p-3 sm:p-4">
           <PxHeader icon={<BookOpen className="size-3.5" />}>Run Summary</PxHeader>
           <div className="mt-2 grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
             {[
               ["Waves Cleared", `${Math.max(0, stats.wave - 1)} / ${VICTORY_WAVE}`],
-              ["Resonances Woven", String(stats.newCombos.length)],
-              ["Tyrants Slain", String(stats.bossesSlain.length)],
               ["Glyphs Collected", fmtNum(stats.glyphs)]
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between gap-4 border-b border-[#2a1835] py-1 last:border-b-0">
@@ -1380,7 +1485,7 @@ function GameOverContent() {
           </div>
           {earned > 0 && (
             <div className="mt-2 flex items-center justify-center gap-2 rounded-md border border-[#f0c060]/30 bg-[#f0c060]/5 px-3 py-2 text-[11px] text-[#d8cfe8]">
-              <Gem className="size-3.5 text-[#f0c060]" />
+              <img src={V31_PORTRAIT.icon("crystal")} alt="" width={14} height={14} draggable={false} className="size-3.5 [image-rendering:pixelated]" />
               <span><span className="font-bold text-[#f0c060]">{earned}</span> glyphs earned · <span className="font-bold text-[#f0c060]">{payout}</span> banked<span className="text-[#9a8fb5]"> (75% paid to the rift)</span></span>
             </div>
           )}
@@ -1404,11 +1509,11 @@ function GameOverContent() {
           </button>
           <button type="button" onClick={() => { sfx.click(); ui.onGameOverRetry(stats.seed); }} className="px-btn px-btn--primary px-breathe h-14 flex-col">
             <span className="flex items-center gap-2"><RotateCcw className="size-4" />Replay</span>
-            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-70">(same seed · from wave 1)</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-70">same seed · wave 1</span>
           </button>
           <button type="button" onClick={remix} className="px-btn px-btn--purple h-14 flex-col">
             <span className="flex items-center gap-2"><Swords className="size-4" />Rematch</span>
-            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-60">(new run)</span>
+            <span className="text-[8px] font-semibold normal-case tracking-[0.2em] opacity-60">new run · new seed</span>
           </button>
         </div>
       </div>
@@ -1501,92 +1606,33 @@ function CreditsContent() {
           ))}
         </PxPanel>
         {/* your build */}
-        <PxPanel className="w-full p-3 sm:p-4">
-          <PxHeader icon={<Sparkles className="size-3.5" />}>Your Build</PxHeader>
-          <div className="mt-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <div className="flex items-center gap-2.5">
-              <span aria-hidden className="block size-12 overflow-hidden rounded-md border-2 border-[#f0c060]/70 bg-[#1e1430]">
-                <img src={assetPath("/assets/sprites/player-idle.png")} alt="" width={48} height={48} className="size-full object-contain [image-rendering:pixelated]" />
-              </span>
-              <span>
-                <span className="font-serif block text-base font-bold text-[#f2ead8]">Archmage</span>
-                <span className="block text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#f0c060]">Rift Sealer</span>
-              </span>
-            </div>
-            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Spells</div>
-              <div className="mt-1 flex gap-2">
-                {[0, 1, 2].map(i => {
-                  const slot = stats.equipped?.[i];
-                  const el = typeof slot === "string" ? slot : slot ? slot.merged[0] : null;
-                  return (
-                    <span key={i} className="flex size-11 items-center justify-center rounded-md border bg-[#1a0e22]" style={{ borderColor: el ? `${elementColor(el)}66` : "rgba(58,37,69,0.9)" }}>
-                      {el ? <img src={assetPath(`/assets/icons/element-${el}.png`)} alt="" width={30} height={30} className="h-[30px] w-[30px] [image-rendering:pixelated]" /> : <span className="text-lg font-black text-white/15">+</span>}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-            <span aria-hidden className="hidden h-10 w-px bg-[#3a2545] sm:block" />
-            <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#c8b8d0]">Resonances ({stats.newCombos.length})</div>
-              <div className="mt-1 flex max-w-md flex-wrap gap-1.5">
-                {stats.newCombos.length === 0 ? (
-                  <span className="text-[11px] italic text-[#a898b0]/70">None woven this run</span>
-                ) : (
-                  stats.newCombos.map(k => (
-                    <span key={k} className="rounded-md border border-[#a66bf0]/40 bg-[#241740]/80 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#c9a0ff]">
-                      {COMBOS[k]?.name ?? k}
-                    </span>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </PxPanel>
+        <BuildPanel stats={stats} epithet="Rift Sealer" icon={<Sparkles className="size-3.5" />} />
         {/* stats strip */}
-        <PxPanel className="grid w-full grid-cols-3 gap-px overflow-hidden sm:grid-cols-6" corners={false}>
-          {[
-            ["Damage Dealt", fmtNum(Math.round(stats.damage)), Swords],
-            ["Kills", fmtNum(stats.kills), Skull],
-            ["Score", fmtNum(stats.score), Trophy],
-            ["Tyrants Slain", String(stats.bossesSlain.length), Crown],
-            ["Time in the Rift", fmtTime(stats.timeSec), Clock],
-            ["New Resonances", String(stats.newCombos.length), Sparkles]
-          ].map(([label, value, Icon]) => {
-            const I = Icon as typeof Swords;
-            return (
-              <div key={label as string} className="flex items-center gap-2 bg-[#160e22]/85 px-2.5 py-2.5">
-                <I className="size-4 shrink-0 text-[#f0c060]" />
-                <span className="min-w-0">
-                  <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">{label as string}</span>
-                  <span className="font-display block text-base font-black leading-tight text-[#f2ead8]">{value as string}</span>
-                </span>
-              </div>
-            );
-          })}
+        <PxPanel className="grid w-full grid-cols-2 gap-px overflow-hidden sm:grid-cols-3 lg:grid-cols-6" corners={false}>
+          <StatCell icon={<Swords className="size-4 text-[#f0c060]" />} label="Damage Dealt" value={fmtNum(Math.round(stats.damage))} />
+          <StatCell icon={<Skull className="size-4 text-[#f0c060]" />} label="Kills" value={fmtNum(stats.kills)} />
+          <StatCell icon={<img src={V31_PORTRAIT.icon("coins")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Score" value={fmtNum(stats.score)} />
+          <StatCell icon={<img src={V31_PORTRAIT.relic("crown")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Tyrants Slain" value={String(stats.bossesSlain.length)} />
+          <StatCell icon={<Clock className="size-4 text-[#f0c060]" />} label="Time in the Rift" value={fmtTime(stats.timeSec)} />
+          <StatCell icon={<img src={V31_PORTRAIT.relic("tome")} alt="" width={18} height={18} draggable={false} className="size-[18px] [image-rendering:pixelated]" />} label="Resonances" value={String(stats.newCombos.length)} />
         </PxPanel>
-        {/* rewards */}
+        {/* rewards — relic tiles with ×N badges (concept 09) */}
         <PxPanel className="w-full p-3 sm:p-4">
           <PxHeader icon={<Crown className="size-3.5" />}>Rewards</PxHeader>
-          <div className="mt-2.5 flex flex-wrap items-center gap-3">
-            <span className="flex items-center gap-2 rounded-md border border-[#b060d0]/50 bg-[#1a0e22] px-3 py-2">
-              <Gem className="size-5 text-[#c9a0ff] [filter:drop-shadow(0_0_6px_#a66bf0)]" />
-              <span className="font-display text-lg font-black tabular-nums text-[#f2ead8]">×{fmtNum(stats.payout)}</span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#a898b0]">aether glyphs · 100% banked</span>
-            </span>
+          <div className="mt-2.5 flex flex-wrap items-start gap-3">
+            <RewardTile src={V31_PORTRAIT.icon("crystal")} count={fmtNum(stats.payout)} label="Aether Glyphs · 100% Banked" tone="violet" />
+            <RewardTile src={V31_PORTRAIT.icon("coins")} count={fmtNum(stats.score)} label="Score Earned" />
             {stats.bossesSlain.length > 0 && (
-              <span className="flex items-center gap-2 rounded-md border border-[#f0c060]/40 bg-[#1a0e22] px-3 py-2">
-                <Crown className="size-4 text-[#f0c060]" />
-                <span className="text-[11px] font-bold text-[#d8cfe8]">{stats.bossesSlain.length} tyrant{stats.bossesSlain.length > 1 ? "s" : ""} unmade</span>
-              </span>
+              <RewardTile src={V31_PORTRAIT.relic("crown")} count={String(stats.bossesSlain.length)} label={`Tyrant${stats.bossesSlain.length > 1 ? "s" : ""} Unmade`} />
             )}
+            {stats.newCombos.slice(0, 4).map(k => (
+              <RewardTile key={k} src={V31_PORTRAIT.relic("grimoire")} count="NEW" label={COMBOS[k]?.name ?? k} tone="violet" />
+            ))}
           </div>
           {stats.newCombos.length > 0 && (
             <div className="mt-3">
               <PxHeader icon={<BookMarked className="size-3.5" />} className="!text-[#c9a0ff]">Unlocked</PxHeader>
-              <div className="mt-1.5 flex flex-wrap gap-2">
+              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
                 {stats.newCombos.map(k => (
                   <span key={k} className="flex items-center gap-1.5 text-[11px] text-[#c8b8d0]">
                     <PxDiamond small />
@@ -1626,6 +1672,11 @@ export function PauseOverlay({
   hud
 }) {
   const phase = useRiftStore(s => s.phase);
+  /* vitals mini-bars (concept 05 language) — read once from the paused
+   * snapshot; the sim is frozen so these are static by definition */
+  const hpPct = hud ? Math.max(0, Math.min(100, hud.hp / Math.max(1, hud.hpMax) * 100)) : 0;
+  const aePct = hud ? Math.max(0, Math.min(100, hud.aether / Math.max(1, hud.aetherMax) * 100)) : 0;
+  const sgPct = hud ? Math.round(hud.surge * 100) : 0;
   return <AnimatePresence>{phase === "paused" && <motion.div className="dark fixed inset-0 z-40 flex items-center justify-center bg-[#0a0712]/70 p-4 backdrop-blur-sm" initial={{
       opacity: 0
     }} animate={{
@@ -1651,14 +1702,14 @@ export function PauseOverlay({
         ease: "easeOut"
       }}>{<div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-32 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-[60px]" style={{
           backgroundColor: GOLD
-        }} />}{<Hourglass className="relative mx-auto size-6 text-[#f0c060]" />}{<h2 className="font-display relative mt-3 text-balance text-lg font-black uppercase tracking-[0.14em] text-[#f0c060] [text-shadow:0_0_22px_rgba(240,192,96,0.35)] sm:text-2xl">The Rift Sleeps</h2>}{<div className="relative mt-1.5 flex items-center justify-center gap-2">{<PxDiamond small />}{<span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]">it waits, impatient</span>}{<PxDiamond small />}</div>}{hud && <div className="relative mt-4 rounded-lg border border-[#a66bf0]/25 bg-[#120b24]/70 px-4 py-2.5" aria-label="Active run identity">{<div className="flex items-center justify-center gap-2">{<span className="text-[9px] font-bold uppercase tracking-[0.28em] text-[#6bf0c2]">Active rift seed</span>}{<span className="font-mono text-sm font-bold tracking-widest text-[#ffe9ad]">{hud.seed}</span>}</div>}{hud.biomeName && <div className="mt-1 text-center text-[10px] uppercase tracking-[0.22em] text-white/40">{"Current ground · "}<span className="font-bold text-[#b9aee0]">{hud.biomeName}</span></div>}</div>}{<div className="relative mt-6 flex flex-col gap-2.5">{<button type="button" onClick={() => {
+        }} />}{<Hourglass className="relative mx-auto size-6 text-[#f0c060]" />}{<h2 className="font-display relative mt-3 text-balance text-lg font-black uppercase tracking-[0.14em] text-[#f0c060] [text-shadow:0_0_22px_rgba(240,192,96,0.35)] sm:text-2xl">The Rift Sleeps</h2>}{<div className="relative mt-1.5 flex items-center justify-center gap-2">{<PxDiamond small />}{<span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]">it waits, impatient</span>}{<PxDiamond small />}</div>}{hud && <div className="relative mt-4 rounded-lg border border-[#a66bf0]/25 bg-[#120b24]/70 px-4 py-3" aria-label="Active run identity">{<div className="flex items-center justify-center gap-2">{<span className="text-[9px] font-bold uppercase tracking-[0.28em] text-[#6bf0c2]">Active rift seed</span>}{<span className="font-mono text-sm font-bold tracking-widest text-[#ffe9ad]">{hud.seed}</span>}</div>}{hud.biomeName && <div className="mt-1 text-center text-[10px] uppercase tracking-[0.22em] text-white/40">{"Current ground · "}<span className="font-bold text-[#b9aee0]">{hud.biomeName}</span></div>}{/* frozen vitals — pixel sockets, matching the HUD's bar language */}<div className="mt-2.5 flex flex-col gap-1.5">{<div className="flex items-center gap-2"><img src={V31_PORTRAIT.icon("heart")} alt="" width={13} height={13} draggable={false} className="size-[13px] shrink-0 [image-rendering:pixelated]" /><span className="h-2 flex-1 overflow-hidden rounded-full border border-[#d9a441]/30 bg-[#0a0712]"><span className="block h-full rounded-full" style={{ width: `${hpPct}%`, background: "linear-gradient(90deg,#e02040,#ff5a7a)" }} /></span><span className="w-14 text-right text-[8px] font-bold tabular-nums text-[#d8cfe8]">{Math.ceil(Math.max(0, hud.hp))} / {Math.round(hud.hpMax)}</span></div>}{<div className="flex items-center gap-2"><img src={V31_PORTRAIT.icon("flask")} alt="" width={13} height={13} draggable={false} className="size-[13px] shrink-0 [image-rendering:pixelated]" /><span className="h-2 flex-1 overflow-hidden rounded-full border border-[#d9a441]/30 bg-[#0a0712]"><span className="block h-full rounded-full" style={{ width: `${aePct}%`, background: "linear-gradient(90deg,#6a3df0,#a66bf0)" }} /></span><span className="w-14 text-right text-[8px] font-bold tabular-nums text-[#d8cfe8]">{Math.floor(hud.aether)} / {Math.round(hud.aetherMax)}</span></div>}{<div className="flex items-center gap-2"><svg viewBox="0 0 24 24" className="size-[13px] shrink-0"><path d="M13 2 L4.5 13.5 L11 13.5 L9.5 22 L19.5 9.5 L12.5 9.5 Z" fill="#f5a623" /></svg><span className="h-2 flex-1 overflow-hidden rounded-full border border-[#d9a441]/30 bg-[#0a0712]"><span className="block h-full rounded-full" style={{ width: `${sgPct}%`, background: "linear-gradient(90deg,#e8940a,#ffd24a)" }} /></span><span className="w-14 text-right text-[8px] font-bold tabular-nums text-[#d8cfe8]">SURGE {sgPct}%</span></div>}</div></div>}{<div className="relative mt-6 flex flex-col gap-2.5">{<button type="button" onClick={() => {
             sfx.click();
             onResume();
-          }} className="px-btn px-btn--primary w-full">{<Play className="size-4" />}{" Resume"}</button>}{<button type="button" onClick={() => {
+          }} className="px-btn px-btn--primary px-breathe w-full">{<Play className="size-4" />}{" Resume"}</button>}{<button type="button" onClick={() => {
             sfx.click();
             onSettings();
           }} className="px-btn w-full">{<Settings className="size-4" />}{" Settings"}</button>}{<button type="button" onClick={() => {
             sfx.click();
             onAbandon();
-          }} className="px-btn w-full" style={{ borderColor: "rgba(224,32,64,0.5)", color: "#ff8fa3" }}>{<DoorOpen className="size-4" />}{" Abandon Run"}</button>}</div>}</motion.div>}</motion.div>}</AnimatePresence>;
+          }} className="px-btn w-full" style={{ borderColor: "rgba(224,32,64,0.5)", color: "#ff8fa3" }}>{<DoorOpen className="size-4" />}{" Abandon Run"}</button>}</div>}{<div className="relative mt-3 text-center text-[8px] font-bold uppercase tracking-[0.24em] text-white/30">P resumes · the rift holds its breath</div>}</motion.div>}</motion.div>}</AnimatePresence>;
 }

@@ -1,23 +1,32 @@
 /* ARCHMAGE: RIFTBOUND — MenuScene
    A layered 2.5D title-screen backdrop rendered with Three.js:
 
-     Layer 0 (z = -9.0)  Sky & swirling rift portal — custom GLSL vortex with
-                          lightning pulses, spiral arms, stars and a pale moon.
-     Layer 1 (z = -2.6)  Midground vista — floating islands, castle silhouettes,
-                          stone courtyard, foreground crystals. Painted onto a
-                          canvas texture (procedural fallback) or a loaded
-                          `bg-clean.png` via the texture candidate hook.
-     Layer 2 (z = -1.55) Golden rune circle — RingGeometry driven by a pulsing,
-                          dash-tick shader, lying on the painted floor.
-     Layer 3 (z = -1.35) Central wizard sprite — idle bob + warm-gold PointLight
-                          pulsing from the staff tip (`wizard-idle.png` hook with
-                          procedural fallback).
-     Layer 4 (z = -4..1)  Foreground VFX — two GPU particle systems (rising
-                          purple crystal embers + golden arcane dust).
+     Layer 0 (z = -9.0)  Rift tunnel — custom GLSL vortex with lightning
+                          pulses, spiral arms and hyperspace streaks. It sits
+                          hidden behind the painted backdrop and takes over
+                          the frame during the SOLO RUN dive, as the painting
+                          dissolves into the living rift.
+     Layer 1 (z = -4.0)  Painted night vista — the V3.1 menu backdrop
+                          (purple rift portal, floating islands, castle,
+                          waterfalls, moon), cover-fitted to the frustum with
+                          a slight overscan so pointer parallax and a slow
+                          autonomous drift never reveal the edges. A
+                          procedural fallback paints in if the texture fails.
+     Layer 2 (z = -1.52) Golden rune circle — RingGeometry driven by a pulsing,
+                          dash-tick shader, lying on the painted courtyard,
+                          over a Lambert glow pool that catches the staff light.
+     Layer 3 (z = -1.35) Stormcaller — the V3.1 animated sprite sheet
+                          (idle-down row, 4 frames @ 6 fps, NearestFilter)
+                          with a gentle bob and a warm-gold PointLight
+                          pulsing from the staff orb.
+     Layer 4             Foreground VFX — two GPU particle systems: purple
+                          embers rising out of the painted portal and a wide
+                          drift of golden arcane dust.
 
-   Rendering contract: antialias off, pixelRatio capped, every texture on
-   NearestFilter — a crisp retro feel. The camera parallaxes subtly with the
-   pointer and dollies into the portal when a run starts. */
+   Rendering contract: antialias off, pixelRatio capped, sprite textures on
+   NearestFilter — crisp retro pixels; the painted backdrop alone uses linear
+   sampling + mipmaps. The camera parallaxes subtly with the pointer and
+   dives into the painted portal when a run starts. */
 
 import * as THREE from "three";
 
@@ -25,9 +34,11 @@ export interface MenuSceneConfig {
   canvas: HTMLCanvasElement;
   width: number;
   height: number;
-  /** Ordered candidate URLs for the painted midground (first that loads wins). */
+  /** Ordered candidate URLs for a painted midground — legacy fallbacks that
+   *  sit behind the V3.1 backdrop. */
   backgroundUrls?: string[];
-  /** Ordered candidate URLs for the wizard sprite (first that loads wins). */
+  /** Ordered candidate URLs for a single-frame wizard sprite — legacy
+   *  fallback behind the V3.1 stormcaller sheet. */
   wizardUrls?: string[];
   /** Fired once after the first rendered frame — HUD reveal hook. */
   onReady?: () => void;
@@ -39,12 +50,68 @@ export interface SceneControls {
   setParticleDensity(density: number): void;
 }
 
+/* ------------------------------------------------------------------ */
+/* V3.1 asset wiring                                                   */
+/* ------------------------------------------------------------------ */
+
+/* The bootstrap (src/main.ts) still hands over the legacy candidate lists;
+   the V3.1 painted backdrop + animated stormcaller sheet take priority and
+   the legacy lists survive as graceful fallbacks. */
+const BACKDROP_URL = "/assets/v31/menu-backdrop-clean.webp";
+const MAGE_SHEET_URL = "/assets/v31/sprites/mage_stormcaller.png";
+
+/* Sheet layout per /assets/v31/sprites/mage_stormcaller.json: 6 cols x 36
+   rows of 64px frames; idle-down = row 0, cols 0-3 at 6 fps. */
+const SHEET_COLS = 6;
+const SHEET_ROWS = 36;
+const IDLE_ROW = 0;
+const IDLE_FRAMES = 4;
+const IDLE_FPS = 6;
+
+/* Landmarks of the painted composition, as UV fractions of the backdrop
+   (grid-measured on menu-backdrop-clean.webp: portal rim spans u 0.35-0.65). */
+const PORTAL_UV_X = 0.5;
+const PORTAL_UV_Y = 0.4;
+
+/* Sprite-space anchors inside one 64px stormcaller frame (idle-down row):
+   the staff orb and the feet line, measured from the frame top. */
+const STAFF_ORB_U = 49 / 64;
+const STAFF_ORB_V = 30 / 64;
+const FEET_V = 57 / 64;
+
+/* Depth staging. */
+const Z_SKY = -9;
+const Z_BACKDROP = -4;
+const Z_RING = -1.52;
+const Z_MAGE = -1.35;
+
+/* Screen anchors for the foreground stage (fractions of the viewport,
+   0 = top edge). The compact variants engage when the stage is letterboxed
+   very short (portrait phones) so the mage clears the HUD cluster.
+   Ring staging is measured so the circle's near arc stays clear of the
+   dock row (dock top ≈ 0.911 desktop / 0.854 compact): desktop ring spans
+   screen y 0.69–0.86, compact 0.73–0.83. */
+const RING_SCREEN_Y = 0.775;
+const RING_SCREEN_Y_COMPACT = 0.77;
+/** Ground-plane tilt: 8.6° shy of horizontal, so the ring reads as a
+ *  perspective ellipse cut into the courtyard stone, never an upright hoop. */
+const RING_TILT = -1.42;
+const MAGE_FEET_SCREEN_Y = 0.828;
+const MAGE_FEET_SCREEN_Y_COMPACT = 0.824;
+/** The full 64px frame occupies this share of the viewport height; the
+ *  character inside (49 of 64 px of body) reads at ~28%. */
+const MAGE_PLANE_FRACTION = 0.36;
+const MAGE_PLANE_FRACTION_COMPACT = 0.27;
+/** Below this CSS-pixel stage height the portrait letterbox engages the
+ *  compact courtyard staging. */
+const COMPACT_STAGE_HEIGHT = 300;
+
+/* The backdrop plane is drawn slightly larger than the frustum so pointer
+   parallax and the slow drift never reveal the edges. */
+const BACKDROP_OVERSCAN = 1.08;
+
 const CAMERA_BASE = new THREE.Vector3(0, 1.15, 7.5);
 const CAMERA_LOOK = new THREE.Vector3(0, 0.65, -1);
-/* The dive is part camera, part optics: the camera dollies gently toward
-   the portal while the vortex shader magnifies — see uZoom in SKY_FRAG. */
-const PORTAL_FOCUS = new THREE.Vector3(0, 2.6, -4);
-const RUN_END = new THREE.Vector3(0, 2.4, 2.0);
 
 /* ------------------------------------------------------------------ */
 /* Shaders                                                             */
@@ -64,7 +131,7 @@ const SKY_FRAG = /* glsl */ `
   uniform float uTime;
   uniform float uFlash;   // lightning pulse energy, 0..1
   uniform float uZoom;    // 0..1 run-start dolly, intensifies the vortex
-  uniform float uAspect;  // plane width / height, keeps the vortex round
+  uniform float uAspect;  // viewport width / height, keeps the vortex round
   uniform vec2  uCenter;  // portal center in uv space
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -166,23 +233,41 @@ const RING_FRAG = /* glsl */ `
   precision highp float;
   varying vec2 vLocal;
   uniform float uTime;
+  uniform float uFade;    // 0..1, dissolves the ring during the dive
 
   void main() {
     float r = length(vLocal);
     float a = atan(vLocal.y, vLocal.x);
 
-    // Radial band between the ring's inner and outer radii.
-    float band = smoothstep(0.95, 1.08, r) * (1.0 - smoothstep(1.38, 1.50, r));
+    /* Engraved channel: a dark annulus cut into the courtyard stone, so the
+       ring holds up against the bright painted floor instead of washing out
+       (the old additive pass dissolved into the plaza glow). A radial
+       gradient inside the channel fakes a bevel. */
+    float channel = smoothstep(0.93, 0.98, r) * (1.0 - smoothstep(1.42, 1.50, r));
+    vec3 channelCol = mix(vec3(0.07, 0.04, 0.13), vec3(0.14, 0.08, 0.23),
+                           smoothstep(0.96, 1.44, r));
 
     // Angular rune ticks: long dash, gap, short dash, gap — slowly orbiting.
     float seg = fract(a * 2.5465 + uTime * 0.06);
-    float tick = (seg < 0.16 || (seg > 0.30 && seg < 0.36)) ? 1.0 : 0.30;
+    float tick = (seg < 0.16 || (seg > 0.30 && seg < 0.36)) ? 1.0 : 0.22;
 
     float pulse = 0.65 + 0.35 * sin(uTime * 1.7 - r * 3.0);
-    vec3 gold = mix(vec3(0.71, 0.55, 0.22), vec3(1.00, 0.85, 0.45), pulse);
-    float alpha = band * tick * pulse;
+    vec3 gold = mix(vec3(0.85, 0.62, 0.20), vec3(1.00, 0.88, 0.50), pulse);
 
-    gl_FragColor = vec4(gold * 1.5, alpha * 0.9);
+    // Molten gold inlay, inset inside the channel.
+    float band = smoothstep(0.99, 1.03, r) * (1.0 - smoothstep(1.36, 1.41, r));
+    float goldA = band * tick * pulse;
+
+    // Composite: gold inlay over the dark channel.
+    vec3 col = mix(channelCol, gold * 1.18, goldA);
+    float alpha = channel * 0.68;
+
+    // Thin bright rim chasing the outer edge.
+    float rim = smoothstep(1.435, 1.462, r) * (1.0 - smoothstep(1.478, 1.50, r));
+    col = mix(col, vec3(1.0, 0.91, 0.58), rim * pulse);
+    alpha = max(alpha, rim * 0.75);
+
+    gl_FragColor = vec4(col, alpha * uFade);
   }
 `;
 
@@ -194,6 +279,8 @@ const POINTS_VERT = /* glsl */ `
   uniform float uTime;
   uniform float uDensity;   // fraction of particles visible, 0..1
   uniform float uScale;     // device-pixel scale reference (height / 1080)
+  uniform float uRise;      // world units climbed over one life
+  uniform float uLift;      // vertical offset at life = 0
   varying float vLife;
   varying float vSeed;
 
@@ -203,7 +290,7 @@ const POINTS_VERT = /* glsl */ `
     vLife = life;
 
     vec3 pos = position;
-    pos.y += life * 6.8 - 2.4;
+    pos.y += life * uRise + uLift;
     pos.x += sin(uTime * (0.4 + aSeed * 0.5) + aSeed * 6.2831) * 0.45;
 
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
@@ -491,7 +578,7 @@ function createProceduralBackground(): THREE.CanvasTexture {
   return tex;
 }
 
-/** Fallback wizard: a blocky hooded mage with a glowing staff orb, 72x104. */
+/** Fallback mage: a blocky hooded spellcaster with a glowing staff orb. */
 function createProceduralWizard(): THREE.CanvasTexture {
   const c = document.createElement("canvas");
   c.width = 72;
@@ -534,13 +621,78 @@ function createProceduralWizard(): THREE.CanvasTexture {
   return tex;
 }
 
+/** Soft elliptical contact shadow that anchors the mage to the courtyard
+    (the sprite's own 4px drop shadow alone gets lost on the glow pool). */
+function createContactShadowTexture(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = 128;
+  c.height = 64;
+  const g = c.getContext("2d");
+  if (!g) throw new Error("2D canvas unavailable for contact shadow");
+  const grad = g.createRadialGradient(64, 32, 4, 64, 32, 60);
+  grad.addColorStop(0, "rgba(5, 3, 10, 0.95)");
+  grad.addColorStop(0.55, "rgba(5, 3, 10, 0.5)");
+  grad.addColorStop(1, "rgba(5, 3, 10, 0)");
+  g.save();
+  g.translate(64, 32);
+  g.scale(1, 0.5);
+  g.translate(-64, -32);
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 64);
+  g.restore();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** Soft radial backlight that lifts the stormcaller's dark robe off the
+    painted portal — additive violet-gold aura, tinted by the staff light's
+    own palette so the silhouette always reads, even over the vortex core. */
+function createMageBacklightTexture(): THREE.CanvasTexture {
+  const c = document.createElement("canvas");
+  c.width = 128;
+  c.height = 128;
+  const g = c.getContext("2d");
+  if (!g) throw new Error("2D canvas unavailable for mage backlight");
+  const grad = g.createRadialGradient(64, 60, 6, 64, 64, 62);
+  grad.addColorStop(0, "rgba(255, 214, 140, 0.5)");
+  grad.addColorStop(0.42, "rgba(196, 128, 255, 0.3)");
+  grad.addColorStop(0.72, "rgba(120, 68, 210, 0.14)");
+  grad.addColorStop(1, "rgba(80, 40, 160, 0)");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 128);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 /* ------------------------------------------------------------------ */
 /* MenuScene                                                           */
 /* ------------------------------------------------------------------ */
 
 interface ParticleSystem {
   points: THREE.Points;
-  uniforms: { uTime: { value: number }; uDensity: { value: number }; uScale: { value: number } };
+  uniforms: {
+    uTime: { value: number };
+    uDensity: { value: number };
+    uScale: { value: number };
+    uRise: { value: number };
+    uLift: { value: number };
+  };
+}
+
+/** Spawn volume of a particle system, expressed in its object space. */
+interface ParticleSpawn {
+  x: number;
+  y0: number;
+  y1: number;
+  z: number;
+  rise: number;
+  lift: number;
+}
+
+function clamp01(v: number): number {
+  return Math.min(1, Math.max(0, v));
 }
 
 export class MenuScene implements SceneControls {
@@ -555,29 +707,60 @@ export class MenuScene implements SceneControls {
     uAspect: { value: number };
     uCenter: { value: THREE.Vector2 };
   };
-  private readonly ringUniforms: { uTime: { value: number } };
+  private readonly ringUniforms: { uTime: { value: number }; uFade: { value: number } };
   private readonly ember: ParticleSystem;
   private readonly dust: ParticleSystem;
 
-  private readonly wizard: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-  private readonly staffLight: THREE.PointLight;
+  private readonly backdrop: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   private readonly ring: THREE.Mesh<THREE.RingGeometry, THREE.ShaderMaterial>;
-  private readonly midground: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshLambertMaterial>;
+  private readonly pool: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshLambertMaterial>;
+  private readonly contactShadow: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  private readonly mage: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  /** additive backlight plane riding the mage — lifts the robe silhouette
+   *  off the painted portal (v3.1 cohesion polish). */
+  private mageGlow: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  private readonly staffLight: THREE.PointLight;
 
   private readonly disposables: Array<{ dispose(): void }> = [];
   private readonly onReady?: () => void;
 
   private pointer = { x: 0, y: 0 };
   private parallaxEnabled = true;
+  private driftEnabled = true;
   private time = 0;
   private flash = 0;
   private nextFlash = 2.4;
-  private wizardBaseY = -0.42;
   private readyFired = false;
   private transitioning = false;
+  private staffGlow = 1;
+  private compact = false;
+
+  /* Layout state, recomputed by layout(). */
+  private backdropAspect = 16 / 9;
+  private readonly backdropBase = new THREE.Vector3();
+  private readonly portalFocus = new THREE.Vector3(0, 1.7, Z_BACKDROP);
+  private readonly runEnd = new THREE.Vector3(0, 1.55, 3.3);
+  private mageCenterY = -0.6;
+  private magePlaneH = 3.3;
+
+  /* Stormcaller sheet state. */
+  private mageSheet: THREE.Texture | null = null;
+  private mageAspect = 1;
+  private mageFrame = -1;
+  private mageAnimTime = 0;
 
   constructor(config: MenuSceneConfig) {
     this.onReady = config.onReady;
+
+    /* Reduced motion: no pointer parallax, no autonomous drift, sparse
+       particles — the painting carries the scene on its own. */
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    if (reducedMotion) {
+      this.parallaxEnabled = false;
+      this.driftEnabled = false;
+    }
 
     /* Renderer — retro contract: no AA, capped pixel ratio. */
     this.renderer = new THREE.WebGLRenderer({
@@ -593,21 +776,21 @@ export class MenuScene implements SceneControls {
     this.camera.position.copy(CAMERA_BASE);
     this.camera.lookAt(CAMERA_LOOK);
 
-    /* Lights: ambient dusk, a violet rim from the portal, and the staff. */
-    const ambient = new THREE.AmbientLight(0x5a4880, 1.5);
+    /* Lights — they only feed the Lambert glow pool now: dusk ambient, a
+       violet rim from the portal direction, and the warm staff orb. */
+    const ambient = new THREE.AmbientLight(0x5a4880, 1.2);
     const rim = new THREE.DirectionalLight(0x8a4fd0, 0.85);
     rim.position.set(0, 4, -8);
     this.staffLight = new THREE.PointLight(0xffc46a, 14, 9, 2);
-    this.staffLight.position.set(0.46, 0.06, -1.25);
     this.scene.add(ambient, rim, this.staffLight);
 
-    /* Layer 0 — sky & rift portal. */
+    /* Layer 0 — rift tunnel sky (hidden behind the painting until dive). */
     this.skyUniforms = {
       uTime: { value: 0 },
       uFlash: { value: 0 },
       uZoom: { value: 0 },
-      uAspect: { value: 34 / 19.5 },
-      uCenter: { value: new THREE.Vector2(0.5, 0.66) },
+      uAspect: { value: 16 / 9 },
+      uCenter: { value: new THREE.Vector2(0.5, 0.6) },
     };
     const skyGeo = new THREE.PlaneGeometry(34, 19.5);
     const skyMat = new THREE.ShaderMaterial({
@@ -617,98 +800,125 @@ export class MenuScene implements SceneControls {
       depthWrite: true,
     });
     const sky = new THREE.Mesh(skyGeo, skyMat);
-    sky.position.set(0, 0.4, -9);
+    sky.position.set(0, 0.4, Z_SKY);
     sky.renderOrder = 0;
     this.scene.add(sky);
     this.disposables.push(skyGeo, skyMat);
 
-    /* Layer 1 — midground vista (procedural fallback + loader hook). */
-    const midGeo = new THREE.PlaneGeometry(26, 14.625);
-    const midMat = new THREE.MeshLambertMaterial({
+    /* Layer 1 — painted backdrop (procedural fallback + loader hook). */
+    const bdGeo = new THREE.PlaneGeometry(1, 1);
+    const bdMat = new THREE.MeshBasicMaterial({
       map: createProceduralBackground(),
       transparent: true,
       depthWrite: false,
     });
-    this.disposables.push(midGeo, midMat, midMat.map!);
-    this.midground = new THREE.Mesh(midGeo, midMat);
-    this.midground.position.set(0, 0, -2.6);
-    this.midground.renderOrder = 1;
-    this.scene.add(this.midground);
-    void this.loadFirstAvailable(config.backgroundUrls ?? [], (tex) => {
-      const img = tex.image as { width: number; height: number };
-      const aspect = img.width / img.height;
-      // Cover the 16:9 plane without distortion.
-      this.midground.scale.set(
-        Math.max(1, 16 / 9 / aspect),
-        Math.max(1, aspect / (16 / 9)),
-        1,
-      );
-      /* Painted art — unlike the pixel sprites, this wants linear sampling
-         + mipmaps (the plane minifies on hi-dpi screens). The shared loader
-         applies NearestFilter for sprites; re-derive here. */
-      tex.magFilter = THREE.LinearFilter;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.generateMipmaps = true;
-      tex.needsUpdate = true;
-      const old = midMat.map;
-      midMat.map = tex;
-      midMat.needsUpdate = true;
-      old?.dispose();
-      this.disposables.push(tex);
-    });
+    this.disposables.push(bdGeo, bdMat, bdMat.map!);
+    this.backdrop = new THREE.Mesh(bdGeo, bdMat);
+    this.backdrop.renderOrder = 1;
+    this.scene.add(this.backdrop);
+    this.loadBackdrop([BACKDROP_URL, ...(config.backgroundUrls ?? [])]);
 
-    /* Layer 2 — golden rune circle on the floor. */
-    const ringGeo = new THREE.RingGeometry(0.95, 1.5, 72, 1);
-    this.ringUniforms = { uTime: { value: 0 } };
+    /* Layer 2 — golden rune circle + glow pool on the painted courtyard.
+       Normal blending: the shader cuts a dark engraved channel into the
+       floor and lays molten gold ticks inside it, so the circle stays legible
+       over the bright painted plaza. */
+    const ringGeo = new THREE.RingGeometry(0.95, 1.5, 96, 1);
+    this.ringUniforms = { uTime: { value: 0 }, uFade: { value: 1 } };
     const ringMat = new THREE.ShaderMaterial({
       vertexShader: RING_VERT,
       fragmentShader: RING_FRAG,
       uniforms: this.ringUniforms,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
     });
     this.ring = new THREE.Mesh(ringGeo, ringMat);
-    this.ring.position.set(0, -0.92, -1.52);
-    this.ring.rotation.x = -1.08;
-    this.ring.renderOrder = 2;
+    this.ring.rotation.x = RING_TILT;
+    this.ring.renderOrder = 3;
     this.scene.add(this.ring);
     this.disposables.push(ringGeo, ringMat);
 
-    /* Layer 3 — central wizard sprite with idle bob. Unit plane, scaled
-       from the texture's aspect so both the fallback and loaded art keep
-       their true proportions. */
-    const WIZARD_HEIGHT = 1.75;
-    const wizGeo = new THREE.PlaneGeometry(1, 1);
-    const wizMat = new THREE.MeshBasicMaterial({
+    const poolGeo = new THREE.PlaneGeometry(4.6, 2.6);
+    const poolMat = new THREE.MeshLambertMaterial({
+      color: 0x241436,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    this.pool = new THREE.Mesh(poolGeo, poolMat);
+    this.pool.rotation.x = RING_TILT;
+    this.pool.renderOrder = 2;
+    this.scene.add(this.pool);
+    this.disposables.push(poolGeo, poolMat);
+
+    /* Contact shadow — grounds the stormcaller on the courtyard. Wide
+       enough to spill past the robe on both sides; the glow pool beneath
+       is deliberately tighter than the shadow so the dark reads through. */
+    const shadowGeo = new THREE.PlaneGeometry(3.2, 1.7);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      map: createContactShadowTexture(),
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.9,
+    });
+    this.contactShadow = new THREE.Mesh(shadowGeo, shadowMat);
+    this.contactShadow.rotation.x = RING_TILT;
+    this.contactShadow.renderOrder = 2.5;
+    this.scene.add(this.contactShadow);
+    this.disposables.push(shadowGeo, shadowMat, shadowMat.map!);
+
+    /* Layer 3 — the stormcaller, idle-bobbing on the rune circle. Unit
+       plane; the sheet frames are square (64x64) so the sheet maps 1:1,
+       while legacy single-frame fallbacks keep their true aspect. */
+    const mageGeo = new THREE.PlaneGeometry(1, 1);
+    const mageMat = new THREE.MeshBasicMaterial({
       map: createProceduralWizard(),
       transparent: true,
       depthWrite: false,
     });
-    this.disposables.push(wizGeo, wizMat, wizMat.map!);
-    const applyWizardAspect = (aspect: number): void => {
-      this.wizard.scale.set(WIZARD_HEIGHT * aspect, WIZARD_HEIGHT, 1);
-    };
-    this.wizard = new THREE.Mesh(wizGeo, wizMat);
-    applyWizardAspect(72 / 104);
-    this.wizard.position.set(0, this.wizardBaseY, -1.35);
-    this.wizard.renderOrder = 3;
-    this.scene.add(this.wizard);
-    void this.loadFirstAvailable(config.wizardUrls ?? [], (tex) => {
-      const img = tex.image as { width: number; height: number };
-      applyWizardAspect(img.width / img.height);
-      const old = wizMat.map;
-      wizMat.map = tex;
-      wizMat.needsUpdate = true;
-      old?.dispose();
-      this.disposables.push(tex);
+    this.disposables.push(mageGeo, mageMat, mageMat.map!);
+    this.mage = new THREE.Mesh(mageGeo, mageMat);
+    this.mage.renderOrder = 4;
+    this.scene.add(this.mage);
+    /* Backlight — a soft additive aura just behind the mage (renderOrder
+       3.6, between the rune ring and the sprite). Sized from the mage plane
+       each layout(); rides the idle bob so the aura breathes with it. */
+    const glowGeo = new THREE.PlaneGeometry(1, 1);
+    const glowMat = new THREE.MeshBasicMaterial({
+      map: createMageBacklightTexture(),
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.62,
+      blending: THREE.AdditiveBlending,
     });
+    this.mageGlow = new THREE.Mesh(glowGeo, glowMat);
+    this.mageGlow.renderOrder = 3.6;
+    this.scene.add(this.mageGlow);
+    this.disposables.push(glowGeo, glowMat, glowMat.map!);
+    this.loadMage(config.wizardUrls ?? []);
 
-    /* Layer 4 — foreground particle systems. */
-    this.ember = this.buildParticles(300, new THREE.Color("#8b46f0"), new THREE.Color("#e2a9ff"), 16, 30, 0.055, 0.14);
-    this.dust = this.buildParticles(180, new THREE.Color("#e8c56a"), new THREE.Color("#fff0b8"), 9, 16, 0.03, 0.08);
+    /* Layer 4 — foreground particle systems: embers rise out of the
+       painted portal, gold dust drifts across the courtyard. Counts and the
+       resting density stay deliberately below max so the painting reads
+       through the VFX. */
+    this.ember = this.buildParticles(
+      120, new THREE.Color("#8b46f0"), new THREE.Color("#e2a9ff"),
+      9, 20, 0.05, 0.12,
+      { x: 2.7, y0: 0.0, y1: 1.1, z: 0.9, rise: 3.2, lift: 0 },
+    );
+    this.dust = this.buildParticles(
+      70, new THREE.Color("#e8c56a"), new THREE.Color("#fff0b8"),
+      5, 11, 0.03, 0.07,
+      { x: 6.5, y0: -1.6, y1: 0.4, z: 1.9, rise: 4.4, lift: -0.6 },
+    );
+    this.ember.points.renderOrder = 5;
+    this.dust.points.renderOrder = 5;
     this.scene.add(this.ember.points, this.dust.points);
+
+    /* Resting density — tuned down so the painted portal carries the frame. */
+    if (reducedMotion) this.setParticleDensity(0.35);
+    else this.setParticleDensity(0.75);
 
     this.resize(config.width, config.height);
   }
@@ -724,6 +934,8 @@ export class MenuScene implements SceneControls {
     const scale = (height * dpr) / 1080;
     this.ember.uniforms.uScale.value = scale;
     this.dust.uniforms.uScale.value = scale;
+    this.compact = height < COMPACT_STAGE_HEIGHT;
+    this.layout();
   }
 
   setPointer(nx: number, ny: number): void {
@@ -762,18 +974,37 @@ export class MenuScene implements SceneControls {
     this.flash *= Math.exp(-dt * 5.2);
     this.skyUniforms.uFlash.value = this.flash;
 
-    /* Wizard idle bob + slow sway. */
-    this.wizard.position.y = this.wizardBaseY + Math.sin(t * 1.5) * 0.045;
-    this.wizard.rotation.z = Math.sin(t * 0.8) * 0.012;
+    /* Stormcaller idle stepping: 4 frames at 6 fps, forever. */
+    if (this.mageSheet) {
+      this.mageAnimTime += dt;
+      const frame = Math.floor(this.mageAnimTime * IDLE_FPS) % IDLE_FRAMES;
+      if (frame !== this.mageFrame) {
+        this.mageFrame = frame;
+        this.mageSheet.offset.set(frame / SHEET_COLS, 1 - (IDLE_ROW + 1) / SHEET_ROWS);
+      }
+    }
 
-    /* Staff light: warm pulse, sharpened by lightning. */
-    this.staffLight.intensity = 13 + Math.sin(t * 2.3) * 4 + this.flash * 7;
-
-    /* Rune circle slow rotation. */
-    this.ring.rotation.z = t * 0.05;
-
-    /* Camera: parallax lerp, skipped while the dolly owns the camera. */
     if (!this.transitioning) {
+      /* Idle bob + slow sway. */
+      this.mage.position.y = this.mageCenterY + Math.sin(t * 1.5) * 0.035;
+      this.mage.rotation.z = Math.sin(t * 0.8) * 0.012;
+      /* backlight rides the mage: same bob, slight lag + swell so the aura
+       * reads as the staff's light breathing rather than a static halo */
+      this.mageGlow.position.set(this.mage.position.x, this.mage.position.y - 0.01, this.mage.position.z - 0.01);
+      this.mageGlow.scale.setScalar(this.mage.scale.x * 1.55 + Math.sin(t * 1.5 + 0.6) * 0.04);
+      this.mageGlow.material.opacity = 0.5 + Math.sin(t * 1.2) * 0.1;
+
+      /* Staff light: warm pulse, sharpened by lightning. */
+      this.staffLight.intensity = (13 + Math.sin(t * 2.3) * 4 + this.flash * 7) * this.staffGlow;
+
+      /* Rune circle slow rotation. */
+      this.ring.rotation.z = t * 0.05;
+
+      /* Backdrop: slow autonomous drift inside the overscan margin. */
+      this.backdrop.position.x = this.backdropBase.x + (this.driftEnabled ? Math.sin(t * 0.05) * 0.16 : 0);
+      this.backdrop.position.y = this.backdropBase.y + (this.driftEnabled ? Math.cos(t * 0.04) * 0.09 : 0);
+
+      /* Camera: parallax lerp, skipped while the dolly owns the camera. */
       const k = 1 - Math.exp(-dt * 3.2);
       const tx = this.parallaxEnabled ? this.pointer.x * 0.45 : 0;
       const ty = this.parallaxEnabled ? -this.pointer.y * 0.28 : 0;
@@ -792,7 +1023,9 @@ export class MenuScene implements SceneControls {
     }
   }
 
-  /** Arc up and into the portal. Resolves when fully inside; onProgress is 0..1. */
+  /** Arc up and into the painted portal. Resolves when fully inside;
+      onProgress is 0..1. As the camera commits, the painting and the
+      courtyard stage dissolve and the shader rift takes the frame. */
   startRunTransition(durationMs = 1900, onProgress?: (t: number) => void): Promise<void> {
     this.transitioning = true;
     const start = performance.now();
@@ -801,12 +1034,13 @@ export class MenuScene implements SceneControls {
       const step = () => {
         const raw = Math.min(1, (performance.now() - start) / durationMs);
         const e = raw < 0.5 ? 4 * raw * raw * raw : 1 - Math.pow(-2 * raw + 2, 3) / 2;
-        this.camera.position.lerpVectors(CAMERA_BASE, RUN_END, e);
-        /* The gaze swings from the courtyard up to the portal eye, so the
-           vortex swells to fill the frame instead of sliding below it. */
-        look.lerpVectors(CAMERA_LOOK, PORTAL_FOCUS, e);
+        this.camera.position.lerpVectors(CAMERA_BASE, this.runEnd, e);
+        /* The gaze swings from the courtyard up to the painted portal, so
+           the rift swells to fill the frame instead of sliding below it. */
+        look.lerpVectors(CAMERA_LOOK, this.portalFocus, e);
         this.camera.lookAt(look);
         this.skyUniforms.uZoom.value = e;
+        this.setSwallow(e);
         this.staffLight.intensity = 13 + e * 30;
         onProgress?.(raw);
         if (raw < 1) requestAnimationFrame(step);
@@ -821,6 +1055,7 @@ export class MenuScene implements SceneControls {
     this.camera.position.copy(CAMERA_BASE);
     this.camera.lookAt(CAMERA_LOOK);
     this.skyUniforms.uZoom.value = 0;
+    this.setSwallow(0);
     this.transitioning = false;
   }
 
@@ -833,6 +1068,170 @@ export class MenuScene implements SceneControls {
 
   /* ---------------- internals ---------------- */
 
+  /** The rift swallowing the stage: 0 = calm menu, 1 = fully inside. The
+      mage dissolves a beat BEFORE the painting reveals the dive tunnel, so
+      the vortex never draws over the character (V3.1 critique). */
+  private setSwallow(v: number): void {
+    this.backdrop.material.opacity = 1 - clamp01((v - 0.3) / 0.35);
+    const stageOut = clamp01((v - 0.15) / 0.35);
+    this.mage.material.opacity = 1 - stageOut;
+    this.mageGlow.material.opacity = 0.62 * (1 - clamp01((v - 0.1) / 0.3));
+    this.ringUniforms.uFade.value = 1 - stageOut;
+    this.pool.material.opacity = 0.5 * (1 - clamp01((v - 0.2) / 0.3));
+    this.contactShadow.material.opacity = 0.9 * (1 - clamp01((v - 0.2) / 0.3));
+    this.staffGlow = 1 - clamp01((v - 0.25) / 0.35);
+  }
+
+  /** Screen fraction (0..1, y down) to world point on plane z = zPlane. */
+  private screenToWorld(fx: number, fy: number, zPlane: number): THREE.Vector3 {
+    const ndc = new THREE.Vector3(fx * 2 - 1, 1 - fy * 2, 0.5).unproject(this.camera);
+    const dir = ndc.sub(this.camera.position).normalize();
+    const t = (zPlane - this.camera.position.z) / dir.z;
+    return this.camera.position.clone().add(dir.multiplyScalar(t));
+  }
+
+  /** Axis-aligned frustum rectangle on plane z = zPlane. */
+  private frustumAt(zPlane: number): { cx: number; cy: number; w: number; h: number } {
+    const tl = this.screenToWorld(0, 0, zPlane);
+    const br = this.screenToWorld(1, 1, zPlane);
+    return { cx: (tl.x + br.x) / 2, cy: (tl.y + br.y) / 2, w: br.x - tl.x, h: tl.y - br.y };
+  }
+
+  /** Re-derive every painting-anchored position: the backdrop cover-fit,
+      the painted portal (dive target + ember hearth + vortex eye), and the
+      screen-anchored courtyard stage (ring, pool, mage, staff light). */
+  private layout(): void {
+    this.camera.updateMatrixWorld();
+
+    /* Backdrop: cover the frustum at its depth, undistorted, overscanned. */
+    const view = this.frustumAt(Z_BACKDROP);
+    const viewAspect = view.w / view.h;
+    const coverX = Math.max(1, viewAspect / this.backdropAspect);
+    const coverY = Math.max(1, this.backdropAspect / viewAspect);
+    const pw = view.w * coverX * BACKDROP_OVERSCAN;
+    const ph = view.h * coverY * BACKDROP_OVERSCAN;
+    this.backdrop.scale.set(pw, ph, 1);
+    this.backdrop.position.set(view.cx, view.cy, Z_BACKDROP);
+    this.backdropBase.copy(this.backdrop.position);
+
+    /* The painted portal, in world space. */
+    this.portalFocus.set(
+      view.cx + (PORTAL_UV_X - 0.5) * pw,
+      view.cy + (0.5 - PORTAL_UV_Y) * ph,
+      Z_BACKDROP,
+    );
+
+    /* Sky vortex eye: project the painted portal onto the sky plane so the
+       dive tunnel opens exactly where the painting painted it. */
+    const ndc = this.portalFocus.clone().project(this.camera);
+    const eye = this.screenToWorld((ndc.x + 1) / 2, (1 - ndc.y) / 2, Z_SKY);
+    this.skyUniforms.uCenter.value.set(0.5 + eye.x / 34, 0.5 + (eye.y - 0.4) / 19.5);
+    this.skyUniforms.uAspect.value = this.camera.aspect;
+
+    /* Courtyard stage — ring + glow pool on the painted circle. */
+    const ringAt = this.screenToWorld(0.5, this.compact ? RING_SCREEN_Y_COMPACT : RING_SCREEN_Y, Z_RING);
+    this.ring.position.set(ringAt.x, ringAt.y, Z_RING);
+    this.pool.position.set(ringAt.x, ringAt.y + 0.05, Z_RING + 0.06);
+    this.ring.scale.setScalar(this.compact ? 0.68 : 0.95);
+    this.pool.scale.setScalar(this.compact ? 0.5 : 0.62);
+
+    /* Contact shadow under the mage's feet, on the same ground plane —
+       wide enough to spill past the robe and sell the footing. */
+    const feetY = this.compact ? MAGE_FEET_SCREEN_Y_COMPACT : MAGE_FEET_SCREEN_Y;
+    const shadowAt = this.screenToWorld(0.5, feetY + 0.008, Z_RING + 0.05);
+    this.contactShadow.position.set(shadowAt.x, shadowAt.y, Z_RING + 0.05);
+    this.contactShadow.scale.setScalar(this.compact ? 0.78 : 1);
+
+    /* Stormcaller — feet planted on the courtyard, sized to the viewport. */
+    const mageView = this.frustumAt(Z_MAGE);
+    this.magePlaneH = mageView.h * (this.compact ? MAGE_PLANE_FRACTION_COMPACT : MAGE_PLANE_FRACTION);
+    const feet = this.screenToWorld(0.5, feetY, Z_MAGE);
+    this.mageCenterY = feet.y + (FEET_V - 0.5) * this.magePlaneH;
+    this.applyMageTransform();
+
+    /* Staff orb — the PointLight rides the sprite's staff. */
+    const w = this.magePlaneH * this.mageAspect;
+    this.staffLight.position.set(
+      (STAFF_ORB_U - 0.5) * w,
+      this.mageCenterY + (0.5 - STAFF_ORB_V) * this.magePlaneH,
+      Z_MAGE + 0.05,
+    );
+
+    /* Embers rise out of the painted portal. */
+    this.ember.points.position.set(
+      this.portalFocus.x,
+      this.portalFocus.y - 0.85,
+      Z_BACKDROP + 0.15,
+    );
+
+    /* The dive ends short of the portal, on its axis. */
+    this.runEnd.set(this.portalFocus.x * 0.35, Math.max(1.2, this.portalFocus.y - 0.15), 3.3);
+  }
+
+  private applyMageTransform(): void {
+    const h = this.magePlaneH;
+    this.mage.scale.set(h * this.mageAspect, h, 1);
+    this.mage.position.set(0, this.mageCenterY, Z_MAGE);
+  }
+
+  private loadBackdrop(urls: string[]): void {
+    this.loadFirstAvailable(urls, (tex) => {
+      const img = tex.image as { width: number; height: number };
+      this.backdropAspect = img.width / img.height;
+      /* Painted art — unlike the pixel sprites, this wants linear sampling
+         + mipmaps (the plane minifies on hi-dpi screens). The shared loader
+         applies NearestFilter for sprites; re-derive here. */
+      tex.magFilter = THREE.LinearFilter;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.generateMipmaps = true;
+      tex.needsUpdate = true;
+      const old = this.backdrop.material.map;
+      this.backdrop.material.map = tex;
+      this.backdrop.material.needsUpdate = true;
+      old?.dispose();
+      this.disposables.push(tex);
+      this.layout();
+    });
+  }
+
+  private loadMage(fallbackUrls: string[]): void {
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      MAGE_SHEET_URL,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        tex.generateMipmaps = false;
+        tex.repeat.set(1 / SHEET_COLS, 1 / SHEET_ROWS);
+        tex.offset.set(0, 1 - (IDLE_ROW + 1) / SHEET_ROWS);
+        this.mageSheet = tex;
+        this.mageAspect = 1; // 64x64 frames
+        this.mageFrame = -1;
+        this.swapMageMap(tex);
+        this.layout();
+      },
+      undefined,
+      () => {
+        /* Sheet unavailable — fall back to the legacy single-frame art. */
+        this.loadFirstAvailable(fallbackUrls, (tex) => {
+          const img = tex.image as { width: number; height: number };
+          this.mageAspect = img.width / img.height;
+          this.swapMageMap(tex);
+          this.layout();
+        });
+      },
+    );
+  }
+
+  private swapMageMap(tex: THREE.Texture): void {
+    const old = this.mage.material.map;
+    this.mage.material.map = tex;
+    this.mage.material.needsUpdate = true;
+    old?.dispose();
+    this.disposables.push(tex);
+  }
+
   private buildParticles(
     count: number,
     colorA: THREE.Color,
@@ -841,6 +1240,7 @@ export class MenuScene implements SceneControls {
     maxSize: number,
     minSpeed: number,
     maxSpeed: number,
+    spawn: ParticleSpawn,
   ): ParticleSystem {
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(count * 3);
@@ -849,9 +1249,9 @@ export class MenuScene implements SceneControls {
     const sizes = new Float32Array(count);
     const offsets = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 13;
-      pos[i * 3 + 1] = -2.4;
-      pos[i * 3 + 2] = -4 + Math.random() * 4.6;
+      pos[i * 3] = (Math.random() - 0.5) * 2 * spawn.x;
+      pos[i * 3 + 1] = spawn.y0 + Math.random() * (spawn.y1 - spawn.y0);
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 2 * spawn.z;
       seeds[i] = Math.random();
       speeds[i] = minSpeed + Math.random() * (maxSpeed - minSpeed);
       sizes[i] = minSize + Math.random() * (maxSize - minSize);
@@ -866,6 +1266,8 @@ export class MenuScene implements SceneControls {
       uTime: { value: 0 },
       uDensity: { value: 1 },
       uScale: { value: 1 },
+      uRise: { value: spawn.rise },
+      uLift: { value: spawn.lift },
       uColorA: { value: colorA },
       uColorB: { value: colorB },
     };
@@ -878,7 +1280,6 @@ export class MenuScene implements SceneControls {
       blending: THREE.AdditiveBlending,
     });
     const points = new THREE.Points(geo, mat);
-    points.renderOrder = 4;
     points.frustumCulled = false;
     this.disposables.push(geo, mat);
     return { points, uniforms };

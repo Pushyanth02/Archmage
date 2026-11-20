@@ -1,0 +1,125 @@
+{
+  "assetId": "vfx_lightning",
+  "name": "Lightning Spell VFX",
+  "category": "vfx",
+  "subtitle": "Storm Arc chain bolt, zigzag flash & shock burst",
+  "sheetUrl": "/assets/sprites/vfx_lightning.png",
+  "manifestUrl": "/assets/sprites/vfx_lightning.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 5,
+  "rows": 4,
+  "animations": [
+    {
+      "state": "cast",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "projectile",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 16,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "impact",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 5,
+      "fps": 15,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "linger",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "vfx",
+    "64x64",
+    "transparent"
+  ],
+  "integratedInDemo": true
+}

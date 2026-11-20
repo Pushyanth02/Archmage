@@ -1,0 +1,96 @@
+{
+  "assetId": "icons_pickups_schools",
+  "name": "Pickups & 13 Elemental Schools",
+  "category": "icons",
+  "subtitle": "Vials, Arcane Shards, Gold, Relic Chest & all 13 hexagonal elemental school crests",
+  "sheetUrl": "/assets/sprites/icons_pickups_schools.png",
+  "manifestUrl": "/assets/sprites/icons_pickups_schools.json",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "columns": 6,
+  "rows": 3,
+  "animations": [
+    {
+      "state": "pickups_and_fire",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    },
+    {
+      "state": "elemental_schools_a",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    },
+    {
+      "state": "elemental_schools_b",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 16,
+        "y": 16
+      },
+      "hitbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "hurtbox": {
+        "x": 4,
+        "y": 4,
+        "w": 24,
+        "h": 24
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "icons",
+    "pickups",
+    "13-schools",
+    "32x32"
+  ],
+  "integratedInDemo": true
+}

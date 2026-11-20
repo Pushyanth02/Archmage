@@ -1,0 +1,543 @@
+{
+  "schema": "archmage-v3.1-integrity-manifest/1.0",
+  "archiveName": "archmage_v31_full_library_2026-11-20.zip",
+  "exportedAt": "2026-11-20T10:55:59.696Z",
+  "pipeline": "v3.1-cielab-contour-pivot-pipeline",
+  "packagingMode": "PKZIP-2.0-STORE-LOSSLESS",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "zeroRecompression": true
+  },
+  "summary": {
+    "totalFiles": 92,
+    "processedSheets": 30,
+    "v31PassedSheets": 30,
+    "raw4KSources": 0,
+    "slicedFrames": 0,
+    "verifiedPngCount": 30
+  },
+  "files": [
+    {
+      "path": "sprites/mage_pyromancer.png",
+      "bytes": 143021,
+      "sha256": "27822455f50f77409ba66aa0026dfd14cb10e90a656d3612d56d896a490b55be",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_pyromancer.json",
+      "bytes": 17992,
+      "sha256": "8624a21f997ee701b1fb18ef5ca2f3ef6cc0b42b28c2a1602721e54e679521da"
+    },
+    {
+      "path": "atlases/mage_pyromancer.atlas.json",
+      "bytes": 105265,
+      "sha256": "d498a391b0beb38b6cba5eceafc78b0251ce8df3f966de108740d786af880273"
+    },
+    {
+      "path": "sprites/mage_cryomancer.png",
+      "bytes": 142100,
+      "sha256": "d63712a7a523a87661d9119f4858c8b4cda0c55d6163f7accaacf42ffa7700f1",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_cryomancer.json",
+      "bytes": 17994,
+      "sha256": "80e9cebc92c44603d0fc3118b52c436ad012dc6a9e50295f8ccef0a9d030b42a"
+    },
+    {
+      "path": "atlases/mage_cryomancer.atlas.json",
+      "bytes": 105267,
+      "sha256": "bfd746f0cb44bd0571461d6625a0f54d06d986e8ce04582925e203eb39701dda"
+    },
+    {
+      "path": "sprites/mage_stormcaller.png",
+      "bytes": 140251,
+      "sha256": "a9eb871231e0dc99b43fcde6c3bd5a3e44524c521ff16a8b637e0c0127c88332",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_stormcaller.json",
+      "bytes": 18003,
+      "sha256": "69a53de8175c56f3c711b15624ffa8635f6ec8f28a56a6edb695516009e42bb6"
+    },
+    {
+      "path": "atlases/mage_stormcaller.atlas.json",
+      "bytes": 105431,
+      "sha256": "a1ac70fe054dfc37a2a06ba40e198e89ab7eabe8e97bada92f0bc75f86943df9"
+    },
+    {
+      "path": "sprites/mage_voidweaver.png",
+      "bytes": 133612,
+      "sha256": "14c1d42688036baf144df7b54eef204d065ca647952b13e4eecd7b1ee20d8318",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_voidweaver.json",
+      "bytes": 17996,
+      "sha256": "ef774d1d5bcbc4ab08eead137e777ef5d65018c1b26e61a16a530f8628c1971a"
+    },
+    {
+      "path": "atlases/mage_voidweaver.atlas.json",
+      "bytes": 105269,
+      "sha256": "cfc75953f43db951a42c31882d8daf4ce8e271dc37b896efb859659824ac42ab"
+    },
+    {
+      "path": "sprites/mage_aethermancer.png",
+      "bytes": 156727,
+      "sha256": "d3456fefb0aa52c7321e90d34bb0b90e532b082757aedca887bc289e48ebcb9f",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_aethermancer.json",
+      "bytes": 18002,
+      "sha256": "7b6db457818184412d3e264c5f17c4a39c694f11eb7e029706cfa6e8d69a7005"
+    },
+    {
+      "path": "atlases/mage_aethermancer.atlas.json",
+      "bytes": 105585,
+      "sha256": "1291e3409337478ac81353a4cbc238b6cc0acb6baa83158b3a49b2caae4d6469"
+    },
+    {
+      "path": "sprites/mage_chronomancer.png",
+      "bytes": 136461,
+      "sha256": "2145e0689aa72d78f26e9b7b3ddf79bb09af293911693ab3a519c8dadb54af91",
+      "pngDimensions": "384x2304",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/mage_chronomancer.json",
+      "bytes": 18001,
+      "sha256": "d0677ff3b29b6aed765034769abd4fe50a5b9a02be905b68efcb4913e48d0b1d"
+    },
+    {
+      "path": "atlases/mage_chronomancer.atlas.json",
+      "bytes": 105583,
+      "sha256": "c9e2246aa60519ba6d6b4503b41e3955728a27d493f051a8b334cb70bae2ce1e"
+    },
+    {
+      "path": "sprites/enemy_skeleton_warrior.png",
+      "bytes": 101981,
+      "sha256": "33bb909fbebdf61caff45456839c31a341627bbc8fedbcee6d069b1ec316b5b8",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_skeleton_warrior.json",
+      "bytes": 13728,
+      "sha256": "a4f1fea90d74f73f3e3a3c48cbd97557ff480ee4441f97232a54c7a76ba776a9"
+    },
+    {
+      "path": "atlases/enemy_skeleton_warrior.atlas.json",
+      "bytes": 81738,
+      "sha256": "bcfa6edb9aaa9ad4da16d7f084e97faddf68b36f0e9037c562ea6e9838520f08"
+    },
+    {
+      "path": "sprites/enemy_cultist_acolyte.png",
+      "bytes": 87857,
+      "sha256": "ad706ea8cc36b7a595be2627a695fa5614e2d4512efc87ff2eeb6cb182336b84",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_cultist_acolyte.json",
+      "bytes": 13725,
+      "sha256": "b2f106bfac28fe9a8f1049596382a2789ecdf77a814f7551a7427f4302c296af"
+    },
+    {
+      "path": "atlases/enemy_cultist_acolyte.atlas.json",
+      "bytes": 81618,
+      "sha256": "cb7b0d22b0bfbcf3991e22f2eb5261e373b01cd125abbca03891940fc21e619b"
+    },
+    {
+      "path": "sprites/enemy_shieldbone_knight.png",
+      "bytes": 115555,
+      "sha256": "ba6acc25323f1fe226ea7c9e8b5a860ab819ef06c6b80fc9d0d37b873d37b697",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_shieldbone_knight.json",
+      "bytes": 13737,
+      "sha256": "140dc5f80ea28a8a56fb2518640a1a02c74f298c6d2ea6c18d5c9c81bdcbfec7"
+    },
+    {
+      "path": "atlases/enemy_shieldbone_knight.atlas.json",
+      "bytes": 81866,
+      "sha256": "a2131e91e8388559563ccbde3deec754fc5a5913ac597aafb9a4c575150067cc"
+    },
+    {
+      "path": "sprites/enemy_necromancer.png",
+      "bytes": 94563,
+      "sha256": "1f7695f727064d4a79e8728b4f36b065a9ae04218cbdc1d95426d5945d00ba32",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_necromancer.json",
+      "bytes": 13711,
+      "sha256": "222c14a1be3690e0d55c7e016d39c59230f54cbff396edab77171ae4ce30f915"
+    },
+    {
+      "path": "atlases/enemy_necromancer.atlas.json",
+      "bytes": 81128,
+      "sha256": "c9651e01e3959adc0e5b86f80334679bfee65290562be1d8cba78c472f349604"
+    },
+    {
+      "path": "sprites/enemy_wraith.png",
+      "bytes": 64746,
+      "sha256": "7867646eaf0b4b7c54cb2d9300ae06ee0d14b89e7b3d7ff023584ed3a808c9ff",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_wraith.json",
+      "bytes": 13683,
+      "sha256": "318ba9acfaebe2af1b956df6b9e89be35ee7f49c74be82eb1c379dd60c060b5f"
+    },
+    {
+      "path": "atlases/enemy_wraith.atlas.json",
+      "bytes": 80505,
+      "sha256": "8391deb56453b8112a53b9c469c3b7da6260e5b29b441ee3e612077f0fb84e5d"
+    },
+    {
+      "path": "sprites/enemy_bone_archer.png",
+      "bytes": 94566,
+      "sha256": "4fe1ea25109caff8892afe8c27bc3743f090d343fd60a6b98e39925c6983ce1c",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_bone_archer.json",
+      "bytes": 13766,
+      "sha256": "a19200f706c493c1d498a83dbd0ee6fd6c763da4c789b949b162b2dcc7bc8933"
+    },
+    {
+      "path": "atlases/enemy_bone_archer.atlas.json",
+      "bytes": 81148,
+      "sha256": "b04060468e21ef0766528b9be37d0dbf0a56cb637ca00f3ced85a1ca7ed6ef57"
+    },
+    {
+      "path": "sprites/enemy_plaguebearer.png",
+      "bytes": 111295,
+      "sha256": "066e10af1d3611570c7e155bc366aea7a478fc08ed387e000e6ee416ed3e6ac6",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_plaguebearer.json",
+      "bytes": 13751,
+      "sha256": "f6f6612d34787d9c7614f792e921cd4bea42503673672196d3410c84efeb5c23"
+    },
+    {
+      "path": "atlases/enemy_plaguebearer.atlas.json",
+      "bytes": 81250,
+      "sha256": "124b932f2a12ac64ae3d27b3588e176b95127148d64128a2e8f06d0c2f3f55d3"
+    },
+    {
+      "path": "sprites/enemy_flesh_construct.png",
+      "bytes": 99362,
+      "sha256": "32539a8e7fa87d961bd33ee4ce5524512d1c34745d17d1d97e4394b54b2ee34a",
+      "pngDimensions": "384x1792",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/enemy_flesh_construct.json",
+      "bytes": 13762,
+      "sha256": "7cc4ec5758b82fdf6354f35963f1ff3ddeb24ae545445e785204d90e19fbe92f"
+    },
+    {
+      "path": "atlases/enemy_flesh_construct.atlas.json",
+      "bytes": 81624,
+      "sha256": "0aefd439b1f4e480ac75e97f1e1479c6168d60612be0cfb9dac95fc1da186785"
+    },
+    {
+      "path": "sprites/boss_bone_regent.png",
+      "bytes": 507696,
+      "sha256": "5aa50a76f2292b940e2fe672f6cb135166c27d901850c43cce5296a8c021a1d8",
+      "pngDimensions": "768x4096",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/boss_bone_regent.json",
+      "bytes": 15927,
+      "sha256": "5fe691f67384d7b4024fbfa0a661dd4716b1e86110a42e2404e384f284cba1c2"
+    },
+    {
+      "path": "atlases/boss_bone_regent.atlas.json",
+      "bytes": 106758,
+      "sha256": "0bf76537e7f4056cdcadc740747548e0208a60950e3ba211540e22b7c9f3d988"
+    },
+    {
+      "path": "sprites/boss_rift_leviathan.png",
+      "bytes": 488343,
+      "sha256": "d6250ee510e6e04d0c1b974035c086cf612b11e1b18b3fa886ac271b4e22ac85",
+      "pngDimensions": "768x4096",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/boss_rift_leviathan.json",
+      "bytes": 15961,
+      "sha256": "43276e4eb7d328427eb49a9ef014b478841075c968d006fecc6b251bd382a6d1"
+    },
+    {
+      "path": "atlases/boss_rift_leviathan.atlas.json",
+      "bytes": 107253,
+      "sha256": "3b7add6659f00658a44aa7009f9ec3b8f2f8e9fe0e908ac9480b8ff05efbdd4e"
+    },
+    {
+      "path": "sprites/boss_blight_colossus.png",
+      "bytes": 406340,
+      "sha256": "416cff72d813d7bdda9e6360744e3cbdc62286d4cc82f58dbaab763ad5997ea7",
+      "pngDimensions": "768x4096",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/boss_blight_colossus.json",
+      "bytes": 15958,
+      "sha256": "73a59c7245ccce8105ac835e7f9202bb4271caf6647f23dcc737699a159d65c5"
+    },
+    {
+      "path": "atlases/boss_blight_colossus.atlas.json",
+      "bytes": 107403,
+      "sha256": "00d649a453194e6b70d0026c3c949bd0052a937656b71cdc594e16afe241e5ed"
+    },
+    {
+      "path": "sprites/vfx_fire.png",
+      "bytes": 24608,
+      "sha256": "81500741d14832bbeed56267014f991627b606121b6dc29a6cdfe8c2936a7567",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_fire.json",
+      "bytes": 2138,
+      "sha256": "13ceaf17e071494eb740af7f287b0dfdd5094ea3fd5fb362015ddb458ee5445f"
+    },
+    {
+      "path": "atlases/vfx_fire.atlas.json",
+      "bytes": 12007,
+      "sha256": "dd9c721f4e4a8948590348bd4d9c9969740ca816f1bd67dde4a2f368abf8ee31"
+    },
+    {
+      "path": "sprites/vfx_ice.png",
+      "bytes": 22610,
+      "sha256": "22e99b4b0417642814b5acfe48e2cfb9fcf1bfd6ce9cb0bb4fbe8cce5527715f",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_ice.json",
+      "bytes": 2140,
+      "sha256": "f4ab1e9b82010f905efcb107f2254d8e6170fadb449463f77833b9bd172da30f"
+    },
+    {
+      "path": "atlases/vfx_ice.atlas.json",
+      "bytes": 11994,
+      "sha256": "f01c24fd2335f5e46985a7173203688cb701f338fb241011f28cd24e2fc38657"
+    },
+    {
+      "path": "sprites/vfx_lightning.png",
+      "bytes": 22746,
+      "sha256": "467652ff42acb35ff5a507df6ebae7f83a72fb1bd130b9a219ddedf790e9929b",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_lightning.json",
+      "bytes": 2151,
+      "sha256": "aee1c04b6a96e3b5dc16896819ba887babafe971902c596469564176a91120d2"
+    },
+    {
+      "path": "atlases/vfx_lightning.atlas.json",
+      "bytes": 12100,
+      "sha256": "f043080b8cfc5a5dbf9b6a24ca02b83844523c5ab171f82b72ea08e7bda7528c"
+    },
+    {
+      "path": "sprites/vfx_thermal_shatter.png",
+      "bytes": 13511,
+      "sha256": "e2099c35ef7e7fd767d71b388818bc84b8bb3c7e7694b37ae759eda291033a02",
+      "pngDimensions": "384x128",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_thermal_shatter.json",
+      "bytes": 1360,
+      "sha256": "4dc8c6734f4c07e0c477cc5ddb1944516081768c42d435ac893584cde8400231"
+    },
+    {
+      "path": "atlases/vfx_thermal_shatter.atlas.json",
+      "bytes": 7506,
+      "sha256": "2fff113d21eedcf730928f63067c5dae9980d35b73e626f0136eb60177b27d43"
+    },
+    {
+      "path": "sprites/vfx_arcane_utility.png",
+      "bytes": 28559,
+      "sha256": "0f13c2a806894f0a5b403735c780679ddc3ade69724502c8f7fcab80d27564ae",
+      "pngDimensions": "384x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_arcane_utility.json",
+      "bytes": 2115,
+      "sha256": "602e2e2423fffca25aaeb15509edf3ffba7d52429141591fe55e8662d5c3ba7d"
+    },
+    {
+      "path": "atlases/vfx_arcane_utility.atlas.json",
+      "bytes": 14364,
+      "sha256": "d7658b47aab1067781f473db7654d88cecbbbb98d1557994167a397591a09e9a"
+    },
+    {
+      "path": "sprites/vfx_schools_extended.png",
+      "bytes": 57196,
+      "sha256": "e0b9bcbd8fefa7c5a6750a86ffe33c4088c3a778ca9df87a27332f8a716b5c21",
+      "pngDimensions": "256x640",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_schools_extended.json",
+      "bytes": 4619,
+      "sha256": "2235102622831ec8a4c6776f6674568b1cac8acba61ad78233e15fea54baaac7"
+    },
+    {
+      "path": "atlases/vfx_schools_extended.atlas.json",
+      "bytes": 27291,
+      "sha256": "87c925c3f024a83004fa62d7f30c607334592001573ca4e7eec4f927049e3e35"
+    },
+    {
+      "path": "sprites/vfx_resonances_arcane.png",
+      "bytes": 65526,
+      "sha256": "c4d13659adf285933832a100ebab4a7524a35b09076bd813dc096fb0d7255080",
+      "pngDimensions": "384x512",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/vfx_resonances_arcane.json",
+      "bytes": 4438,
+      "sha256": "998ac662bd94cbdfa80721ca563b498d09dfb25e829ee097ef2a77a8aec51529"
+    },
+    {
+      "path": "atlases/vfx_resonances_arcane.atlas.json",
+      "bytes": 31902,
+      "sha256": "1b4d3030ae4c19ce08a1a7e558cf8a050e07c9b1f37377c18f2fcc47e427e87a"
+    },
+    {
+      "path": "sprites/tileset_cursed_grove.png",
+      "bytes": 39422,
+      "sha256": "09397aaca2909f30d4aa60ebca25dea6a331a4884ea5f799e8a624c4a113c269",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/tileset_cursed_grove.json",
+      "bytes": 2180,
+      "sha256": "e89d86539050a7cfffb7e2239e02f97607027ec16b330d4d3d826efac4b92998"
+    },
+    {
+      "path": "atlases/tileset_cursed_grove.atlas.json",
+      "bytes": 14302,
+      "sha256": "c3743288c2da6e043187a145bd911b23a20bc9445aa7f1cab8672284d7ed3c90"
+    },
+    {
+      "path": "sprites/tileset_undead_crypt.png",
+      "bytes": 39299,
+      "sha256": "61c22427d020a956106634c245f818eb2c32259dc1717a7d7045fa2deb840fa6",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/tileset_undead_crypt.json",
+      "bytes": 2202,
+      "sha256": "771abd8745232b9ea747621e7dc67f4daa00dc010f0fe9bf5e39b55b966674be"
+    },
+    {
+      "path": "atlases/tileset_undead_crypt.atlas.json",
+      "bytes": 14309,
+      "sha256": "3ad79c56acd319da7aff297a78910afdab868693504e4a6855321d55c32ceebe"
+    },
+    {
+      "path": "sprites/tileset_blighted_marsh.png",
+      "bytes": 35095,
+      "sha256": "a2ec1e6139029f2403fe922c117cd6ac4bf5950375f44d7896856af40808167d",
+      "pngDimensions": "320x256",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/tileset_blighted_marsh.json",
+      "bytes": 2202,
+      "sha256": "a7f33b2507e6d2988b1eaa2012513cfb69929a616d9fa056d73b6c3bd7edab35"
+    },
+    {
+      "path": "atlases/tileset_blighted_marsh.atlas.json",
+      "bytes": 14345,
+      "sha256": "431633db74ac67b365339c530b757fc7229496acca482b835390f03083d5031e"
+    },
+    {
+      "path": "sprites/icons_pickups_schools.png",
+      "bytes": 8802,
+      "sha256": "c29fb04d1802c6dba5e34ae441cbd947ebe83af4b0e98c7185600ab6b13ec09a",
+      "pngDimensions": "192x96",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/icons_pickups_schools.json",
+      "bytes": 1769,
+      "sha256": "a6a1969d1f956ee428b7da8fdec956d18b65afc6ff077f6f5b63c7b576103f10"
+    },
+    {
+      "path": "atlases/icons_pickups_schools.atlas.json",
+      "bytes": 12702,
+      "sha256": "ed998de3ea52e9453dbe1228b837e33c8cc245653043c71f3ca02e25c098b2c3"
+    },
+    {
+      "path": "sprites/portraits_classes_tyrants.png",
+      "bytes": 14667,
+      "sha256": "adface3758ae725725ce4f562390ca7ae12ae0b8ab2dc17c43dd560ac3b9c011",
+      "pngDimensions": "320x128",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/portraits_classes_tyrants.json",
+      "bytes": 1352,
+      "sha256": "b1ecf483445e2c2ceb83ed6cdba701eaea0e0c10ac5b51d5cab4c5c487c876e8"
+    },
+    {
+      "path": "atlases/portraits_classes_tyrants.atlas.json",
+      "bytes": 7716,
+      "sha256": "f1aed53c6699b3b7c6030fcc3077f765e229494782fd403776460cfb518fa95b"
+    },
+    {
+      "path": "sprites/ui_relics_artifacts.png",
+      "bytes": 12251,
+      "sha256": "8441540afe34d826e8966b78842c318ef55e305421db947ab61181bab108e83a",
+      "pngDimensions": "384x128",
+      "dimensionParity": "verified"
+    },
+    {
+      "path": "sprites/ui_relics_artifacts.json",
+      "bytes": 1335,
+      "sha256": "7baf0bdf91ffec0c7cb07a2d671703d986671dda696ee62ed0d41f062ef0ace0"
+    },
+    {
+      "path": "atlases/ui_relics_artifacts.atlas.json",
+      "bytes": 8796,
+      "sha256": "1d2aae9fda6fd893f2d7eaec242ab1e772ed99d8f3e701ba01518c02c83bead1"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 367718,
+      "sha256": "e3734eb28b27977b6cc6ea6997dbc252b711c0cb5607498031e13687d1e46deb"
+    },
+    {
+      "path": "validation/validation-report.json",
+      "bytes": 264021,
+      "sha256": "021fde00a2b6034c094a99a988dedd6b07d1726e63d349e03150c1a2fbd14b32"
+    }
+  ]
+}

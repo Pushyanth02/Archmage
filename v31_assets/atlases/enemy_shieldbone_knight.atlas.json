@@ -1,0 +1,4751 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "enemy_shieldbone_knight",
+    "name": "Shieldbone Knight",
+    "category": "enemy",
+    "subtitle": "Tower-shielded undead vanguard",
+    "image": "../sprites/enemy_shieldbone_knight.png",
+    "size": {
+      "w": 384,
+      "h": 1792
+    },
+    "tileSize": {
+      "w": 64,
+      "h": 64
+    },
+    "grid": {
+      "columns": 6,
+      "rows": 28
+    },
+    "totalFrames": 120
+  },
+  "animations": [
+    {
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 9,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "step"
+        },
+        {
+          "frame": 4,
+          "name": "step"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 9,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "step"
+        },
+        {
+          "frame": 4,
+          "name": "step"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 9,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "step"
+        },
+        {
+          "frame": 4,
+          "name": "step"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 9,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "step"
+        },
+        {
+          "frame": 4,
+          "name": "step"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "frameCount": 4,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_start"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "frameCount": 4,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_start"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "frameCount": 4,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_start"
+        }
+      ]
+    },
+    {
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "frameCount": 4,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "telegraph_start"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "strike_hit"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "strike_hit"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "strike_hit"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "strike_hit"
+        }
+      ]
+    },
+    {
+      "state": "recovery",
+      "direction": "down",
+      "row": 16,
+      "frameCount": 3,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "recovery",
+      "direction": "up",
+      "row": 17,
+      "frameCount": 3,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "recovery",
+      "direction": "left",
+      "row": 18,
+      "frameCount": 3,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "recovery",
+      "direction": "right",
+      "row": 19,
+      "frameCount": 3,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "hit",
+      "direction": "down",
+      "row": 20,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "hit_flash"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "up",
+      "row": 21,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "hit_flash"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "left",
+      "row": 22,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "hit_flash"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "right",
+      "row": 23,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "hit_flash"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "drop_loot"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "drop_loot"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "drop_loot"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "drop_loot"
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "id": "enemy_shieldbone_knight_idle_down_00",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_down_01",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_down_02",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_down_03",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_up_00",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_up_01",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_up_02",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_up_03",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_left_00",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_left_01",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_left_02",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_left_03",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_right_00",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_right_01",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_right_02",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_idle_right_03",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_00",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_01",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_02",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_03",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_04",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_down_05",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_00",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_01",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_02",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_03",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_04",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_up_05",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_00",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_01",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_02",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_03",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_04",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_left_05",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_00",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_01",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_02",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_03",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_04",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": [
+        "step"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_walk_right_05",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 111,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_down_00",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "telegraph_start"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_down_01",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_down_02",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_down_03",
+      "state": "windup",
+      "direction": "down",
+      "row": 8,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_up_00",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "telegraph_start"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_up_01",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_up_02",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_up_03",
+      "state": "windup",
+      "direction": "up",
+      "row": 9,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_left_00",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "telegraph_start"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_left_01",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_left_02",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_left_03",
+      "state": "windup",
+      "direction": "left",
+      "row": 10,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_right_00",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "telegraph_start"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_right_01",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_right_02",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_windup_right_03",
+      "state": "windup",
+      "direction": "right",
+      "row": 11,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_down_00",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_down_01",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_down_02",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": [
+        "strike_hit"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_down_03",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_down_04",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_up_00",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_up_01",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_up_02",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": [
+        "strike_hit"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_up_03",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_up_04",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_left_00",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_left_01",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_left_02",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": [
+        "strike_hit"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_left_03",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_left_04",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_right_00",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_right_01",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_right_02",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": [
+        "strike_hit"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_right_03",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_attack_right_04",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_down_00",
+      "state": "recovery",
+      "direction": "down",
+      "row": 16,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_down_01",
+      "state": "recovery",
+      "direction": "down",
+      "row": 16,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_down_02",
+      "state": "recovery",
+      "direction": "down",
+      "row": 16,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_up_00",
+      "state": "recovery",
+      "direction": "up",
+      "row": 17,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_up_01",
+      "state": "recovery",
+      "direction": "up",
+      "row": 17,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_up_02",
+      "state": "recovery",
+      "direction": "up",
+      "row": 17,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_left_00",
+      "state": "recovery",
+      "direction": "left",
+      "row": 18,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_left_01",
+      "state": "recovery",
+      "direction": "left",
+      "row": 18,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_left_02",
+      "state": "recovery",
+      "direction": "left",
+      "row": 18,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_right_00",
+      "state": "recovery",
+      "direction": "right",
+      "row": 19,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_right_01",
+      "state": "recovery",
+      "direction": "right",
+      "row": 19,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_recovery_right_02",
+      "state": "recovery",
+      "direction": "right",
+      "row": 19,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_down_00",
+      "state": "hit",
+      "direction": "down",
+      "row": 20,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "hit_flash"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_down_01",
+      "state": "hit",
+      "direction": "down",
+      "row": 20,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_down_02",
+      "state": "hit",
+      "direction": "down",
+      "row": 20,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_up_00",
+      "state": "hit",
+      "direction": "up",
+      "row": 21,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "hit_flash"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_up_01",
+      "state": "hit",
+      "direction": "up",
+      "row": 21,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_up_02",
+      "state": "hit",
+      "direction": "up",
+      "row": 21,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_left_00",
+      "state": "hit",
+      "direction": "left",
+      "row": 22,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "hit_flash"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_left_01",
+      "state": "hit",
+      "direction": "left",
+      "row": 22,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_left_02",
+      "state": "hit",
+      "direction": "left",
+      "row": 22,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_right_00",
+      "state": "hit",
+      "direction": "right",
+      "row": 23,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": [
+        "hit_flash"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_right_01",
+      "state": "hit",
+      "direction": "right",
+      "row": 23,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_hit_right_02",
+      "state": "hit",
+      "direction": "right",
+      "row": 23,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_down_00",
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_down_01",
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_down_02",
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_down_03",
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": [
+        "drop_loot"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_down_04",
+      "state": "death",
+      "direction": "down",
+      "row": 24,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_up_00",
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_up_01",
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_up_02",
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_up_03",
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": [
+        "drop_loot"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_up_04",
+      "state": "death",
+      "direction": "up",
+      "row": 25,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_left_00",
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_left_01",
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_left_02",
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_left_03",
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": [
+        "drop_loot"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_left_04",
+      "state": "death",
+      "direction": "left",
+      "row": 26,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_right_00",
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_right_01",
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_right_02",
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_right_03",
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": [
+        "drop_loot"
+      ]
+    },
+    {
+      "id": "enemy_shieldbone_knight_death_right_04",
+      "state": "death",
+      "direction": "right",
+      "row": 27,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 18,
+        "y": 16,
+        "w": 28,
+        "h": 38
+      },
+      "hurtbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "durationMs": 125,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "384x1792",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 4.55,
+    "outlinePerimeterCoverage": 85.3,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 6.8,
+    "hurtboxContainmentPct": 52
+  }
+}

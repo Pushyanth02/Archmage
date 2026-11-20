@@ -1,0 +1,262 @@
+{
+  "assetId": "vfx_resonances_arcane",
+  "name": "Arcane Resonance Detonations (8 Archetypes)",
+  "category": "vfx",
+  "subtitle": "Nova, Vortex, Chain, Chrono, Siphon, Hazard, Shrapnel & Fracture VFX",
+  "sheetUrl": "/assets/sprites/vfx_resonances_arcane.png",
+  "manifestUrl": "/assets/sprites/vfx_resonances_arcane.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 6,
+  "rows": 8,
+  "animations": [
+    {
+      "state": "nova",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "vortex",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "chain",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "chrono",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "siphon",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "hazard",
+      "direction": "down",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "shrapnel",
+      "direction": "down",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "fracture",
+      "direction": "down",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "vfx",
+    "batch-2",
+    "64x64",
+    "78-resonances",
+    "transparent"
+  ],
+  "integratedInDemo": true
+}

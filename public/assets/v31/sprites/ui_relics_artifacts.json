@@ -1,0 +1,71 @@
+{
+  "assetId": "ui_relics_artifacts",
+  "name": "Archmage Staves & Rift Relics",
+  "category": "icons",
+  "subtitle": "6 Elemental Staves, Grimoire, Rings, Arcane Amulet, Robe & Tyrant Crown",
+  "sheetUrl": "/assets/sprites/ui_relics_artifacts.png",
+  "manifestUrl": "/assets/sprites/ui_relics_artifacts.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 6,
+  "rows": 2,
+  "animations": [
+    {
+      "state": "elemental_staves",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "events": []
+    },
+    {
+      "state": "grimoires_and_relics",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 3,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "hurtbox": {
+        "x": 6,
+        "y": 6,
+        "w": 52,
+        "h": 52
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "relics",
+    "staves",
+    "artifacts",
+    "64x64"
+  ],
+  "integratedInDemo": true
+}

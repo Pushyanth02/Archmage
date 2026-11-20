@@ -1,0 +1,120 @@
+{
+  "assetId": "vfx_arcane_utility",
+  "name": "Blink, Surge & Boss Rift VFX",
+  "category": "vfx",
+  "subtitle": "Blink sigil, Aether Surge, Crimson Boss Warning & Cultist Orb",
+  "sheetUrl": "/assets/sprites/vfx_arcane_utility.png",
+  "manifestUrl": "/assets/sprites/vfx_arcane_utility.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 6,
+  "rows": 4,
+  "animations": [
+    {
+      "state": "blink",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 5,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "surge",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "boss_nova",
+      "direction": "down",
+      "row": 2,
+      "frameCount": 6,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    },
+    {
+      "state": "cultist_orb",
+      "direction": "down",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 12,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "vfx",
+    "64x64",
+    "transparent"
+  ],
+  "integratedInDemo": true
+}

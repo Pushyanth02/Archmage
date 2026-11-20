@@ -1,0 +1,75 @@
+{
+  "assetId": "vfx_thermal_shatter",
+  "name": "Thermal Shatter Resonance VFX",
+  "category": "vfx",
+  "subtitle": "Fire + Ice resonance detonation & vapor shockwave",
+  "sheetUrl": "/assets/sprites/vfx_thermal_shatter.png",
+  "manifestUrl": "/assets/sprites/vfx_thermal_shatter.json",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "columns": 6,
+  "rows": 2,
+  "animations": [
+    {
+      "state": "impact",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 6,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "vfx_peak"
+        }
+      ]
+    },
+    {
+      "state": "linger",
+      "direction": "down",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 32
+      },
+      "hitbox": {
+        "x": 10,
+        "y": 10,
+        "w": 44,
+        "h": 44
+      },
+      "hurtbox": {
+        "x": 14,
+        "y": 14,
+        "w": 36,
+        "h": 36
+      },
+      "events": []
+    }
+  ],
+  "tags": [
+    "vfx",
+    "64x64",
+    "transparent"
+  ],
+  "integratedInDemo": true
+}

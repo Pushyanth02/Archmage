@@ -1,0 +1,6183 @@
+{
+  "schema": "archmage-v3.1-atlas/1.0",
+  "styleContract": {
+    "version": "3.1",
+    "pixelDensity": "2x",
+    "outlineInkHex": "#140E1D",
+    "palette": "Rift Night (CIELAB Hybrid)",
+    "nearestNeighborRequired": true
+  },
+  "meta": {
+    "assetId": "mage_stormcaller",
+    "name": "Stormcaller",
+    "category": "mage",
+    "subtitle": "Tempest-cloaked lightning savant",
+    "image": "../sprites/mage_stormcaller.png",
+    "size": {
+      "w": 384,
+      "h": 2304
+    },
+    "tileSize": {
+      "w": 64,
+      "h": 64
+    },
+    "grid": {
+      "columns": 6,
+      "rows": 36
+    },
+    "totalFrames": 156
+  },
+  "animations": [
+    {
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "frameCount": 6,
+      "fps": 10,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "footstep_l"
+        },
+        {
+          "frame": 4,
+          "name": "footstep_r"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "cast_release"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "frameCount": 5,
+      "fps": 12,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 2,
+          "name": "spell_impact"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "down",
+      "row": 16,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "up",
+      "row": 17,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "left",
+      "row": 18,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "hit",
+      "direction": "right",
+      "row": 19,
+      "frameCount": 3,
+      "fps": 10,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 0,
+          "name": "stagger_start"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "frameCount": 4,
+      "fps": 14,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 1,
+          "name": "phase_out"
+        },
+        {
+          "frame": 3,
+          "name": "phase_in"
+        }
+      ]
+    },
+    {
+      "state": "downed",
+      "direction": "down",
+      "row": 24,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "up",
+      "row": 25,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "left",
+      "row": 26,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "downed",
+      "direction": "right",
+      "row": 27,
+      "frameCount": 3,
+      "fps": 4,
+      "loop": true,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": []
+    },
+    {
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "revive_complete"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    },
+    {
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "frameCount": 5,
+      "fps": 8,
+      "loop": false,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "events": [
+        {
+          "frame": 3,
+          "name": "soul_release"
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "id": "mage_stormcaller_idle_down_00",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_down_01",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_down_02",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_down_03",
+      "state": "idle",
+      "direction": "down",
+      "row": 0,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_up_00",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_up_01",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_up_02",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_up_03",
+      "state": "idle",
+      "direction": "up",
+      "row": 1,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_left_00",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_left_01",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_left_02",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_left_03",
+      "state": "idle",
+      "direction": "left",
+      "row": 2,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_right_00",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_right_01",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_right_02",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_idle_right_03",
+      "state": "idle",
+      "direction": "right",
+      "row": 3,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 167,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_down_00",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_down_01",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_l"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_down_02",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_down_03",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_down_04",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_r"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_down_05",
+      "state": "walk",
+      "direction": "down",
+      "row": 4,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 256,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_up_00",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_up_01",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_l"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_up_02",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_up_03",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_up_04",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_r"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_up_05",
+      "state": "walk",
+      "direction": "up",
+      "row": 5,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 320,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_left_00",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_left_01",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_l"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_left_02",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_left_03",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_left_04",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_r"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_left_05",
+      "state": "walk",
+      "direction": "left",
+      "row": 6,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 384,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_right_00",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_right_01",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_l"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_right_02",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_right_03",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_walk_right_04",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "footstep_r"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_walk_right_05",
+      "state": "walk",
+      "direction": "right",
+      "row": 7,
+      "col": 5,
+      "frameIndex": 5,
+      "rect": {
+        "x": 320,
+        "y": 448,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_down_00",
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_down_01",
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_down_02",
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "cast_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_cast_down_03",
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_down_04",
+      "state": "cast",
+      "direction": "down",
+      "row": 8,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 512,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_up_00",
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_up_01",
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_up_02",
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "cast_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_cast_up_03",
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_up_04",
+      "state": "cast",
+      "direction": "up",
+      "row": 9,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 576,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_left_00",
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_left_01",
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_left_02",
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "cast_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_cast_left_03",
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_left_04",
+      "state": "cast",
+      "direction": "left",
+      "row": 10,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 640,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_right_00",
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_right_01",
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_right_02",
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "cast_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_cast_right_03",
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_cast_right_04",
+      "state": "cast",
+      "direction": "right",
+      "row": 11,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 704,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_down_00",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_down_01",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_down_02",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "spell_impact"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_attack_down_03",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_down_04",
+      "state": "attack",
+      "direction": "down",
+      "row": 12,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 768,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_up_00",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_up_01",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_up_02",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "spell_impact"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_attack_up_03",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_up_04",
+      "state": "attack",
+      "direction": "up",
+      "row": 13,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 832,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_left_00",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_left_01",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_left_02",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "spell_impact"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_attack_left_03",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_left_04",
+      "state": "attack",
+      "direction": "left",
+      "row": 14,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 896,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_right_00",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_right_01",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_right_02",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": [
+        "spell_impact"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_attack_right_03",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_attack_right_04",
+      "state": "attack",
+      "direction": "right",
+      "row": 15,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 960,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 83,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_down_00",
+      "state": "hit",
+      "direction": "down",
+      "row": 16,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "stagger_start"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_hit_down_01",
+      "state": "hit",
+      "direction": "down",
+      "row": 16,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_down_02",
+      "state": "hit",
+      "direction": "down",
+      "row": 16,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1024,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_up_00",
+      "state": "hit",
+      "direction": "up",
+      "row": 17,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "stagger_start"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_hit_up_01",
+      "state": "hit",
+      "direction": "up",
+      "row": 17,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_up_02",
+      "state": "hit",
+      "direction": "up",
+      "row": 17,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1088,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_left_00",
+      "state": "hit",
+      "direction": "left",
+      "row": 18,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "stagger_start"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_hit_left_01",
+      "state": "hit",
+      "direction": "left",
+      "row": 18,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_left_02",
+      "state": "hit",
+      "direction": "left",
+      "row": 18,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1152,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_right_00",
+      "state": "hit",
+      "direction": "right",
+      "row": 19,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": [
+        "stagger_start"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_hit_right_01",
+      "state": "hit",
+      "direction": "right",
+      "row": 19,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_hit_right_02",
+      "state": "hit",
+      "direction": "right",
+      "row": 19,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1216,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 100,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_down_00",
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_down_01",
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_out"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_down_02",
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_down_03",
+      "state": "blink",
+      "direction": "down",
+      "row": 20,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1280,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_in"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_up_00",
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_up_01",
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_out"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_up_02",
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_up_03",
+      "state": "blink",
+      "direction": "up",
+      "row": 21,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1344,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_in"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_left_00",
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_left_01",
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_out"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_left_02",
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_left_03",
+      "state": "blink",
+      "direction": "left",
+      "row": 22,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1408,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_in"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_right_00",
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_right_01",
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_out"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_blink_right_02",
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_blink_right_03",
+      "state": "blink",
+      "direction": "right",
+      "row": 23,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1472,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 71,
+      "events": [
+        "phase_in"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_downed_down_00",
+      "state": "downed",
+      "direction": "down",
+      "row": 24,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_down_01",
+      "state": "downed",
+      "direction": "down",
+      "row": 24,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_down_02",
+      "state": "downed",
+      "direction": "down",
+      "row": 24,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1536,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_up_00",
+      "state": "downed",
+      "direction": "up",
+      "row": 25,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_up_01",
+      "state": "downed",
+      "direction": "up",
+      "row": 25,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_up_02",
+      "state": "downed",
+      "direction": "up",
+      "row": 25,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1600,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_left_00",
+      "state": "downed",
+      "direction": "left",
+      "row": 26,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_left_01",
+      "state": "downed",
+      "direction": "left",
+      "row": 26,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_left_02",
+      "state": "downed",
+      "direction": "left",
+      "row": 26,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1664,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_right_00",
+      "state": "downed",
+      "direction": "right",
+      "row": 27,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_right_01",
+      "state": "downed",
+      "direction": "right",
+      "row": 27,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_downed_right_02",
+      "state": "downed",
+      "direction": "right",
+      "row": 27,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1728,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 250,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_down_00",
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1792,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_down_01",
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1792,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_down_02",
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1792,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_down_03",
+      "state": "revive",
+      "direction": "down",
+      "row": 28,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1792,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "revive_complete"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_revive_up_00",
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1856,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_up_01",
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1856,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_up_02",
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1856,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_up_03",
+      "state": "revive",
+      "direction": "up",
+      "row": 29,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1856,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "revive_complete"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_revive_left_00",
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1920,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_left_01",
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1920,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_left_02",
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1920,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_left_03",
+      "state": "revive",
+      "direction": "left",
+      "row": 30,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1920,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "revive_complete"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_revive_right_00",
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 1984,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_right_01",
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 1984,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_right_02",
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 1984,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_revive_right_03",
+      "state": "revive",
+      "direction": "right",
+      "row": 31,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 1984,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "revive_complete"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_death_down_00",
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2048,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_down_01",
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 2048,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_down_02",
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 2048,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_down_03",
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 2048,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "soul_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_death_down_04",
+      "state": "death",
+      "direction": "down",
+      "row": 32,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 2048,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_up_00",
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2112,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_up_01",
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 2112,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_up_02",
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 2112,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_up_03",
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 2112,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "soul_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_death_up_04",
+      "state": "death",
+      "direction": "up",
+      "row": 33,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 2112,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_left_00",
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2176,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_left_01",
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 2176,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_left_02",
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 2176,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_left_03",
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 2176,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "soul_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_death_left_04",
+      "state": "death",
+      "direction": "left",
+      "row": 34,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 2176,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_right_00",
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "col": 0,
+      "frameIndex": 0,
+      "rect": {
+        "x": 0,
+        "y": 2240,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_right_01",
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "col": 1,
+      "frameIndex": 1,
+      "rect": {
+        "x": 64,
+        "y": 2240,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_right_02",
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "col": 2,
+      "frameIndex": 2,
+      "rect": {
+        "x": 128,
+        "y": 2240,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    },
+    {
+      "id": "mage_stormcaller_death_right_03",
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "col": 3,
+      "frameIndex": 3,
+      "rect": {
+        "x": 192,
+        "y": 2240,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": [
+        "soul_release"
+      ]
+    },
+    {
+      "id": "mage_stormcaller_death_right_04",
+      "state": "death",
+      "direction": "right",
+      "row": 35,
+      "col": 4,
+      "frameIndex": 4,
+      "rect": {
+        "x": 256,
+        "y": 2240,
+        "w": 64,
+        "h": 64
+      },
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "hitbox": {
+        "x": 20,
+        "y": 18,
+        "w": 24,
+        "h": 36
+      },
+      "hurtbox": {
+        "x": 22,
+        "y": 20,
+        "w": 20,
+        "h": 34
+      },
+      "durationMs": 125,
+      "events": []
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "sheetDimensions": "384x2304",
+    "pixelDensity2xValid": true,
+    "outlineInkPresent": true,
+    "timingContractValid": true,
+    "duplicateAdjacentFrames": 0,
+    "meanDeltaE": 3.57,
+    "outlinePerimeterCoverage": 97.5,
+    "residualHaloPixels": 0,
+    "maxPivotJitterPx": 3.8,
+    "hurtboxContainmentPct": 49.7
+  }
+}
