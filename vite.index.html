@@ -1,0 +1,34 @@
+<!doctype html>
+<!-- ARCHMAGE: RIFTBOUND — Vite entry (portability artifact).
+
+     The title screen's runtime lives in framework-free TypeScript:
+       src/main.ts          bootstrap (injects markup, RAF loop, resize)
+       src/scene/MenuScene.ts
+       src/ui/UIManager.ts
+       src/ui/markup.ts
+       src/style.css
+
+     This file is NOT used by the Next.js app (which mounts the same
+     bootstrap through src/components/TitleScreen.tsx on the single "/"
+     route). To run the identical title screen under Vite instead:
+
+       1. Copy this project's src/ folder into a Vite scaffold
+          (package.json deps: three, @types/three, vite, typescript).
+       2. Rename this file to index.html at the scaffold root.
+       3. `npm run dev` — the markup below mirrors src/ui/markup.ts,
+          which startTitleScreen() injects at runtime anyway. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="ARCHMAGE: RIFTBOUND — fantasy roguelike title screen. Modular TypeScript + Three.js." />
+    <title>ARCHMAGE: RIFTBOUND</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { startTitleScreen } from "/src/main.ts";
+      startTitleScreen(document.getElementById("app"));
+    </script>
+  </body>
+</html>
