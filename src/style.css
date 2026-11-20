@@ -345,11 +345,13 @@ button[disabled] {
   letter-spacing: 0.38em;
   margin-right: -0.38em; /* optically recenter the tracked word */
   white-space: nowrap;
-  background: linear-gradient(180deg, #e6d2ff 0%, #c9a0f0 55%, #9a6ae0 100%);
+  background: linear-gradient(180deg, #f2e6ff 0%, #cdaaf5 55%, #9a6ae0 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 0.8cqw rgba(201, 160, 240, 0.45));
+  /* legibility first: a tight dark outline separates the tracked word from
+     the bright vortex glow behind it, THEN the arcane bloom on top */
+  filter: drop-shadow(0 0.08cqw 0.05cqw rgba(8, 4, 16, 0.92)) drop-shadow(0 0 0.8cqw rgba(201, 160, 240, 0.45));
 }
 
 /* Currency pills, top-right. */

@@ -43,11 +43,23 @@ function isGameplayGesture(t: EventTarget | null): boolean {
   if (useRiftStore.getState().phase !== "playing") return false;
   return t instanceof HTMLElement && t.closest("[data-game-surface]") !== null;
 }
-export default function GameShell() {
+export interface GameShellProps {
+  /** Front-door hand-off (title screen SOLO RUN): start this run the moment
+   *  the engine boots — replicates the in-menu BEGIN click exactly, including
+   *  the relic-stream loading veil when assets are still downloading. */
+  autoStartSeed?: string;
+}
+
+export default function GameShell({ autoStartSeed }: GameShellProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<RiftEngine | null>(null);
   const damageLayerRef = useRef<HTMLDivElement>(null);
   const hudApplyRef = useRef<HudApply | null>(null);
+  /* guards the auto-start against StrictMode's double effect invoke: the
+     fired-flag is keyed to the ENGINE INSTANCE, so a disposed+recreated
+     engine (dev remount) correctly re-fires, while a stable engine never
+     double-starts. */
+  const autoSeedEngine = useRef<RiftEngine | null>(null);
   const [touchLatched, setTouchLatched] = useState(false); // one-shot hybrid-laptop upgrade latch (see unified touch detection)
   const [gamepadOn, setGamepadOn] = useState(false);
   const [hudTick, setHudTick] = useState<HudSnapshot | null>(null); // for TouchControls meters (low rate)
@@ -306,6 +318,23 @@ export default function GameShell() {
       engineRef.current = null;
     };
   }, []);
+  /* ----------------- front-door auto-start (title hand-off) ---------------- */
+  /* Fired once per ENGINE INSTANCE (StrictMode-safe: a dev remount disposes
+     and recreates the engine, and the fresh instance re-fires; a stable
+     engine never double-starts). Runs after the boot effect on the same
+     commit, so engineRef is already populated here. The start is deferred a
+     tick past the commit so the (potential) loading-veil setState never
+     cascades synchronously inside this effect. */
+  useEffect(() => {
+    if (!autoStartSeed) return;
+    const t = window.setTimeout(() => {
+      const engine = engineRef.current;
+      if (!engine || autoSeedEngine.current === engine) return;
+      autoSeedEngine.current = engine;
+      startRun(autoStartSeed);
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [autoStartSeed, startRun]);
   /* --------------------- HUD mirror (v2.2: event-driven) ------------------ */ /* The old 250 ms interval poll is retired: the touch meters, ambience
                                                                                   act tracking and the pause HUD all read `hudTick`, which now updates
                                                                                   from the engine's 30 Hz push throttled to ~4 Hz (see onHud above).

@@ -347,12 +347,14 @@ function updateGhostDrift(e: Enemy, dt: number): { pitch: number; roll: number; 
   d.roll += (cl(-side * GHOST_BANK) - d.roll) * k;
   /* ground wraiths float; flyers bob at the group level already */
   const bobY = e.flying ? 0 : 0.14 + Math.sin(e.bobPhase * 0.8) * 0.1;
-  return {
-    pitch: d.pitch,
-    roll: d.roll,
-    bobY
-  };
+  /* zero-allocation out param: callers consume the fields immediately
+     (same tick, before any other foe's update) — the shared scratch is safe */
+  _ghostOut.pitch = d.pitch;
+  _ghostOut.roll = d.roll;
+  _ghostOut.bobY = bobY;
+  return _ghostOut;
 }
+const _ghostOut = { pitch: 0, roll: 0, bobY: 0 };
 const slimeHops = new WeakMap<THREE.Group, SlimeHop>();
 const SLIME_HOP_RATE = 1.05; // hop-phase rad per unit of speed per second
 const SLIME_HOP_BASE = 2.2; // base cadence (rad/s) once moving
@@ -386,12 +388,13 @@ function updateSlimeHop(e: Enemy, dt: number): { lift: number; sy: number; sxz: 
   const lift = h * SLIME_HOP_HEIGHT * a;
   const sy = 1 + SLIME_STRETCH * h * a - SLIME_SQUASH * contact * a * (1 - h);
   const sxz = 1 / Math.sqrt(Math.max(0.05, sy)); // volume-preserving
-  return {
-    lift,
-    sy,
-    sxz
-  };
+  /* zero-allocation out param — consumed immediately by the caller */
+  _slimeOut.lift = lift;
+  _slimeOut.sy = sy;
+  _slimeOut.sxz = sxz;
+  return _slimeOut;
 }
+const _slimeOut = { lift: 0, sy: 1, sxz: 1 };
 /* v3.0 — MODEL_FIT / MODEL_HPBAR_Y retired with the GLTF bestiary (sprite
    geometry carries its own height; the hp bar rides spriteHeight+0.35). */
 /* Emissive floor for textured models — their authored albedo carries identity,
@@ -1403,7 +1406,14 @@ export class EnemySystem {
       if (atkT > 0) attackPulses.set(e.group, atkT - dt);
       const last = lastPos.get(e.group);
       const moved = last ? Math.hypot(e.x - last.x, e.z - last.z) : 0;
-      lastPos.set(e.group, { x: e.x, z: e.z });
+      /* mutate the WeakMap entry in place — one small object per foe per
+         LIFETIME, not per frame (~1,800 fresh literals/s at the 30-foe cap) */
+      if (last) {
+        last.x = e.x;
+        last.z = e.z;
+      } else {
+        lastPos.set(e.group, { x: e.x, z: e.z });
+      }
       spr.face = faceRight;
       spr.state = e.hp <= 0 ? "death" : e.hitFlash > FOE_HIT_TRIGGER ? "hurt" : atkT > 0 ? "attack" : moved > 0.02 ? "walk" : "idle";
       spr.update(dt);
@@ -1631,13 +1641,13 @@ export class EnemySystem {
       ctx.hitStop(0.1);
       ctx.slowmo(0.45, 0.3);
       /* white → teal double ring flash — reads at any range, any palette */
-      ctx.vfx.ring(new THREE.Vector3(e.x, 0, e.z), 0xffffff, 17, {
+      ctx.vfx.ring(_tellPos.set(e.x, 0, e.z), 0xffffff, 17, {
         life: 0.55
       });
-      ctx.vfx.ring(new THREE.Vector3(e.x, 0, e.z), 0x43e8d8, 11, {
+      ctx.vfx.ring(_tellPos.set(e.x, 0, e.z), 0x43e8d8, 11, {
         life: 0.75
       });
-      ctx.vfx.ring(new THREE.Vector3(e.x, 0, e.z), color, 12);
+      ctx.vfx.ring(_tellPos.set(e.x, 0, e.z), color, 12);
       return; // the stagger: no patterns this frame
     }
     /* minion shed */
@@ -1651,40 +1661,8 @@ export class EnemySystem {
         }
       }
     }
-    const volleyFan = (count, spreadDeg, speed, dmgFrac) => {
-      const baseA = Math.atan2(player.x - e.x, player.z - e.z);
-      for (let i = 0; i < count; i++) {
-        const off = (i / Math.max(1, count - 1) - 0.5) * (spreadDeg * Math.PI / 180);
-        const a = baseA + off;
-        ctx.spawnEnemyBolt(e.x, 1.8, e.z, e.x + Math.sin(a) * 30, e.z + Math.cos(a) * 30, speed, e.dmg * dmgFrac, color, 0.42);
-      }
-      ctx.vfx.muzzleFlash(new THREE.Vector3(e.x, 1.9, e.z), color); // release flash
-      ctx.sfx.play("volley", {
-        intensity: 0.9
-      });
-    };
-    const spiralArm = (armCount, rotSpeed, interval) => {
-      b.volleyT -= dt;
-      b.angle += rotSpeed * dt;
-      if (b.volleyT <= 0) {
-        b.volleyT = interval;
-        for (let arm = 0; arm < armCount; arm++) {
-          const a = b.angle + arm / armCount * Math.PI * 2;
-          ctx.spawnEnemyBolt(e.x, 1.8, e.z, e.x + Math.sin(a) * 30, e.z + Math.cos(a) * 30, 9.5, e.dmg * 0.32, color, 0.4);
-        }
-      }
-    };
-    /* state transition helper — `tellDur` fires the pre-fire tell the moment
-    a windup state begins; b.ringR doubles as the per-visit "already told"
-    marker for in-state entry tells (fortress/storm) and is cleared here so
-    every visit re-arms it. */
-    const go = (state, stateT = 0, tellDur = 0) => {
-      b.state = state;
-      b.stateT = stateT;
-      b.flag = false;
-      b.ringR = 0;
-      if (tellDur > 0) tellFire(e, ctx, tellDur);
-    };
+    /* pattern helpers live at module scope (bossVolleyFan / bossSpiralArm /
+       bossGo) — zero closure allocation on the 60 Hz brain tick */
     switch (b.brain) {
       /* ---- Malgrym, the Maw of Ruin: stampede charger ---- */case "charger":
         {
@@ -1693,12 +1671,12 @@ export class EnemySystem {
             e.z += nz * spd * dt;
             if (b.stateT > 1.5) {
               b.cycle = 0;
-              go(1, 0, 0.35);
+              bossGo(b, e, ctx, 1, 0, 0.35);
             }
           } else if (b.state === 1) {
             if (b.stateT > 0.35) {
-              volleyFan(b.phase === 2 ? 7 : 5, 52, 11, 0.3);
-              go(2);
+              bossVolleyFan(b, e, ctx, color, b.phase === 2 ? 7 : 5, 52, 11, 0.3);
+              bossGo(b, e, ctx, 2);
             }
           } else if (b.state === 2) {
             e.hitFlash = Math.max(e.hitFlash, 0.55 + Math.sin(b.stateT * 26) * 0.3);
@@ -1710,7 +1688,7 @@ export class EnemySystem {
               ctx.sfx.play("cast", {
                 intensity: 0.8
               });
-              go(3);
+              bossGo(b, e, ctx, 3);
             }
           } else if (b.state === 3) {
             /* F-03: the tyrant stampede rides the global locomotion scale
@@ -1718,18 +1696,18 @@ export class EnemySystem {
             const dashSpd = (24 + (b.phase === 2 ? 4 : 0)) * FOE_MOVE_SPEED_SCALE;
             e.x += b.lockedDx * dashSpd * dt;
             e.z += b.lockedDz * dashSpd * dt;
-            if (Math.random() < dt * 14) ctx.vfx.muzzleFlash(new THREE.Vector3(e.x, 0.5, e.z), color);
+            if (Math.random() < dt * 14) ctx.vfx.muzzleFlash(_tellPos.set(e.x, 0.5, e.z), color);
             const d = Math.hypot(e.x, e.z);
             if (b.stateT > 0.55 || d > ctx.arenaRadius - e.radius - 0.3) {
               b.cycle++;
-              if (b.cycle < (b.phase === 2 ? 4 : 3)) go(2, 0.35); // short re-aim
+              if (b.cycle < (b.phase === 2 ? 4 : 3)) bossGo(b, e, ctx, 2, 0.35); // short re-aim
               else {
                 ctx.shake(0.35);
-                go(4);
+                bossGo(b, e, ctx, 4);
               }
             }
           } else if (b.stateT > 1.3) {
-            go(0);
+            bossGo(b, e, ctx, 0);
           }
           break;
         }
@@ -1742,7 +1720,7 @@ export class EnemySystem {
             b.volleyT -= dt;
             if (b.volleyT <= 0) {
               b.volleyT = b.phase === 2 ? 2.6 : 3.6;
-              go(1, 0, 0.5);
+              bossGo(b, e, ctx, 1, 0, 0.5);
             }
           } else if (b.state === 1) {
             e.squash = Math.max(e.squash, 0.5);
@@ -1753,7 +1731,7 @@ export class EnemySystem {
               ctx.sfx.play("nova", {
                 intensity: 0.9
               });
-              go(0);
+              bossGo(b, e, ctx, 0);
             }
           }
           break;
@@ -1767,7 +1745,7 @@ export class EnemySystem {
             e.x += (nx * radial + -nz * tang) * spd * 1.5 * dt;
             e.z += (nz * radial + nx * tang) * spd * 1.5 * dt;
             /* every fan is preceded by a 0.38s tell (b.flag re-arms after each
-            volley — go() clears it on the lunge transition) */
+            volley — bossGo clears it on the lunge transition) */
             b.volleyT -= dt;
             if (!b.flag && b.volleyT <= 0.38) {
               b.flag = true;
@@ -1777,11 +1755,11 @@ export class EnemySystem {
             if (b.volleyT <= 0) {
               b.volleyT = Math.max(1.1, 2.4 - b.stateT * 0.08);
               b.flag = false; // re-arm the next fan's tell
-              volleyFan(b.phase === 2 ? 5 : 3, 34, 12.5, 0.26);
+              bossVolleyFan(b, e, ctx, color, b.phase === 2 ? 5 : 3, 34, 12.5, 0.26);
               b.cycle++;
               if (b.cycle % 3 === 0) {
                 b.cycle = 0;
-                go(1);
+                bossGo(b, e, ctx, 1);
               }
             }
           } else if (b.state === 1) {
@@ -1790,17 +1768,17 @@ export class EnemySystem {
               b.lockedDx = nx;
               b.lockedDz = nz;
             }
-            if (b.stateT > 0.4) go(2);
+            if (b.stateT > 0.4) bossGo(b, e, ctx, 2);
           } else if (b.state === 2) {
             /* F-03: lunge speed rides the global locomotion scale */
             e.x += b.lockedDx * 22 * FOE_MOVE_SPEED_SCALE * dt;
             e.z += b.lockedDz * 22 * FOE_MOVE_SPEED_SCALE * dt;
-            if (Math.random() < dt * 16) ctx.vfx.muzzleFlash(new THREE.Vector3(e.x, 0.8, e.z), color);
+            if (Math.random() < dt * 16) ctx.vfx.muzzleFlash(_tellPos.set(e.x, 0.8, e.z), color);
             if (b.stateT > 0.5) {
               b.cycle++;
-              if (b.cycle < (b.phase === 2 ? 3 : 2)) go(1, 0.15);else {
+              if (b.cycle < (b.phase === 2 ? 3 : 2)) bossGo(b, e, ctx, 1, 0.15);else {
                 b.volleyT = 1;
-                go(0);
+                bossGo(b, e, ctx, 0);
               }
             }
           }
@@ -1811,18 +1789,18 @@ export class EnemySystem {
         {
           if (b.state === 0) {
             /* entry tell: the first arm burst is always told (b.ringR is the
-            per-visit marker go() clears; volleyT floored past the tell) */
+            per-visit marker bossGo clears; volleyT floored past the tell) */
             if (b.ringR === 0) {
               b.ringR = 1;
               b.volleyT = Math.max(b.volleyT, 0.42);
               tellFire(e, ctx, 0.4);
             }
-            spiralArm(b.phase === 2 ? 3 : 2, b.phase === 2 ? 2.1 : 1.6, 0.24);
-            if (b.stateT > (b.phase === 2 ? 3.2 : 4)) go(1);
+            bossSpiralArm(b, e, ctx, color, dt, b.phase === 2 ? 3 : 2, b.phase === 2 ? 2.1 : 1.6, 0.24);
+            if (b.stateT > (b.phase === 2 ? 3.2 : 4)) bossGo(b, e, ctx, 1);
           } else if (b.state === 1) {
             e.hitFlash = Math.max(e.hitFlash, 0.7);
             if (b.stateT > 0.55) {
-              ctx.vfx.burst(new THREE.Vector3(e.x, 1.5, e.z), color, 20, {
+              ctx.vfx.burst(_tellPos.set(e.x, 1.5, e.z), color, 20, {
                 speed: 8
               });
               const a = ctx.rng.range(0, Math.PI * 2);
@@ -1832,7 +1810,7 @@ export class EnemySystem {
               const bR = Math.max(1, ctx.arenaRadius - e.radius - 2);
               e.x = Math.max(-bR, Math.min(bR, player.x + Math.cos(a) * r));
               e.z = Math.max(-bR, Math.min(bR, player.z + Math.sin(a) * r));
-              ctx.vfx.burst(new THREE.Vector3(e.x, 1.5, e.z), color, 26, {
+              ctx.vfx.burst(_tellPos.set(e.x, 1.5, e.z), color, 26, {
                 speed: 9
               });
               ctx.spawnBossShockring(e.x, e.z, color, e.dmg * 0.7, 10);
@@ -1840,7 +1818,7 @@ export class EnemySystem {
                 intensity: 1
               });
               ctx.shake(0.3);
-              go(0);
+              bossGo(b, e, ctx, 0);
             }
           }
           break;
@@ -1855,9 +1833,9 @@ export class EnemySystem {
             }
             if (!b.flag && b.stateT > 0.3) {
               b.flag = true;
-              volleyFan(5, 46, 12, 0.26);
+              bossVolleyFan(b, e, ctx, color, 5, 46, 12, 0.26);
             }
-            if (b.stateT > 0.9) go(1 + b.cycle % 3);
+            if (b.stateT > 0.9) bossGo(b, e, ctx, 1 + b.cycle % 3);
           } else if (b.state === 1) {
             if (b.stateT < 0.5) {
               e.hitFlash = Math.max(e.hitFlash, 0.5);
@@ -1884,7 +1862,7 @@ export class EnemySystem {
               e.z += b.lockedDz * 25 * FOE_MOVE_SPEED_SCALE * dt;
             } else {
               b.cycle++;
-              go(0);
+              bossGo(b, e, ctx, 0);
             }
           } else if (b.state === 2) {
             if (b.ringR === 0) {
@@ -1892,10 +1870,10 @@ export class EnemySystem {
               b.volleyT = Math.max(b.volleyT, 0.36);
               tellFire(e, ctx, 0.35);
             }
-            spiralArm(b.phase === 2 ? 4 : 3, 2.0, 0.2);
+            bossSpiralArm(b, e, ctx, color, dt, b.phase === 2 ? 4 : 3, 2.0, 0.2);
             if (b.stateT > 2.6) {
               b.cycle++;
-              go(0);
+              bossGo(b, e, ctx, 0);
             }
           } else if (b.state === 3) {
             if (!b.flag) {
@@ -1911,11 +1889,49 @@ export class EnemySystem {
             e.z += nz * spd * 0.3 * dt;
             if (b.stateT > 2.6) {
               b.cycle++;
-              go(0);
+              bossGo(b, e, ctx, 0);
             }
           }
           break;
         }
     }
   }
+}
+
+/* ---- boss pattern helpers (module scope) --------------------------------
+   Hoisted out of updateBoss so the 60 Hz brain tick allocates zero closures;
+   all state rides the arguments, nothing is captured. */
+function bossVolleyFan(b: BossState, e: Enemy, ctx: SimContext, color: number, count: number, spreadDeg: number, speed: number, dmgFrac: number): void {
+  const baseA = Math.atan2(ctx.player.x - e.x, ctx.player.z - e.z);
+  for (let i = 0; i < count; i++) {
+    const off = (i / Math.max(1, count - 1) - 0.5) * (spreadDeg * Math.PI / 180);
+    const a = baseA + off;
+    ctx.spawnEnemyBolt(e.x, 1.8, e.z, e.x + Math.sin(a) * 30, e.z + Math.cos(a) * 30, speed, e.dmg * dmgFrac, color, 0.42);
+  }
+  ctx.vfx.muzzleFlash(_tellPos.set(e.x, 1.9, e.z), color); // release flash
+  ctx.sfx.play("volley", {
+    intensity: 0.9
+  });
+}
+function bossSpiralArm(b: BossState, e: Enemy, ctx: SimContext, color: number, dt: number, armCount: number, rotSpeed: number, interval: number): void {
+  b.volleyT -= dt;
+  b.angle += rotSpeed * dt;
+  if (b.volleyT <= 0) {
+    b.volleyT = interval;
+    for (let arm = 0; arm < armCount; arm++) {
+      const a = b.angle + arm / armCount * Math.PI * 2;
+      ctx.spawnEnemyBolt(e.x, 1.8, e.z, e.x + Math.sin(a) * 30, e.z + Math.cos(a) * 30, 9.5, e.dmg * 0.32, color, 0.4);
+    }
+  }
+}
+/* state transition helper — `tellDur` fires the pre-fire tell the moment a
+   windup state begins; b.ringR doubles as the per-visit "already told" marker
+   for in-state entry tells (fortress/storm) and is cleared here so every
+   visit re-arms it. */
+function bossGo(b: BossState, e: Enemy, ctx: SimContext, state: number, stateT = 0, tellDur = 0): void {
+  b.state = state;
+  b.stateT = stateT;
+  b.flag = false;
+  b.ringR = 0;
+  if (tellDur > 0) tellFire(e, ctx, tellDur);
 }

@@ -95,6 +95,19 @@ const HALO_SCALE = {
    below pass these by reference (vfx reads them synchronously, never stores),
    so steady-state flight allocates NOTHING. Dynamic fields are mutated in
    place right before the call. */
+/* Hazard fade-out traverse — module-scope named callback (up to 40 hazards ×
+   60 Hz used to allocate a fresh closure per frame); the fade value rides
+   the _hazFade scratch, written immediately before each traverse. */
+let _hazFade = 1;
+function hazFadeNode(o: THREE.Object3D): void {
+  if (o instanceof THREE.Mesh) {
+    const m = o.material;
+    if ("opacity" in m) {
+      m.transparent = true;
+      m.opacity = Math.max(0, Math.min(m.opacity, _hazFade));
+    }
+  }
+}
 const T_FIRE_EMBER = {
   jitter: 0.55,
   vy: 0.7,
@@ -408,12 +421,29 @@ export class SpellSystem {
     });
   }
   /* ------------------------------ spawning ------------------------------- */
+  /** Pooled pierce-tracking sets — volleys churn dozens per second; clearing
+      + recycling keeps the Set hash-table allocation (and the GC pauses it
+      causes mid-volley) out of the hot path. */
+  private hitIdPool: Set<number>[] = [];
+  private obtainHitIds(): Set<number> {
+    const s = this.hitIdPool.pop();
+    if (s) {
+      s.clear(); // released sets are cleared too — this is belt & suspenders
+      return s;
+    }
+    return new Set<number>();
+  }
+  private releaseHitIds(s: Set<number>): void {
+    s.clear();
+    if (this.hitIdPool.length < 64) this.hitIdPool.push(s);
+  }
   spawnProjectile(p: Partial<Projectile> & { kind: Projectile["kind"]; x: number; z: number; color: number }): Projectile {
     if (this.projectiles.length >= MAX_PROJ) {
       const oldest = this.projectiles.shift();
       if (oldest) {
         this.scene.remove(oldest.mesh);
         this.releaseMesh(oldest.kind, oldest.mesh);
+        this.releaseHitIds(oldest.hitIds);
       }
     }
     const mesh = this.obtainMesh(p.kind, p.color);
@@ -449,7 +479,7 @@ export class SpellSystem {
       startZ: p.startZ ?? p.z,
       targetX: p.targetX ?? p.x,
       targetZ: p.targetZ ?? p.z,
-      hitIds: new Set<number>()
+      hitIds: this.obtainHitIds()
     };
     this.projectiles.push(proj);
     return proj;
@@ -1638,6 +1668,7 @@ export class SpellSystem {
     const pr = this.projectiles[i];
     this.scene.remove(pr.mesh);
     this.releaseMesh(pr.kind, pr.mesh);
+    this.releaseHitIds(pr.hitIds);
     this.projectiles.splice(i, 1);
   }
   updateHazards(dt: number, ctx: SimContext): void {
@@ -1826,16 +1857,8 @@ export class SpellSystem {
       }
       /* fade & retire */
       if (h.kind !== "shockring" && h.kind !== "rift") {
-        const fade = Math.min(1, h.life / 0.8);
-        h.group.traverse(o => {
-          if (o instanceof THREE.Mesh) {
-            const m = o.material;
-            if ("opacity" in m) {
-              m.transparent = true;
-              m.opacity = Math.max(0, Math.min(m.opacity, fade));
-            }
-          }
-        });
+        _hazFade = Math.min(1, h.life / 0.8);
+        h.group.traverse(hazFadeNode);
       }
       if (h.life <= 0 || h.kind === "shockring" && (h.ringR ?? 0) > 15) {
         this.disposeHazard(h);
@@ -1847,6 +1870,7 @@ export class SpellSystem {
     for (const pr of this.projectiles) {
       this.scene.remove(pr.mesh);
       this.releaseMesh(pr.kind, pr.mesh);
+      this.releaseHitIds(pr.hitIds);
     }
     this.projectiles.length = 0;
     for (const h of this.hazards) this.disposeHazard(h);

@@ -16,6 +16,13 @@ export interface TitleApp {
   dispose(): void;
 }
 
+/** Host hooks — the Next.js wrapper uses onRunArrived to swap the title
+ *  screen for the playable GameShell the instant the dive lands; the plain
+ *  Vite scaffold omits it and keeps the seed splash instead. */
+export interface TitleHooks {
+  onRunArrived?: (seed: string) => void;
+}
+
 const NOOP_SCENE: SceneControls = {
   setParallax(): void { /* no WebGL — nothing to drive */ },
   setParticleDensity(): void { /* no WebGL — nothing to drive */ },
@@ -27,7 +34,7 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-export function startTitleScreen(root: HTMLElement): TitleApp {
+export function startTitleScreen(root: HTMLElement, hooks: TitleHooks = {}): TitleApp {
   root.innerHTML = TITLE_MARKUP;
 
   const stage = root.querySelector<HTMLElement>(".stage");
@@ -54,8 +61,8 @@ export function startTitleScreen(root: HTMLElement): TitleApp {
       canvas,
       width: stageEl.clientWidth,
       height: stageEl.clientHeight,
-      backgroundUrls: ["/assets/bg-clean.png"],
-      wizardUrls: ["/assets/sprites/wizard-idle.png", "/assets/sprites/player-idle.png"],
+      backgroundUrls: ["/assets/bg-clean.webp"],
+      wizardUrls: ["/assets/sprites/player-idle.png"],
       onReady: () => {
         stageEl.classList.add("ready");
         hudEl.classList.add("on");
@@ -77,7 +84,8 @@ export function startTitleScreen(root: HTMLElement): TitleApp {
     onReturnToMenu: returnToMenu,
   });
 
-  /* SOLO RUN: dolly into the portal, fade the veil, land on the splash. */
+  /* SOLO RUN: dolly into the portal, fade the veil, hand off to the game
+     (or land on the standalone seed splash when no host hook is wired). */
   let runBusy = false;
   function beginRun(seed: string): void {
     if (runBusy) return;
@@ -89,6 +97,12 @@ export function startTitleScreen(root: HTMLElement): TitleApp {
 
     const arrive = (): void => {
       veilEl.style.opacity = "1";
+      /* Host hand-off: the game shell takes the viewport right here — the
+         splash + return button are the framework-free fallback only. */
+      if (hooks.onRunArrived) {
+        hooks.onRunArrived(seed);
+        return;
+      }
       veilEl.classList.add("arrived");
     };
 

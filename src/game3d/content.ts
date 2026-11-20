@@ -2132,8 +2132,18 @@ export function evolvedSpellDef(el: ElementId, evoId: string | null | undefined)
     radius: base.radius !== undefined ? Math.round(base.radius * (m.radius ?? 1) * 10) / 10 : undefined
   };
 }
+/* Memoized css ("#rrggbb") → 0xRRGGBB. Hot path — called per foe per frame
+   for tell/VFX colors — so the parse result is cached per distinct color
+   string (bounded by the def/elite tables); steady-state calls are pure
+   Map lookups with zero string allocation. */
+const _hexCache = new Map<string, number>();
 export function hexNum(css) {
-  return parseInt(css.replace("#", ""), 16);
+  let v = _hexCache.get(css);
+  if (v === undefined) {
+    v = parseInt(css.replace("#", ""), 16);
+    _hexCache.set(css, v);
+  }
+  return v;
 }
 /** Canonical game version (crash snapshots, save diagnostics, README sync).
     Keep in lockstep with src/lib/site.ts SITE_VERSION and the llms.txt

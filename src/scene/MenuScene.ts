@@ -643,6 +643,13 @@ export class MenuScene implements SceneControls {
         Math.max(1, aspect / (16 / 9)),
         1,
       );
+      /* Painted art — unlike the pixel sprites, this wants linear sampling
+         + mipmaps (the plane minifies on hi-dpi screens). The shared loader
+         applies NearestFilter for sprites; re-derive here. */
+      tex.magFilter = THREE.LinearFilter;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
+      tex.generateMipmaps = true;
+      tex.needsUpdate = true;
       const old = midMat.map;
       midMat.map = tex;
       midMat.needsUpdate = true;

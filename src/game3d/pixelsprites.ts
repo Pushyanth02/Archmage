@@ -657,17 +657,33 @@ export class BillboardSprite {
   }
 
   private applyFrameUV(): void {
-    const tex = this.sheet.texture;
-    tex.wrapS = THREE.ClampToEdgeWrapping;
-    tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.repeat.set(1 / this.sheet.frames, 1);
-    tex.offset.x = this.frame / this.sheet.frames;
+    /* v3.0.1 — the frame rect is baked into THIS sprite's own geometry UVs
+       instead of the shared sheet texture's offset/repeat. The old shared
+       write made every same-kind foe render whatever frame the last sprite
+       to update chose (perfect lockstep + a shared texture-matrix dirty per
+       sprite per frame); per-geometry UVs give each foe its own animation
+       timeline and never touch the shared texture. */
+    this.writeFrameUV(this.frame);
+  }
+  private writeFrameUV(f: number): void {
+    const inv = 1 / this.sheet.frames;
+    const u0 = f * inv,
+      u1 = (f + 1) * inv;
+    const uv = (this.mesh.geometry as THREE.PlaneGeometry).attributes.uv as THREE.BufferAttribute;
+    /* PlaneGeometry (1 segment) default UVs, rewritten into the sub-rect:
+       idx0 (0,1) top-left, idx1 (1,1) top-right, idx2 (0,0) bottom-left,
+       idx3 (1,0) bottom-right — feet-anchored translate does not touch UVs */
+    uv.setXY(0, u0, 1);
+    uv.setXY(1, u1, 1);
+    uv.setXY(2, u0, 0);
+    uv.setXY(3, u1, 0);
+    uv.needsUpdate = true;
   }
 
   private setFrame(f: number): void {
     if (f === this.frame) return;
     this.frame = f;
-    this.sheet.texture.offset.x = f / this.sheet.frames;
+    this.writeFrameUV(f);
   }
 
   /** advance the animation; call once per frame with dt. */
@@ -742,15 +758,4 @@ export function loadPlayerSheet(worldH = 3.4): Promise<SpriteSheet> {
     });
   });
   return playerLoading;
-}
-
-/** player state → frame (single-action poses, no loops except idle/run). */
-export function playerFrameFor(state: SpriteState, t: number): number {
-  switch (state) {
-    case "idle": return Math.floor(t * 2) % 2 === 0 ? 0 : 1;
-    case "walk": return Math.floor(t * 8) % 2 === 0 ? 2 : 3;
-    case "attack": return 4; // cast raise (release flash handled by VFX)
-    case "hurt": return 6;
-    case "death": return 7;
-  }
 }

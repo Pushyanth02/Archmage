@@ -80,6 +80,46 @@ const PERF_EMA_TAU = 0.25;
 /** Scratch position for hot-path VFX spawns (VfxSystem copies values
  *  immediately — it never retains the reference — so reuse is safe). */
 const _fxPos = new THREE.Vector3();
+/* --------------------------- HUD push scratch ----------------------------
+ * Zero-allocation snapshot plumbing for the 30 Hz pushHud stream. The
+ * TOP-LEVEL snap object stays a fresh literal per push (React state via
+ * setHudTick and the crash-snapshot hold it — a reused reference would
+ * trip React's Object.is bailout and freeze the throttled mirror). All
+ * FIXED-SIZE inner state — the three spell-slot arrays, the boss sub-object,
+ * the blip/threat pools — is module-scratch, written in place. HUD.apply
+ * and TouchControls read fields synchronously and never retain them, so
+ * mutation between pushes is invisible to them. */
+const _cdWas = [false, false, false]; // cast-ready haptic snapshot (step)
+const hudSpellIds = ["", "", ""];
+const hudSpellNames = ["", "", ""];
+const hudSpellColors = ["", "", ""];
+const hudSpellEvolved = [false, false, false];
+const hudCooldowns = [0, 0, 0];
+const hudCooldownSeconds = [0, 0, 0];
+const hudBossScratch = { name: "", title: "", hp: 0, hpMax: 0, color: "" };
+const HUD_BLIP_CAP = 28;
+const hudBlipPool: { x: number; z: number; k: 0 | 1 | 2 }[] = Array.from({ length: HUD_BLIP_CAP }, () => ({ x: 0, z: 0, k: 0 }));
+const hudBlips: { x: number; z: number; k: 0 | 1 | 2 }[] = [];
+const HUD_THREAT_CAP = 3;
+const hudThreatPool: { angle: number; kind: "elite" | "boss" }[] = Array.from({ length: HUD_THREAT_CAP }, () => ({ angle: 0, kind: "elite" as const }));
+const hudThreats: { angle: number; kind: "elite" | "boss" }[] = [];
+const HUD_ELITE_POOL = 8; // far-elites sorted per push; only 3 ever shown
+const hudElitePool: { d: number; x: number; z: number }[] = Array.from({ length: HUD_ELITE_POOL }, () => ({ d: Infinity, x: 0, z: 0 }));
+const _eliteDistCmp = (a: { d: number }, b: { d: number }) => a.d - b.d;
+/** Off-screen threat angle (deg, camera-relative CW) or -1 when the source
+ *  is close enough to be on-screen (markers are for FAR threats only). */
+function threatAngle(px: number, pz: number, x: number, z: number, camYaw: number): number {
+  const dx = x - px,
+    dz = z - pz;
+  if (Math.hypot(dx, dz) < 14) return -1;
+  let a = Math.atan2(dx, dz) - camYaw + Math.PI;
+  a = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  return Math.round(a * 180 / Math.PI);
+}
+/** Merged-slot HUD string cache — equip/merge create a stable slot object;
+ *  the derived id/name/color strings are computed once per slot, not per
+ *  30 Hz push. */
+const _mergedHudCache = new WeakMap<object, { ids: string; names: string; color: string }>();
 export class QualityGovernor {
   static EMA_ALPHA = 0.06;
   static SLOW_MS = 18.5;
@@ -1556,7 +1596,9 @@ export class RiftEngine {
     }
     /* v2.2 cast-ready haptics: snapshot cooldown state before the world
      *  moves; a slot that WAS cooling and is NOW ready cues 8 ms. */
-    const cdWas = [this.cooldowns[0] > 0.001, this.cooldowns[1] > 0.001, this.cooldowns[2] > 0.001];
+    _cdWas[0] = this.cooldowns[0] > 0.001;
+    _cdWas[1] = this.cooldowns[1] > 0.001;
+    _cdWas[2] = this.cooldowns[2] > 0.001;
     this.time += dt;
     this.ctx.time = this.time;
     this.ctx.wave = this.wave;
@@ -1592,7 +1634,7 @@ export class RiftEngine {
     }
     /* v2.2 cast-ready haptics: fire once per slot transition cooling→ready */
     for (let i = 0; i < 3; i++) {
-      if (cdWas[i] && this.cooldowns[i] <= 0.001 && this.equipped[i]) this.haptic(8);
+      if (_cdWas[i] && this.cooldowns[i] <= 0.001 && this.equipped[i]) this.haptic(8);
     }
   }
   processInput(dt) {
@@ -2857,38 +2899,57 @@ export class RiftEngine {
   /* --------------------------------- HUD --------------------------------- */
   pushHud() {
     const p = this.player;
-    const spellIds: string[] = [];
-    const spellNames: string[] = [];
-    const spellColors: string[] = [];
-    const spellEvolved: boolean[] = [];
-    const cooldowns: number[] = [];
-    const cooldownSeconds: number[] = []; // R-02: raw remaining seconds — the authoritative countdown
     for (let i = 0; i < 3; i++) {
       const slot = this.equipped[i];
+      let has = false;
       if (typeof slot === "string") {
         const def = evolvedSpellDef(slot as ElementId, this.evolved[slot]);
-        spellIds.push(slot);
-        spellNames.push(def.name);
-        spellColors.push(def.color);
-        spellEvolved.push(!!this.evolved[slot] && this.evolved[slot] !== "seen");
+        hudSpellIds[i] = slot;
+        hudSpellNames[i] = def.name;
+        hudSpellColors[i] = def.color;
+        hudSpellEvolved[i] = !!this.evolved[slot] && this.evolved[slot] !== "seen";
+        hudCooldowns[i] = Math.min(1, this.cooldowns[i] / (def.cooldown * p.cdMult));
+        hudCooldownSeconds[i] = Math.max(0, this.cooldowns[i]);
+        has = true;
       } else if (slot) {
-        const names = slot.merged.map(m => SPELLS[m].name.split(" ")[0]);
-        spellIds.push(slot.merged.join("+"));
-        spellNames.push(names.join("·"));
-        spellColors.push(SPELLS[slot.merged[0]].color);
-        spellEvolved.push(false);
+        /* merged-slot strings are derived once per slot object and cached —
+           the join/split work never runs on the 30 Hz path twice */
+        let mc = _mergedHudCache.get(slot);
+        if (!mc) {
+          const names = slot.merged.map(m => SPELLS[m].name.split(" ")[0]);
+          mc = { ids: slot.merged.join("+"), names: names.join("·"), color: SPELLS[slot.merged[0]].color };
+          _mergedHudCache.set(slot, mc);
+        }
+        hudSpellIds[i] = mc.ids;
+        hudSpellNames[i] = mc.names;
+        hudSpellColors[i] = mc.color;
+        hudSpellEvolved[i] = false;
+        hudCooldowns[i] = Math.min(1, this.cooldowns[i] / (SPELLS[slot.merged[0]].cooldown * p.cdMult));
+        hudCooldownSeconds[i] = Math.max(0, this.cooldowns[i]);
+        has = true;
       } else {
-        spellIds.push("");
-        spellNames.push("—");
-        spellColors.push("#3a3352");
-        spellEvolved.push(false);
+        hudSpellIds[i] = "";
+        hudSpellNames[i] = "—";
+        hudSpellColors[i] = "#3a3352";
+        hudSpellEvolved[i] = false;
       }
-      const def = typeof slot === "string" ? evolvedSpellDef(slot as ElementId, this.evolved[slot]) : slot ? SPELLS[slot.merged[0]] : null;
-      const cdMax = def ? def.cooldown * p.cdMult : 1;
-      cooldowns.push(def ? Math.min(1, this.cooldowns[i] / cdMax) : 0);
-      cooldownSeconds.push(def ? Math.max(0, this.cooldowns[i]) : 0);
+      if (!has) {
+        hudCooldowns[i] = 0;
+        hudCooldownSeconds[i] = 0;
+      }
     }
     const boss = this.enemies.boss;
+    let bossSnap: { name: string; title: string; hp: number; hpMax: number; color: string } | null = null;
+    if (boss && boss.boss) {
+      bossSnap = hudBossScratch;
+      hudBossScratch.name = boss.boss.def.name;
+      hudBossScratch.title = boss.boss.def.title;
+      hudBossScratch.hp = Math.max(0, boss.hp);
+      hudBossScratch.hpMax = boss.hpMax;
+      hudBossScratch.color = boss.boss.def.color;
+    }
+    /* the snap literal itself stays fresh per push (retained by React state
+       + crash snapshot); every array/object inside it is reused scratch */
     const snap = {
       hp: Math.max(0, p.hp),
       hpMax: p.hpMax,
@@ -2901,25 +2962,19 @@ export class RiftEngine {
       enemiesLeft: this.enemies.countAlive() + this.waveQueue.length + (this.pendingBoss ? 1 : 0),
       glyphs: this.stats.glyphs,
       score: this.stats.score,
-      spellIds,
-      spellNames,
-      spellColors,
+      spellIds: hudSpellIds,
+      spellNames: hudSpellNames,
+      spellColors: hudSpellColors,
       selected: this.selected,
-      cooldowns,
-      cooldownSeconds,
+      cooldowns: hudCooldowns,
+      cooldownSeconds: hudCooldownSeconds,
       castWindow: this.lastCast ? Math.max(0, 1 - (this.time - this.lastCast.t) / RESONANCE_WINDOW) : 0,
       lastCastElement: this.lastCast?.element ?? null,
       blinkCd: 1 - p.blinkCd / BLINK_CD,
-      boss: boss && boss.boss ? {
-        name: boss.boss.def.name,
-        title: boss.boss.def.title,
-        hp: Math.max(0, boss.hp),
-        hpMax: boss.hpMax,
-        color: boss.boss.def.color
-      } : null,
+      boss: bossSnap,
       mercy: this.mercyF,
       /* v2.2 */
-      spellEvolved,
+      spellEvolved: hudSpellEvolved,
       countdown: this.countdownT,
       threats: this.computeThreats(),
       /* F-06: the HUD describes the world actually generated — biome name
@@ -2933,49 +2988,73 @@ export class RiftEngine {
     };
     this.opts.callbacks.onHud(snap);
   }
-  /** v3.0: capped live blip list for the HUD minimap (foes / elites / boss). */
+  /** v3.0: capped live blip list for the HUD minimap (foes / elites / boss).
+   *  Writes into the shared pool + truncates the display array — zero
+   *  per-blip allocation on the 30 Hz path. */
   computeBlips(): { x: number; z: number; k: 0 | 1 | 2 }[] {
-    const out: { x: number; z: number; k: 0 | 1 | 2 }[] = [];
     const list = this.enemies.enemies;
-    for (let i = 0; i < list.length && out.length < 28; i++) {
+    let n = 0;
+    for (let i = 0; i < list.length && n < HUD_BLIP_CAP; i++) {
       const e = list[i];
       if (e.hp <= 0) continue;
-      out.push({ x: e.x, z: e.z, k: e.boss ? 2 : e.elite ? 1 : 0 });
+      const b = hudBlipPool[n++];
+      b.x = e.x;
+      b.z = e.z;
+      b.k = e.boss ? 2 : e.elite ? 1 : 0;
     }
-    return out;
+    hudBlips.length = 0;
+    for (let i = 0; i < n; i++) hudBlips.push(hudBlipPool[i]);
+    return hudBlips;
   }
   /** v2.2 off-screen threat markers: up to 3 screen-space angle cues for
    *  looming danger — the tyrant first, then the nearest elites. Angles are
    *  relative to the camera's forward (screen-up), clockwise degrees, so
-   *  the HUD can rotate an arrow chip directly. */
+   *  the HUD can rotate an arrow chip directly. Pool-backed: no closures,
+   *  no per-threat literals, no sort-comparator allocation. */
   computeThreats() {
     const p = this.player;
-    const out: { angle: number; kind: "elite" | "boss" }[] = [];
     /* camera forward on the ground plane (fixed-rig follow camera: -Z is
      *  screen-up; derive from the actual camera for correctness) */
     const dir = this._threatDir;
     this.camera.getWorldDirection(dir);
     const camYaw = Math.atan2(dir.x, dir.z);
-    const push = (x: number, z: number, kind: "elite" | "boss") => {
-      const dx = x - p.x,
-        dz = z - p.z;
-      const dist = Math.hypot(dx, dz);
-      if (dist < 14) return; // on-screen enough — markers are for the far threats
-      let a = Math.atan2(dx, dz) - camYaw + Math.PI;
-      a = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      out.push({ angle: Math.round(a * 180 / Math.PI), kind });
-    };
+    let n = 0;
     const boss = this.enemies.boss;
-    if (boss && boss.boss) push(boss.x, boss.z, "boss");
-    const elites: { d: number; x: number; z: number }[] = [];
+    if (boss && boss.boss) {
+      const a = threatAngle(p.x, p.z, boss.x, boss.z, camYaw);
+      if (a >= 0 && n < HUD_THREAT_CAP) {
+        const t = hudThreatPool[n++];
+        t.angle = a;
+        t.kind = "boss";
+      }
+    }
+    /* nearest far-elites fill the remaining slots (unused pool slots park at
+       d=Infinity so the single full-array sort always orders the used prefix
+       first — identical outcome to the old slice(0, n) sort) */
+    let m = 0;
     for (const e of this.enemies.enemies) {
       if (e.dead || !e.elite) continue;
       const d = Math.hypot(e.x - p.x, e.z - p.z);
-      if (d >= 14) elites.push({ d, x: e.x, z: e.z });
+      if (d >= 14 && m < HUD_ELITE_POOL) {
+        const s = hudElitePool[m++];
+        s.d = d;
+        s.x = e.x;
+        s.z = e.z;
+      }
     }
-    elites.sort((a, b) => a.d - b.d);
-    for (const el of elites.slice(0, 3 - out.length)) push(el.x, el.z, "elite");
-    return out.slice(0, 3);
+    for (let i = m; i < HUD_ELITE_POOL; i++) hudElitePool[i].d = Infinity;
+    hudElitePool.sort(_eliteDistCmp);
+    for (let i = 0; i < m && n < HUD_THREAT_CAP; i++) {
+      const a = threatAngle(p.x, p.z, hudElitePool[i].x, hudElitePool[i].z, camYaw);
+      if (a >= 0) {
+        const t = hudThreatPool[n++];
+        t.angle = a;
+        t.kind = "elite";
+      }
+    }
+    hudThreats.length = 0;
+    for (let i = 0; i < n; i++) hudThreats.push(hudThreatPool[i]);
+    return hudThreats;
   }
   /* ---------------------------- perf overlay ----------------------------- */ /* Plan §9 HUD item 6 (optional debug metrics) + §4 loading telemetry
                                                                                 (load time / transfer size / instance counts) surfaced live. The engine
