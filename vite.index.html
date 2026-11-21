@@ -1,34 +1,50 @@
 <!doctype html>
 <!-- ARCHMAGE: RIFTBOUND — Vite entry (portability artifact).
 
-     The title screen's runtime lives in framework-free TypeScript:
-       src/main.ts          bootstrap (injects markup, RAF loop, resize)
-       src/scene/MenuScene.ts
-       src/ui/UIManager.ts
-       src/ui/markup.ts
-       src/style.css
-
-     This file is NOT used by the Next.js app (which mounts the same
-     bootstrap through src/components/TitleScreen.tsx on the single "/"
-     route). To run the identical title screen under Vite instead:
+     v3.2 Rift Night: the framework-free title screen (src/main.ts,
+     MenuScene, UIManager, markup.ts, style.css) is RETIRED — the app now
+     has exactly ONE title hub inside the game shell. Under Vite, mount the
+     shell the same way the Next.js "/" route does:
 
        1. Copy this project's src/ folder into a Vite scaffold
-          (package.json deps: three, @types/three, vite, typescript).
+          (package.json deps: three, @types/three, react, react-dom,
+          zustand, framer-motion, vite, typescript).
        2. Rename this file to index.html at the scaffold root.
-       3. `npm run dev` — the markup below mirrors src/ui/markup.ts,
-          which startTitleScreen() injects at runtime anyway. -->
+       3. `npm run dev` — the boot gate below mirrors the first paint
+          src/app/page.tsx renders (one loading screen, booting → ready). -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="description" content="ARCHMAGE: RIFTBOUND — fantasy roguelike title screen. Modular TypeScript + Three.js." />
+    <meta name="description" content="ARCHMAGE: RIFTBOUND — dark-fantasy pixel-art action roguelite. Top-down 3/4 perspective, one Rift Night art direction." />
     <title>ARCHMAGE: RIFTBOUND</title>
+    <style>
+      /* the ONE loading screen's first paint — matches RiftBootGate */
+      html, body { margin: 0; height: 100%; background: #171321; color: #EFEAF7; font-family: system-ui, sans-serif; }
+      #boot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 80; }
+      #boot .inner { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; max-width: 320px; padding: 0 24px; }
+      #boot .word { font-size: 20px; font-weight: 900; letter-spacing: 0.28em; color: #F8E7BF; text-transform: uppercase; }
+      #boot .sub { font-size: 10px; font-weight: 700; letter-spacing: 0.3em; color: #A991F7; text-transform: uppercase; }
+      #boot .bar { width: 100%; height: 6px; border: 1px solid #3D3152; border-radius: 3px; background: #140E1D; overflow: hidden; }
+      #boot .fill { height: 100%; width: 40%; background: #D9BA72; opacity: 0.5; animation: rn-pulse 1.6s ease-in-out infinite; }
+      @keyframes rn-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.85; } }
+    </style>
   </head>
   <body>
     <div id="app"></div>
+    <!-- the ONE boot gate's static first paint; the shell replaces it on ready -->
+    <div id="boot" role="status" aria-label="Opening the rift — loading the essentials">
+      <div class="inner">
+        <div class="word">Archmage</div>
+        <div class="sub">Riftbound · opening the rift</div>
+        <div class="bar"><div class="fill"></div></div>
+      </div>
+    </div>
     <script type="module">
-      import { startTitleScreen } from "/src/main.ts";
-      startTitleScreen(document.getElementById("app"));
+      import { createRoot } from "react-dom/client";
+      import Page from "/src/app/page.tsx";
+      createRoot(document.getElementById("app")).render(Page());
+      // the gate releases when the shell reports ready (page.tsx owns the swap)
     </script>
   </body>
 </html>

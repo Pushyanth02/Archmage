@@ -155,24 +155,29 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* thin arcane scrollbars for the Arcanum codex panes */
-.rift-scroll {
+/* thin arcane scrollbars — the ONE app-wide standard (rn-scroll aliases) */
+.rift-scroll,
+.rn-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(217, 164, 65, 0.45) transparent;
+  scrollbar-color: rgba(122, 102, 156, 0.55) transparent;
 }
-.rift-scroll::-webkit-scrollbar {
+.rift-scroll::-webkit-scrollbar,
+.rn-scroll::-webkit-scrollbar {
   width: 8px;
 }
-.rift-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
+.rift-scroll::-webkit-scrollbar-track,
+.rn-scroll::-webkit-scrollbar-track {
+  background: rgba(20, 14, 29, 0.4);
   border-radius: 8px;
 }
-.rift-scroll::-webkit-scrollbar-thumb {
-  background: rgba(217, 164, 65, 0.45);
+.rift-scroll::-webkit-scrollbar-thumb,
+.rn-scroll::-webkit-scrollbar-thumb {
+  background: rgba(122, 102, 156, 0.55);
   border-radius: 8px;
 }
-.rift-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 164, 65, 0.7);
+.rift-scroll::-webkit-scrollbar-thumb:hover,
+.rn-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 186, 114, 0.6);
 }
 
 /* damage-number pool entries (created by vfx.ts) */
@@ -645,51 +650,54 @@ body {
 }
 
 /* ================================================================== */
-/*  v3.0 — THE PIXEL REFORGED DESIGN SYSTEM                             */
-/*  Art direction: dark-purple enchanted panels, antique-gold filigree, */
-/*  diamond ornaments, notched hex plaques, keycap chips, gem finials.  */
-/*  Palette distilled from the v3 concept boards:                      */
-/*   panels #1E1430/#241A3A · gold #D9A441/#F0C060/#FFD97A             */
-/*   violet #8A4FE0/#A66BF0/#C9A0FF · cream #F2E8C9 · lavender #D8CFE8 */
+/*  RIFT NIGHT — the unified dark-fantasy pixel-art design system      */
+/*  ONE art direction for canvas, HUD and every menu surface.          */
+/*  Palette (master, enforced in src/game3d/palette.ts too):           */
+/*   void #171321 · ink #140E1D · panel #1B1528/#241C33                */
+/*   stone #3D3152/#7A669C · gold #D9BA72 (hi #F8E7BF)                 */
+/*   violet #A991F7 (peak #E8D6FF) · teal #58D6C2 · crimson #E96578    */
+/*   text #EFEAF7 / #BFB5D4 / #9E93B5                                  */
+/*  Type: Cinzel display · Alegreya Sans body · mono tabular-nums      */
+/*  for every stat, cooldown, cost and timer.                          */
 /* ================================================================== */
 
 :root {
-  --px-panel: 30 20 48; /* #1E1430 */
-  --px-panel-2: 36 26 58; /* #241A3A */
+  --px-panel: 27 21 40; /* #1B1528 recessed surface */
+  --px-panel-2: 36 28 51; /* #241C33 raised surface */
   --px-panel-3: 44 33 72; /* #2C2148 */
-  --px-ink: 10 7 18; /* #0A0712 */
-  --px-gold: 217 164 65; /* #D9A441 */
-  --px-gold-hi: 240 192 96; /* #F0C060 */
-  --px-gold-glow: 255 217 122; /* #FFD97A */
-  --px-gold-dk: 184 130 46; /* #B8822E */
-  --px-violet: 138 79 224; /* #8A4FE0 */
-  --px-violet-hi: 166 107 240; /* #A66BF0 */
-  --px-violet-glow: 201 160 255; /* #C9A0FF */
-  --px-cream: 242 232 201; /* #F2E8C9 */
-  --px-lav: 216 207 232; /* #D8CFE8 */
-  --px-mut: 154 143 181; /* #9A8FB5 */
-  --px-crimson: 224 32 64; /* #E02040 */
-  --px-mana: 42 111 240; /* #2A6FF0 */
-  --px-amber: 245 166 35; /* #F5A623 */
-  --px-teal: 88 214 194; /* #58D6C2 */
+  --px-ink: 20 14 29; /* #140E1D outline ink */
+  --px-void: 23 19 33; /* #171321 canvas void */
+  --px-stone: 61 49 82; /* #3D3152 gothic stone */
+  --px-stone-rim: 122 102 156; /* #7A669C stone rim */
+  --px-gold: 217 186 114; /* #D9BA72 antique gold */
+  --px-gold-hi: 248 231 191; /* #F8E7BF gold highlight */
+  --px-gold-glow: 248 231 191; /* #F8E7BF */
+  --px-gold-dk: 158 133 79; /* #9E854F aged gold */
+  --px-violet: 169 145 247; /* #A991F7 arcane violet */
+  --px-violet-hi: 169 145 247; /* #A991F7 */
+  --px-violet-glow: 232 214 255; /* #E8D6FF violet peak */
+  --px-teal: 88 214 194; /* #58D6C2 aether teal */
+  --px-crimson: 233 101 120; /* #E96578 danger crimson */
+  --px-cream: 239 234 247; /* #EFEAF7 text primary */
+  --px-lav: 191 181 212; /* #BFB5D4 text secondary */
+  --px-mut: 158 147 181; /* #9E93B5 text muted */
+  --px-mana: 88 214 194; /* teal — aether is the teal voice */
+  --px-amber: 217 186 114; /* gold — amber voice retired into gold */
 }
 
-/* ---- enchanted panel ---- */
+/* ---- enchanted panel: SINGLE ELEVATION, flat fill, crisp 1px border ---- */
 .px-panel {
   position: relative;
-  background: linear-gradient(180deg, rgb(var(--px-panel-2) / 0.92), rgb(var(--px-panel) / 0.96));
-  border: 2px solid rgb(var(--px-gold) / 0.85);
-  border-radius: 10px;
-  box-shadow:
-    inset 0 1px 0 rgb(var(--px-gold) / 0.16),
-    inset 0 0 24px rgb(var(--px-ink) / 0.55),
-    0 8px 28px rgb(var(--px-ink) / 0.55);
+  background: rgb(var(--px-panel) / 0.92);
+  border: 1px solid rgb(var(--px-gold) / 0.25);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgb(var(--px-ink) / 0.35);
 }
 .px-panel--violet {
-  border-color: rgb(var(--px-violet-hi) / 0.8);
+  border-color: rgb(var(--px-violet) / 0.2);
 }
 .px-panel--crimson {
-  border-color: rgb(var(--px-crimson) / 0.75);
+  border-color: rgb(var(--px-crimson) / 0.45);
 }
 /* ornate L-shaped corner brackets (double-line filigree caps) */
 .px-corners::before {
@@ -949,5 +957,305 @@ body {
   .px-sparkle,
   .px-breathe {
     animation: none !important;
+  }
+}
+
+/* ================================================================== */
+/*  RIFT NIGHT — SHARED SCREEN SHELL                                   */
+/*  One component language for Title Hub, Vault, Runes, Codex and      */
+/*  Settings: identical header geometry, tab strip, scrollbars,        */
+/*  focus states, pixel rendering and numeric typography.              */
+/* ================================================================== */
+
+/* ---- universal pixel rendering: every sprite/atlas/canvas is crisp --- */
+img[class*="px-"] img,
+img[data-pixel],
+canvas[data-pixel-canvas],
+.px-pixel-img {
+  image-rendering: pixelated;
+}
+
+/* ---- shared full-screen shell (Vault / Runes / Codex) ---- */
+.rn-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: rgb(var(--px-void) / 0.96);
+  backdrop-filter: blur(8px);
+}
+/* the shell's content column — one max width, one gutter, one rhythm */
+.rn-shell-inner {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 72rem;
+  padding: 0.75rem 1rem 1rem;
+}
+
+/* ---- shared header bar: title left · currency right · close FAR right ---- */
+.rn-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(var(--px-gold) / 0.25);
+  border-radius: 8px;
+  background: rgb(var(--px-panel) / 0.92);
+}
+.rn-header-title {
+  font-family: var(--font-cinzel), Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(var(--px-gold));
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+.rn-header-sub {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--px-mut));
+}
+.rn-close {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(var(--px-gold) / 0.4);
+  border-radius: 6px;
+  background: rgb(var(--px-ink) / 0.7);
+  color: rgb(var(--px-lav));
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+.rn-close:hover {
+  border-color: rgb(var(--px-gold));
+  color: rgb(var(--px-gold-hi));
+  background: rgb(var(--px-panel-2));
+}
+.rn-close:focus-visible {
+  outline: 2px solid rgb(var(--px-gold));
+  outline-offset: 2px;
+}
+
+/* ---- shared currency counter: pixel icon + mono tabular-nums ---- */
+.rn-currency {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgb(var(--px-gold) / 0.25);
+  border-radius: 6px;
+  background: rgb(var(--px-ink) / 0.55);
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: rgb(var(--px-gold-hi));
+  font-size: 0.85rem;
+}
+
+/* ---- shared tab strip: single-line, never wraps, scrolls on overflow -- */
+.rn-tabs {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0.25rem;
+  border: 1px solid rgb(var(--px-gold) / 0.18);
+  border-radius: 8px;
+  background: rgb(var(--px-panel) / 0.85);
+}
+.rn-tabs::-webkit-scrollbar {
+  display: none;
+}
+.rn-tab {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(var(--px-mut));
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+.rn-tab:hover {
+  color: rgb(var(--px-lav));
+  border-color: rgb(var(--px-stone));
+}
+.rn-tab[data-active="true"] {
+  color: rgb(var(--px-gold-hi));
+  border-color: rgb(var(--px-gold) / 0.45);
+  background: rgb(var(--px-panel-2));
+}
+.rn-tab:focus-visible {
+  outline: 2px solid rgb(var(--px-gold));
+  outline-offset: -2px;
+}
+
+/* ---- shared filter chips (Vault rarity / Codex search row) ---- */
+.rn-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(var(--px-stone) / 0.6);
+  border-radius: 6px;
+  background: rgb(var(--px-ink) / 0.4);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(var(--px-mut));
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.rn-chip:hover {
+  color: rgb(var(--px-lav));
+  border-color: rgb(var(--px-stone-rim));
+}
+.rn-chip[data-active="true"] {
+  color: rgb(var(--px-teal));
+  border-color: rgb(var(--px-teal) / 0.5);
+  background: rgb(var(--px-teal) / 0.08);
+}
+.rn-chip:focus-visible {
+  outline: 2px solid rgb(var(--px-teal));
+  outline-offset: -2px;
+}
+
+/* ---- shared search field ---- */
+.rn-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  flex: 1;
+  min-width: 8rem;
+  max-width: 22rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(var(--px-stone));
+  border-radius: 6px;
+  background: rgb(var(--px-ink) / 0.6);
+  color: rgb(var(--px-cream));
+}
+.rn-search:focus-within {
+  border-color: rgb(var(--px-gold) / 0.55);
+}
+.rn-search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgb(var(--px-cream));
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+}
+.rn-search input::placeholder {
+  color: rgb(var(--px-mut) / 0.7);
+}
+
+/* ---- shared item tile (Vault grid / Codex cards / Rune sockets) ------ */
+.rn-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid rgb(var(--px-stone) / 0.5);
+  border-radius: 8px;
+  background: rgb(var(--px-panel) / 0.9);
+  padding: 0.75rem;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+}
+.rn-tile:hover {
+  border-color: rgb(var(--px-gold) / 0.5);
+  background: rgb(var(--px-panel-2) / 0.9);
+}
+.rn-tile[data-selected="true"] {
+  border-color: rgb(var(--px-gold));
+  background: rgb(var(--px-panel-2));
+}
+.rn-tile[data-locked="true"] {
+  filter: saturate(0.25) brightness(0.6);
+  cursor: default;
+}
+.rn-tile:focus-visible {
+  outline: 2px solid rgb(var(--px-gold));
+  outline-offset: 2px;
+}
+
+/* ---- shared stat line: label muted · value mono tabular-nums ---------- */
+.rn-stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(var(--px-stone) / 0.35);
+  padding: 0.4rem 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--px-mut));
+}
+.rn-stat > b {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: rgb(var(--px-cream));
+}
+
+/* ---- shared section label ---- */
+.rn-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgb(var(--px-mut));
+}
+
+/* ---- shared scroll column + custom scrollbar (whole app standard) ----- */
+.rn-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+}
+
+/* ---- reduced motion guard (Rift Night loops) ---- */
+@media (prefers-reduced-motion: reduce) {
+  .rn-shell,
+  .rn-tile,
+  .rn-tab,
+  .rn-chip,
+  .rn-close {
+    transition: none !important;
   }
 }

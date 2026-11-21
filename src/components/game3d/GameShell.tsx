@@ -2,13 +2,14 @@
 
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import { RiftEngine } from "@/game3d/engine";
 import { sfx } from "@/game3d/audio";
 import { useRiftStore, currentBonuses } from "@/game3d/store";
 import { randomSeedString } from "@/game3d/content";
 import type { HudSnapshot, InputState } from "@/game3d/types";
 import type { ElementId } from "@/game3d/content";
+import type { BootHandle } from "@/components/game3d/RiftBootGate";
 import { HUD, type HudApply } from "@/components/game3d/HUD";
 import { Banner, TributeGateOverlay, SpellOfferOverlay, MergeOverlay, EvolveOverlay } from "@/components/game3d/overlays";
 import { ui, PauseOverlay, MainMenu, ReliquaryScreen, ArcanumScreen, GameOverScreen, VictoryCredits, SettingsModal } from "@/components/game3d/screens";
@@ -44,13 +45,17 @@ function isGameplayGesture(t: EventTarget | null): boolean {
   return t instanceof HTMLElement && t.closest("[data-game-surface]") !== null;
 }
 export interface GameShellProps {
-  /** Front-door hand-off (title screen SOLO RUN): start this run the moment
-   *  the engine boots — replicates the in-menu BEGIN click exactly, including
-   *  the relic-stream loading veil when assets are still downloading. */
-  autoStartSeed?: string;
+  /** Front-door hand-off: start this run the moment the engine boots.
+   *  (Reserved for deep links; the hub's PLAY button is the normal path.) */
+  autoStartSeed?: string | null;
+  /** v3.2 Rift Night boot gate: the shell reports the ONE loading screen's
+   *  state up to the page (booting → ready). While booting, the page's
+   *  RiftBootGate covers the viewport; the shell never renders its own
+   *  second spinner or splash. */
+  bootHandle?: (handle: BootHandle) => void;
 }
 
-export default function GameShell({ autoStartSeed }: GameShellProps) {
+export default function GameShell({ autoStartSeed, bootHandle }: GameShellProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<RiftEngine | null>(null);
   const damageLayerRef = useRef<HTMLDivElement>(null);
@@ -77,31 +82,34 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
   const registerHud = useCallback((apply: HudApply | null) => {
     hudApplyRef.current = apply;
   }, []);
-  /* ------------------------- pre-run loading veil -------------------------- */ /* v2.2: the veil is now TWO gates. (1) BOOT — on mount, while the
-                                                                                  essential tier (sprites + the player's models + the clip bank)
-                                                                                  streams, a "Summoning the Rift" veil holds the reveal so the menu
-                                                                                  never paints over a parse storm; capped at 6s so a stalled network
-                                                                                  still reaches the (procedural-safe) menu. (2) RUN — clicking Enter
-                                                                                  the Rift while relics still stream holds the click behind "Attuning
-                                                                                  the Rift" with byte-accurate progress; the ceiling is 30s (was 8s —
-                                                                                  slow devices used to fall through to fallback art while their assets
-                                                                                  were seconds from landing). */
-  const [veil, setVeil] = useState<{ progress: number | null; indeterminate: boolean; boot?: boolean; loadedBytes?: number; totalBytes?: number } | null>(null);
-  const veilPollRef = useRef<number | null>(null);
-  const veilTimeoutRef = useRef<number | null>(null);
-  const veilSeedRef = useRef("");
-  /* v2.2: the boot veil's interval+cap teardown, handed to the engine-boot
+  /* ------------------------- the ONE boot gate ----------------------------- */ /* v3.2 Rift Night: there is exactly ONE loading surface — the page's
+                                                                                   RiftBootGate. The shell never paints its own spinner; it REPORTS
+                                                                                   state upward through bootHandle (booting → ready) and may REQUEST
+                                                                                   a cover ("covering" = a run is being built behind the gate while
+                                                                                   relics stream, with byte-accurate progress). Two moments use it:
+                                                                                   (1) cold boot, while the essential asset tier streams (6s cap);
+                                                                                   (2) a PLAY click landing before the full relic tier settles
+                                                                                   (30s ceiling, then procedural fallback carries the run). */
+  const [cover, setCover] = useState<{ progress: number | null; loadedBytes?: number; totalBytes?: number } | null>(null);
+  const coverPollRef = useRef<number | null>(null);
+  const coverTimeoutRef = useRef<number | null>(null);
+  const coverSeedRef = useRef("");
+  /* the boot-gate interval+cap teardown, handed to the engine-boot
   *  effect's cleanup (fast unmount strands nothing). */
   const bootTimersRef = useRef<(() => void) | null>(null);
-  const veilStallRef = useRef({
-    last: -1,
-    at: 0
-  });
+  const coverStallRef = useRef({ last: -1, at: 0 });
   const readAssetGate = (): { ready?: boolean; progress?: number; essentialsReady?: boolean; loadedBytes?: number; totalBytes?: number } | null => {
     const engine = engineRef.current;
     if (!engine) return null;
     return (engine as unknown as { assets?: { ready?: boolean; progress?: number; essentialsReady?: boolean; loadedBytes?: number; totalBytes?: number } }).assets ?? null;
   };
+  /* report the gate state upward whenever it moves */
+  useEffect(() => {
+    if (!bootHandle) return;
+    if (cover) {
+      bootHandle({ phase: "booting", progress: cover.progress, loadedBytes: cover.loadedBytes, totalBytes: cover.totalBytes });
+    }
+  }, [cover, bootHandle]);
   /* ------------------------------ run control ----------------------------- */
   const launchRun = useCallback((seed: string) => {
     const engine = engineRef.current;
@@ -116,54 +124,52 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
       mercyDeaths: meta.mercyDeaths
     });
   }, []);
-  /** Entry point for BOTH run starts (menu BEGIN + game-over RE-ENTER — both
+  /** Entry point for BOTH run starts (hub PLAY + game-over RE-ENTER — both
     funnel through the `ui` bridge). Intercepts only while relics stream. */
   const startRun = useCallback((seed: string) => {
     const engine = engineRef.current;
     if (!engine) return;
     const assets = readAssetGate();
     /* already summoned (typical: assets cached/local) → zero-friction start,
-    no veil flash */
+    no gate cover flash */
     if (!assets || assets.ready !== false) {
       launchRun(seed);
       return;
     }
-    /* relics still streaming → veil with live byte progress + 30s ceiling */
+    /* relics still streaming → cover with live byte progress + 30s ceiling */
     sfx.resume();
-    veilSeedRef.current = seed;
+    coverSeedRef.current = seed;
     const p0 = typeof assets.progress === "number" ? assets.progress : null;
-    veilStallRef.current = {
-      last: p0 ?? -1,
-      at: performance.now()
-    };
-    setVeil({
+    coverStallRef.current = { last: p0 ?? -1, at: performance.now() };
+    setCover({
       progress: p0,
-      indeterminate: p0 === null,
       loadedBytes: assets.loadedBytes,
       totalBytes: assets.totalBytes
     });
-    if (veilPollRef.current) window.clearInterval(veilPollRef.current);
-    if (veilTimeoutRef.current) window.clearTimeout(veilTimeoutRef.current);
+    if (coverPollRef.current) window.clearInterval(coverPollRef.current);
+    if (coverTimeoutRef.current) window.clearTimeout(coverTimeoutRef.current);
     const finish = (timedOut: boolean) => {
-      if (veilPollRef.current) {
-        window.clearInterval(veilPollRef.current);
-        veilPollRef.current = null;
+      if (coverPollRef.current) {
+        window.clearInterval(coverPollRef.current);
+        coverPollRef.current = null;
       }
-      if (veilTimeoutRef.current) {
-        window.clearTimeout(veilTimeoutRef.current);
-        veilTimeoutRef.current = null;
+      if (coverTimeoutRef.current) {
+        window.clearTimeout(coverTimeoutRef.current);
+        coverTimeoutRef.current = null;
       }
-      /* v2.2: build the run BEHIND the veil, then fade it two frames
-      *  later — arena construction + the first (shader-compiling) render
-      *  used to jank visibly right as the veil faded; now the veil
-      *  absorbs them. */
-      launchRun(veilSeedRef.current);
-      requestAnimationFrame(() => requestAnimationFrame(() => setVeil(null)));
+      /* build the run BEHIND the gate, then release it two frames later —
+      *  arena construction + the first (shader-compiling) render used to
+      *  jank visibly right as the cover faded; now the gate absorbs them. */
+      launchRun(coverSeedRef.current);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        setCover(null);
+        bootHandle?.({ phase: "ready" });
+      }));
       if (timedOut) {
-        useRiftStore.getState().showBanner("FALLBACK RAIMENT", "Some relics slumber — procedural art carries the run", "#f5c96b");
+        useRiftStore.getState().showBanner("FALLBACK RAIMENT", "Some relics slumber — procedural art carries the run", "#D9BA72");
       }
     };
-    veilPollRef.current = window.setInterval(() => {
+    coverPollRef.current = window.setInterval(() => {
       const a = readAssetGate();
       if (!a || a.ready === true) {
         finish(false);
@@ -171,32 +177,22 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
       }
       if (typeof a.progress === "number") {
         const now = performance.now();
-        if (a.progress !== veilStallRef.current.last) {
-          veilStallRef.current = {
-            last: a.progress,
-            at: now
-          };
+        if (a.progress !== coverStallRef.current.last) {
+          coverStallRef.current = { last: a.progress, at: now };
         }
-        const stuck = now - veilStallRef.current.at > 2500; // not moving → pulse
-        setVeil(v => v && (v.progress !== a.progress || v.indeterminate !== stuck || v.loadedBytes !== a.loadedBytes) ? {
+        setCover(v => v && (v.progress !== a.progress || v.loadedBytes !== a.loadedBytes) ? {
           progress: a.progress as number,
-          indeterminate: stuck,
           loadedBytes: a.loadedBytes,
           totalBytes: a.totalBytes
         } : v);
-      } else {
-        setVeil(v => v && !v.indeterminate ? {
-          ...v,
-          indeterminate: true
-        } : v);
       }
     }, 120);
-    veilTimeoutRef.current = window.setTimeout(() => finish(true), 30000);
-  }, [launchRun]);
-  /* veil timers never outlive the shell */
+    coverTimeoutRef.current = window.setTimeout(() => finish(true), 30000);
+  }, [launchRun, bootHandle]);
+  /* gate timers never outlive the shell */
   useEffect(() => () => {
-    if (veilPollRef.current) window.clearInterval(veilPollRef.current);
-    if (veilTimeoutRef.current) window.clearTimeout(veilTimeoutRef.current);
+    if (coverPollRef.current) window.clearInterval(coverPollRef.current);
+    if (coverTimeoutRef.current) window.clearTimeout(coverTimeoutRef.current);
   }, []);
   const toMenu = useCallback(() => {
     engineRef.current?.stopRun();
@@ -246,18 +242,16 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
     engineRef.current = engine;
     setEngineInput(engine.input);
     if (damageLayerRef.current) engine.attachDamageLayer(damageLayerRef.current);
-    /* v2.2 BOOT VEIL: hold the reveal behind "Summoning the Rift" while the
-    *  essential tier (sprites + the player's models + the clip bank) streams
-    *  — the menu never paints over a GLB parse storm, and slow first visits
-    *  get an honest, byte-accurate loading screen instead of a silent fill.
-    *  Falls through at 6s (the game is fully playable procedurally) and the
-    *  tier gate itself settles in well under a second on warm caches. */
+    /* v3.2 BOOT GATE: while the essential tier (sprites + the player's models
+    *  + the clip bank) streams, REPORT booting state upward — the page's ONE
+    *  RiftBootGate holds the reveal (the shell itself never paints a second
+    *  spinner). Falls through at 6s (the game is fully playable procedurally)
+    *  and the tier gate settles in well under a second on warm caches. */
     const gate = (engine as unknown as { assets?: { essentialsReady?: boolean; progress?: number; loadedBytes?: number; totalBytes?: number } }).assets;
     if (gate && gate.essentialsReady !== true) {
-      setVeil({
+      bootHandle?.({
+        phase: "booting",
         progress: typeof gate.progress === "number" ? gate.progress : null,
-        indeterminate: typeof gate.progress !== "number",
-        boot: true,
         loadedBytes: gate.loadedBytes,
         totalBytes: gate.totalBytes
       });
@@ -266,19 +260,19 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
         if (!g || g.essentialsReady === true) {
           window.clearInterval(bootPoll);
           window.clearTimeout(bootCap);
-          setVeil(v => v?.boot ? null : v);
+          bootHandle?.({ phase: "ready" });
         } else if (typeof g.progress === "number") {
-          setVeil(v => v?.boot && (v.progress !== g.progress || v.loadedBytes !== g.loadedBytes) ? {
-            ...v,
-            progress: g.progress as number,
+          bootHandle?.({
+            phase: "booting",
+            progress: g.progress,
             loadedBytes: g.loadedBytes,
             totalBytes: g.totalBytes
-          } : v);
+          });
         }
       }, 120);
       const bootCap = window.setTimeout(() => {
         window.clearInterval(bootPoll);
-        setVeil(v => v?.boot ? null : v);
+        bootHandle?.({ phase: "ready" });
       }, 6000);
       /* the engine-boot effect's cleanup disposes the engine; the two boot
       *  timers are cleaned here so a fast unmount strands nothing. */
@@ -286,6 +280,9 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
         window.clearInterval(bootPoll);
         window.clearTimeout(bootCap);
       };
+    } else {
+      /* essentials already settled (warm cache) — the gate releases at once */
+      bootHandle?.({ phase: "ready" });
     }
     /* ui bridge handlers (screens.tsx exports the mutable `ui` object) */
     ui.onStartRun = seed => {
@@ -323,7 +320,7 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
      and recreates the engine, and the fresh instance re-fires; a stable
      engine never double-starts). Runs after the boot effect on the same
      commit, so engineRef is already populated here. The start is deferred a
-     tick past the commit so the (potential) loading-veil setState never
+     tick past the commit so the (potential) boot-gate setState never
      cascades synchronously inside this effect. */
   useEffect(() => {
     if (!autoStartSeed) return;
@@ -651,39 +648,9 @@ export default function GameShell({ autoStartSeed }: GameShellProps) {
     prefers-reduced-motion users while keeping opacity fades; CSS loops were
     already gated in globals.css. */
     <MotionConfig reducedMotion="user">
-    <div data-hud-density={hudDensity} className="fixed inset-0 overflow-hidden bg-[#0a0812] text-white" tabIndex={0} data-archmage-game-root aria-label="ARCHMAGE: RIFTBOUND — 3D Edition game view — WASD move, mouse aim, left click cast, right click volley, Space blink, F surge, P pause">{<canvas ref={canvasRef} data-game-surface className="absolute inset-0 h-full w-full touch-none" />}{<div ref={damageLayerRef} className="pointer-events-none absolute inset-0" />}{inRun && <HUD register={registerHud} vignetteScale={vignette} />}{<Banner />}{gateOffer && <TributeGateOverlay choices={gateOffer.choices} wave={gateOffer.wave} onPick={id => engineRef.current?.resolveGate(id)} />}{spellOffer && <SpellOfferOverlay pool={spellOffer.pool} equipped={spellOffer.equipped} onPick={(el, slot) => engineRef.current?.resolveSpellOffer(el as ElementId, slot)} onSkip={() => engineRef.current?.resolveSpellOffer(null, -1)} />}{mergeOffer && <MergeOverlay offer={mergeOffer} onMerge={(a, b) => engineRef.current?.resolveMerge(a, b)} />}{evolveOffer && <EvolveOverlay offer={evolveOffer} onPick={evoId => engineRef.current?.resolveEvolution(evoId)} />}{phase === "paused" && <PauseOverlay hud={hudTick ?? undefined} onResume={() => engineRef.current?.resume()} onAbandon={toMenu} onSettings={() => useRiftStore.getState().openSettings()} />}{touchMode && inRun && phase === "playing" && engineInput && <TouchControls input={engineInput} visible mirrored={leftHanded} tapToCast={tapToCast} surge={hudTick?.surge ?? 0} castCd={hudTick ? 1 - (hudTick.cooldowns[hudTick.selected] ?? 0) : 0} blinkCd={hudTick?.blinkCd ?? 1} />}{<MainMenu />}{<ReliquaryScreen />}{<ArcanumScreen />}{<GameOverScreen />}{<VictoryCredits />}{<SettingsModal />}{<ImmersiveManager engineRef={engineRef} />}{<CrashSnapshot />}{<AnimatePresence>{veil && <LoadingVeil progress={veil.progress} indeterminate={veil.indeterminate} boot={veil.boot} loadedBytes={veil.loadedBytes} totalBytes={veil.totalBytes} key={"veil"} />}</AnimatePresence>}{phase === "playing" && !touchMode && (gamepadOn ? <div className="safe-b pointer-events-none absolute bottom-1.5 left-1/2 hidden -translate-x-1/2 gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 sm:flex">{<span>Sticks move/aim</span>}{<span>·</span>}{<span>RT cast</span>}{<span>·</span>}{<span>LT volley</span>}{<span>·</span>}{<span>A blink</span>}{<span>·</span>}{<span>X spell</span>}{<span>·</span>}{<span>Y surge</span>}{<span>·</span>}{<span>Start pause</span>}</div> : <div className="safe-b pointer-events-none absolute bottom-1.5 left-1/2 hidden -translate-x-1/2 gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 sm:flex">{<span>WASD move</span>}{<span>·</span>}{<span>LMB cast</span>}{<span>·</span>}{<span>RMB volley</span>}{<span>·</span>}{<span>Space blink</span>}{<span>·</span>}{<span>F surge</span>}{<span>·</span>}{<span>P pause</span>}</div>)}</div>
+    <div data-hud-density={hudDensity} className="fixed inset-0 overflow-hidden bg-[#171321] text-white" tabIndex={0} data-archmage-game-root aria-label="ARCHMAGE: RIFTBOUND — game view — WASD move, mouse aim, left click cast, right click volley, Space blink, F surge, P pause">{<canvas ref={canvasRef} data-game-surface className="absolute inset-0 h-full w-full touch-none" />}{<div ref={damageLayerRef} className="pointer-events-none absolute inset-0" />}{inRun && <HUD register={registerHud} vignetteScale={vignette} />}{<Banner />}{gateOffer && <TributeGateOverlay choices={gateOffer.choices} wave={gateOffer.wave} onPick={id => engineRef.current?.resolveGate(id)} />}{spellOffer && <SpellOfferOverlay pool={spellOffer.pool} equipped={spellOffer.equipped} onPick={(el, slot) => engineRef.current?.resolveSpellOffer(el as ElementId, slot)} onSkip={() => engineRef.current?.resolveSpellOffer(null, -1)} />}{mergeOffer && <MergeOverlay offer={mergeOffer} onMerge={(a, b) => engineRef.current?.resolveMerge(a, b)} />}{evolveOffer && <EvolveOverlay offer={evolveOffer} onPick={evoId => engineRef.current?.resolveEvolution(evoId)} />}{phase === "paused" && <PauseOverlay hud={hudTick ?? undefined} onResume={() => engineRef.current?.resume()} onAbandon={toMenu} onSettings={() => useRiftStore.getState().openSettings()} />}{touchMode && inRun && phase === "playing" && engineInput && <TouchControls input={engineInput} visible mirrored={leftHanded} tapToCast={tapToCast} surge={hudTick?.surge ?? 0} castCd={hudTick ? 1 - (hudTick.cooldowns[hudTick.selected] ?? 0) : 0} blinkCd={hudTick?.blinkCd ?? 1} />}{<MainMenu />}{<ReliquaryScreen />}{<ArcanumScreen />}{<GameOverScreen />}{<VictoryCredits />}{<SettingsModal />}{<ImmersiveManager engineRef={engineRef} />}{<CrashSnapshot />}{phase === "playing" && !touchMode && (gamepadOn ? <div className="safe-b pointer-events-none absolute bottom-1.5 left-1/2 hidden -translate-x-1/2 gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 sm:flex">{<span>Sticks move/aim</span>}{<span>·</span>}{<span>RT cast</span>}{<span>·</span>}{<span>LT volley</span>}{<span>·</span>}{<span>A blink</span>}{<span>·</span>}{<span>X spell</span>}{<span>·</span>}{<span>Y surge</span>}{<span>·</span>}{<span>Start pause</span>}</div> : <div className="safe-b pointer-events-none absolute bottom-1.5 left-1/2 hidden -translate-x-1/2 gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 sm:flex">{<span>WASD move</span>}{<span>·</span>}{<span>LMB cast</span>}{<span>·</span>}{<span>RMB volley</span>}{<span>·</span>}{<span>Space blink</span>}{<span>·</span>}{<span>F surge</span>}{<span>·</span>}{<span>P pause</span>}</div>)}</div>
     </MotionConfig>
   );
-}
-/* ------------------------------------------------------------------ */ /*  LOADING VEIL (v2.2) — two stages, one look:                       */ /*  · BOOT  "Summoning the Rift" — holds the menu reveal while the     */ /*    essential asset tier streams (byte-accurate, 6s cap).           */ /*  · RUN   "Attuning the Rift" — holds a run click while the rest    */ /*    of the relics stream (30s ceiling, then procedural fallback).    */ /*  Rune spinner halts under prefers-reduced-motion (globals.css kills */ /*  .animate-spin → static sigil); the indeterminate bar pulses via    */ /*  .rift-pulse-gold (also reduced-motion aware). Fits 390px.          */ /* ------------------------------------------------------------------ */function LoadingVeil({
-  progress,
-  indeterminate,
-  boot,
-  loadedBytes,
-  totalBytes
-}: {
-  progress: number | null;
-  indeterminate: boolean;
-  boot?: boolean;
-  loadedBytes?: number;
-  totalBytes?: number;
-}) {
-  const shown = !indeterminate && typeof progress === "number" ? Math.round(Math.max(0, Math.min(1, progress)) * 100) : null;
-  const mb = typeof loadedBytes === "number" && typeof totalBytes === "number" && totalBytes > 0 ? `${(loadedBytes / 1048576).toFixed(1)} / ${(totalBytes / 1048576).toFixed(1)} MB` : null;
-  return <motion.div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-[#0a0812] px-6" initial={{
-    opacity: 0
-  }} animate={{
-    opacity: 1
-  }} exit={{
-    opacity: 0,
-    transition: {
-      duration: 0.35
-    }
-  }} transition={{
-    duration: 0.2
-  }} role="status" aria-live="polite" aria-label={boot ? "Summoning the rift — loading the essentials" : "Attuning the rift — summoning relics"}>{<div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">{<div className="absolute left-1/2 top-1/2 h-[52vh] w-[82vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#9a7bff] opacity-[0.08] blur-[120px]" />}{<div className="absolute bottom-[-18%] right-[-10%] h-[42vh] w-[52vw] rounded-full bg-[#43e8d8] opacity-[0.05] blur-[130px]" />}{<div className="absolute left-[-12%] top-[-14%] h-[38vh] w-[48vw] rounded-full bg-[#d05bff] opacity-[0.05] blur-[130px]" />}</div>}{<div className="safe-b-4 relative flex w-full max-w-xs flex-col items-center gap-6 py-10 text-center">{<svg className="size-16 animate-spin text-[#f5c96b]" viewBox="0 0 64 64" fill="none" aria-hidden>{<circle cx="32" cy="32" r="29" stroke="currentColor" strokeOpacity="0.22" strokeWidth="2" />}{<path d="M32 3a29 29 0 0 1 29 29" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />}{<circle cx="32" cy="32" r="13" stroke="#9a7bff" strokeOpacity="0.55" strokeWidth="1.5" strokeDasharray="3 6" />}{<circle cx="32" cy="32" r="4.5" fill="#f5c96b" fillOpacity="0.75" />}</svg>}{<div>{<div className="font-display text-lg font-black uppercase tracking-[0.28em] text-[#f5e3b3] [text-shadow:0_0_26px_rgba(245,201,107,0.45)] sm:text-xl">{boot ? "Summoning the Rift" : "Attuning the Rift"}</div>}{<div className="mt-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#9a7bff]">{boot ? "The essentials arrive" : "Summoning relics"}</div>}{<div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">{boot ? "sprites · the mage · the clip bank" : "mage · staff · bestiary · spell icons"}</div>}</div>}{<div className="w-full">{<div className="h-1 w-full overflow-hidden rounded-full bg-white/10">{shown !== null ? <div className="h-full rounded-full bg-[#f5c96b] shadow-[0_0_12px_rgba(245,201,107,0.55)] transition-[width] duration-200" style={{
-            width: `${shown}%`
-          }} /> : <div className="rift-pulse-gold h-full w-full rounded-full bg-[#f5c96b]/60" />}</div>}{<div className="mt-2 font-mono text-[10px] uppercase tracking-[0.24em] text-white/40">{shown !== null ? <span>{shown}%{mb && <span className="text-white/30">{` · ${mb}`}</span>}</span> : "channeling…"}</div>}</div>}</div>}</motion.div>;
 }
 /* the engine pushes snapshots at 30 Hz through callbacks; keep the last one
    around for the low-rate touch meter mirror */

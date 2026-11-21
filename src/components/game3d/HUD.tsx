@@ -4,7 +4,7 @@
 import { useRef, useEffect } from "react";
 import type { HudSnapshot } from "@/game3d/types";
 import { BOSS_DEFS, elementColor } from "@/game3d/content";
-import { assetPath } from "@/lib/asset-path";
+import { ICON, PORTRAIT, bossPortrait, elementIcon } from "@/game3d/palette";
 import { useRiftStore } from "@/game3d/store";
 
 export type HudApply = (snap: HudSnapshot) => void;
@@ -25,45 +25,14 @@ const THREAT_MARKER_KEYS = [0, 1, 2];
 const ROMAN = ["I", "II", "III", "IV", "V"];
 
 /* ------------------------------------------------------------------ */
-/*  v3.1 ASSET MAP — code element ids → deployed pixel icon files.    */
-/*  The v3.1 pack renames the classic trio (fire/ice/lightning →      */
-/*  ember/frost/volt) and "nature" reads as the green vitality leaf.  */
-/*  Rare schools without a v3.1 file (blood, sonic) fall back to the  */
-/*  legacy 64px set so every element always renders.                  */
+/*  v3.2 UNIFIED ICON REGISTRY — one import serves HUD, hub, Vault,    */
+/*  Runes and Codex (src/game3d/palette.ts). Icon parity by            */
+/*  construction: the sprite the HUD shows IS the sprite the menus     */
+/*  show.                                                              */
 /* ------------------------------------------------------------------ */
-const ELEMENT_V31: Record<string, string> = {
-  fire: "ember",
-  ice: "frost",
-  lightning: "volt",
-  nature: "vitality"
-};
-const V31_ONE_TO_ONE = new Set(["earth", "shadow", "light", "time", "void", "arcane", "wind"]);
-function elementIconSrc(el: string): string {
-  if (!el) return "";
-  if (V31_ONE_TO_ONE.has(el)) return assetPath(`/assets/v31/icons/element-${el}.png`);
-  const renamed = ELEMENT_V31[el];
-  if (renamed) return assetPath(`/assets/v31/icons/element-${renamed}.png`);
-  return assetPath(`/assets/icons/element-${el}.png`);
-}
-const ICON = {
-  heart: () => assetPath("/assets/v31/icons/heart.png"),
-  flask: () => assetPath("/assets/v31/icons/flask.png"),
-  crystal: () => assetPath("/assets/v31/icons/crystal.png")
-};
-const PORTRAIT_STORMCALLER = () => assetPath("/assets/v31/portraits/stormcaller.png");
-/* Tyrant busts — boss display name → deployed v3.1 portrait (the five act
- * bosses share four busts; mirrors screens.tsx BOSS_PORTRAIT_RULES). */
-const BOSS_BUSTS: [RegExp, string][] = [
-  [/bone regent/i, "bone_regent"],
-  [/pyre behemoth/i, "tyrant_grave"],
-  [/void seraph/i, "blight_colossus"],
-  [/rift colossus/i, "blight_colossus"],
-  [/frost leviathan/i, "rift_leviathan"]
-];
-function bossBustSrc(name: string): string | null {
-  for (const [re, id] of BOSS_BUSTS) if (re.test(name)) return assetPath(`/assets/v31/portraits/${id}.png`);
-  return null;
-}
+const elementIconSrc = elementIcon;
+const PORTRAIT_STORMCALLER = PORTRAIT.player;
+const bossBustSrc = bossPortrait;
 /** Gold beveled keycap tab — one system for every ability slot (concept 05:
  *  diamond gold keycaps atop the cards; hangs half above the frame). */
 function HudKeycap({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) {

@@ -735,7 +735,6 @@ const WHITE = new THREE.Color(0xffffff);
 /*  the player sheet — cropped from the v3 reference board (p1, purple  */
 /*  variant). 8 frames: idle windup runA runB cast castfx hurt ko.       */
 /* ------------------------------------------------------------------ */
-const PLAYER_FRAMES = 8;
 let playerSheet: SpriteSheet | null = null;
 let playerLoading: Promise<SpriteSheet> | null = null;
 
@@ -744,18 +743,11 @@ export function loadPlayerSheet(worldH = 3.4): Promise<SpriteSheet> {
   if (playerSheet) return Promise.resolve(playerSheet);
   if (playerLoading) return playerLoading;
   playerLoading = new Promise(resolve => {
-    new THREE.TextureLoader().load(assetPath("/assets/sprites/player.png"), tex => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.magFilter = THREE.NearestFilter;
-      tex.minFilter = THREE.NearestFilter;
-      tex.generateMipmaps = false;
-      playerSheet = { texture: tex, frames: PLAYER_FRAMES, worldW: 3.4 * (1600 / 8) / 179, worldH, fps: 7 };
-      resolve(playerSheet);
-    }, undefined, () => {
-      // fallback: procedural imp sheet keeps the game playable
-      playerSheet = getSheet("imp");
-      resolve(playerSheet);
-    });
+    /* v3.2 Rift Night: the legacy player.png is retired — the player is the
+     * v3.1 mage sheet (engine) with the procedural imp painter as the
+     * offline/headless fallback. No mismatched legacy sprite can load. */
+    playerSheet = getSheet("imp");
+    resolve(playerSheet);
   });
   return playerLoading;
 }

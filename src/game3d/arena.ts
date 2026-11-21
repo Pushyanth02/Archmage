@@ -473,11 +473,11 @@ function composeTilesetFloor(sheet: V31Sheet, ground: THREE.Color): THREE.Textur
   cvs.width = S;
   cvs.height = S;
   const ctx = cvs.getContext("2d")!;
-  /* mortar bed — the act's normalized ground color, darkened so seams read
-   * as soft shadow gaps between flagstones (0.5 keeps depth without the
-   * harsh checker the 0.42 bed produced) */
+  /* mortar bed — the Rift Night canvas void (#171321 = rgb(23,19,33)) with
+   * the act's ground hue reading through at 35%: every biome keeps its
+   * identity while the whole arena shares one master-palette ground */
   const gSRGB = ground.clone().convertLinearToSRGB();
-  ctx.fillStyle = `rgb(${Math.round(Math.min(255, gSRGB.r * 255 * 0.5))},${Math.round(Math.min(255, gSRGB.g * 255 * 0.5))},${Math.round(Math.min(255, gSRGB.b * 255 * 0.5))})`;
+  ctx.fillStyle = `rgb(${Math.round(23 + Math.min(232, gSRGB.r * 255 * 0.35))},${Math.round(19 + Math.min(236, gSRGB.g * 255 * 0.35))},${Math.round(33 + Math.min(222, gSRGB.b * 255 * 0.35))})`;
   ctx.fillRect(0, 0, S, S);
   /* composition profile: calm ground weighted 88%, decorated variants 12%,
    * special tiles (sigils) never scatter. Falls back to "all calm" for
@@ -564,8 +564,8 @@ function makeCobbleTexture(ground: THREE.Color, accent: THREE.Color): THREE.Text
   const gSRGB = ground.clone().convertLinearToSRGB();
   const aSRGB = accent.clone().convertLinearToSRGB();
   const rgb = (c: THREE.Color, m: number) => `rgb(${Math.round(Math.min(255, c.r * 255 * m))},${Math.round(Math.min(255, c.g * 255 * m))},${Math.round(Math.min(255, c.b * 255 * m))})`;
-  // mortar bed (dark)
-  ctx.fillStyle = rgb(gSRGB, 0.45);
+  // mortar bed — palette void + act hue (Rift Night ground standard)
+  ctx.fillStyle = `rgb(${Math.round(23 + Math.min(232, gSRGB.r * 255 * 0.35))},${Math.round(19 + Math.min(236, gSRGB.g * 255 * 0.35))},${Math.round(33 + Math.min(222, gSRGB.b * 255 * 0.35))})`;
   ctx.fillRect(0, 0, S, S);
   // deterministic stone jitter (visual only — same every build)
   let seed = 1337;

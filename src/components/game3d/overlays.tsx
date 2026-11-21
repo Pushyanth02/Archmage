@@ -3,11 +3,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { BatteryCharging, Cross, Flame, Gem, Heart, Shield, Sparkles, Target, Timer, Zap, type LucideIcon } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useRiftStore } from "@/game3d/store";
 import { SPELLS, comboKey, elementColor, evolvedSpellDef, type ElementId } from "@/game3d/content";
 import { sfx } from "@/game3d/audio";
 import { assetPath } from "@/lib/asset-path";
+import { elementIcon } from "@/game3d/palette";
 import type { EvolveOfferPayload, GateChoice, MergeOfferPayload } from "@/game3d/types";
 import { Badge } from "@/components/ui/badge";
 import { PxPanel, PxBannerTab, PxDiamond, PxFiligree } from "@/components/game3d/pixel";
@@ -24,33 +25,21 @@ import { cn } from "@/lib/utils";
    v3.1 pass: pixel element/relic icons, a preview sidebar with the live
    build, a bottom action bar, and NEW-resonance badges driven by the codex. */
 
-const GOLD = "#f5c96b";
+const GOLD = "#D9BA72";
 
 /* ------------------------------------------------------------------ */
-/*  v3.1 ASSET MAP — code element ids → deployed pixel icon files.    */
-/*  (mirrors HUD.tsx; blood/sonic fall back to the legacy 64px set)   */
+/*  v3.2 UNIFIED ICON REGISTRY (src/game3d/palette.ts) — the same      */
+/*  icons the HUD, hub, Vault, Runes and Codex render. Parity by       */
+/*  construction.                                                      */
 /* ------------------------------------------------------------------ */
-const V31_ELEMENT: Record<string, string> = {
-  fire: "ember",
-  ice: "frost",
-  lightning: "volt",
-  nature: "vitality"
-};
-const V31_ONE_TO_ONE = new Set(["earth", "shadow", "light", "time", "void", "arcane", "wind"]);
-function elementIconSrc(el: string): string {
-  if (!el) return "";
-  if (V31_ONE_TO_ONE.has(el)) return assetPath(`/assets/v31/icons/element-${el}.png`);
-  const renamed = V31_ELEMENT[el];
-  if (renamed) return assetPath(`/assets/v31/icons/element-${renamed}.png`);
-  return assetPath(`/assets/icons/element-${el}.png`);
-}
+const elementIconSrc = elementIcon;
 /** first (primary) element of an equipped slot — "a" or {merged:[a,b]}[0] */
 function primaryElement(slot: string | { merged: string[] } | null | undefined): string | null {
   if (!slot) return null;
   return typeof slot === "string" ? slot : slot.merged[0] ?? null;
 }
-/* Pixel icon swap for tribute boons — hex medallions carry the v3.1 art
- * wherever a boon maps cleanly onto a deployed icon; the rest stay lucide. */
+/* Pixel icon swap for tribute boons — hex medallions carry the v3.1 art;
+ * every boon maps onto the unified registry (no lucide gate icons). */
 const GATE_PIXMAP: Record<string, string> = {
   heart: "/assets/v31/icons/heart.png",
   cross: "/assets/v31/icons/flask.png",
@@ -59,7 +48,9 @@ const GATE_PIXMAP: Record<string, string> = {
   zap: "/assets/v31/icons/element-volt.png",
   timer: "/assets/v31/icons/element-time.png",
   gem: "/assets/v31/icons/crystal.png",
-  shield: "/assets/v31/relics/amulet.png"
+  shield: "/assets/v31/relics/amulet.png",
+  target: "/assets/v31/relics/ring.png",
+  battery: "/assets/v31/relics/chalice.png"
 };
 
 /* ------------------------------------------------------------------ */
@@ -85,13 +76,16 @@ const ELEMENT_HINTS: Record<ElementId, string> = {
   sonic: "Nova around you, hurls foes away"
 };
 
-/* The wizard-sanctum vista (concept 07) reading through the overlay veil. */
+/* The sanctum vista reading through the overlay veil — palette-native
+ * (Rift Night): the canvas void with arcane-violet and gold voices. No HD
+ * keyart anywhere in the game; the pixel arena owns every backdrop. */
 function SanctumBackdrop() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <img src={assetPath("/art/v3/upgrade-bg.jpg")} alt="" draggable={false} className="absolute inset-0 h-full w-full object-cover opacity-25" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0712]/80 via-[#120a1e]/70 to-[#0a0712]/90" />
-      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(10,7,18,0.72) 100%)" }} />
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden bg-[#171321]">
+      <div className="absolute left-1/2 top-1/2 h-[56vh] w-[88vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#A991F7] opacity-[0.07] blur-[110px]" />
+      <div className="absolute bottom-[-15%] right-[-8%] h-[40vh] w-[46vw] rounded-full bg-[#58D6C2] opacity-[0.04] blur-[120px]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#140E1D]/85 via-[#171321]/75 to-[#140E1D]/92" />
+      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(20,14,29,0.75) 100%)" }} />
     </div>
   );
 }
@@ -117,7 +111,7 @@ function HexMedallion({ icon, color, size = 64, glow = true }: { icon: React.Rea
 function StatBox({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="rounded-md border bg-[#0e0817]/90 px-1.5 py-1 text-center" style={{ borderColor: color ? `${color}55` : "rgba(217,164,65,0.35)" }}>
-      <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#9a8fb5]">{label}</div>
+      <div className="text-[8px] font-bold uppercase tracking-[0.14em] text-[#9E93B5]">{label}</div>
       <div className="text-[13px] font-extrabold tabular-nums" style={{ color: color ?? "#f2e8c9" }}>{value}</div>
     </div>
   );
@@ -156,7 +150,7 @@ export function Banner() {
               <div className="text-balance font-serif text-lg font-bold uppercase tracking-[0.14em] sm:text-2xl sm:tracking-[0.18em]" style={{ color: banner.color, textShadow: `0 0 26px ${banner.color}55` }}>
                 {banner.title}
               </div>
-              {banner.sub && <div className="mt-0.5 text-[10px] uppercase tracking-[0.28em] text-[#9a8fb5]">{banner.sub}</div>}
+              {banner.sub && <div className="mt-0.5 text-[10px] uppercase tracking-[0.28em] text-[#9E93B5]">{banner.sub}</div>}
             </div>
             <span className="relative flex items-center gap-1.5">
               <PxDiamond small />
@@ -172,18 +166,8 @@ export function Banner() {
 /* ------------------------------------------------------------------ */
 /*  TRIBUTE GATE — mandatory boon pick every TRIBUTE_INTERVAL waves.    */
 /* ------------------------------------------------------------------ */
-const GATE_ICONS: Record<string, LucideIcon> = {
-  heart: Heart,
-  cross: Cross,
-  flame: Flame,
-  sparkles: Sparkles,
-  zap: Zap,
-  timer: Timer,
-  battery: BatteryCharging,
-  shield: Shield,
-  gem: Gem,
-  target: Target
-};
+/* v3.2: every gate boon now renders from the pixel registry — the lucide
+ * map is retired; Sparkles remains the defensive fallback only. */
 
 export function TributeGateOverlay({
   choices,
@@ -208,14 +192,13 @@ export function TributeGateOverlay({
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl">Rift Tribute</h2>
           <div className="relative mt-1.5 flex items-center justify-center gap-3">
             <PxFiligree width="w-10" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#c9b8e8]">Wave {wave}</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#E8D6FF]">Wave {wave}</span>
             <PxFiligree width="w-10" />
           </div>
-          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9a8fb5]">The rift demands a toll. Choose one boon.</p>
+          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9E93B5]">The rift demands a toll. Choose one boon.</p>
         </div>
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-stretch sm:gap-5">
           {choices.map((c, idx) => {
-            const Icon = GATE_ICONS[c.icon] ?? Sparkles;
             const pix = GATE_PIXMAP[c.icon];
             return (
               <motion.button
@@ -231,17 +214,15 @@ export function TributeGateOverlay({
                 key={c.id}
               >
                 <PxBannerTab color="gold">Boon</PxBannerTab>
-                {c.tier > 0 && <Badge className="absolute right-3 top-3 border-[#d9a441]/40 bg-[#241a3a]/90 font-mono text-[10px] text-[#f0c060]">HELD ×{c.tier}</Badge>}
+                {c.tier > 0 && <Badge className="absolute right-3 top-3 border-[#D9BA72]/40 bg-[#241C33]/90 font-mono text-[10px] tabular-nums text-[#D9BA72]">HELD ×{c.tier}</Badge>}
                 <div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(circle at 50% 15%, ${c.color}1e, transparent 70%)` }} />
                 <HexMedallion
                   color={c.color}
-                  icon={pix
-                    ? <img src={assetPath(pix)} alt="" width={30} height={30} draggable={false} className="size-[30px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${c.color}aa)` }} />
-                    : <Icon className="size-7" />}
+                  icon={<img src={assetPath(pix ?? "/assets/v31/icons/element-arcane.png")} alt="" width={30} height={30} draggable={false} className="size-[30px] [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 8px ${c.color}aa)` }} />}
                 />
                 <div className="relative text-center">
                   <div className="font-serif text-base font-bold uppercase tracking-[0.16em]" style={{ color: c.color, textShadow: `0 0 16px ${c.color}44` }}>{c.name}</div>
-                  <div className="mt-1.5 text-xs leading-relaxed text-[#d8cfe8]/75">{c.desc}</div>
+                  <div className="mt-1.5 text-xs leading-relaxed text-[#BFB5D4]/75">{c.desc}</div>
                 </div>
                 <span aria-hidden className="px-finial" style={{ bottom: -12 }} />
               </motion.button>
@@ -325,10 +306,10 @@ function EquipSlotPlate({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#9a8fb5]/70">Slot {index + 1}</span>
+          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#9E93B5]/70">Slot {index + 1}</span>
           {info.fused && <Badge className="border-[#d9a441]/40 bg-[#d9a441]/10 px-1.5 text-[8px] font-bold uppercase tracking-wider text-[#f0c060]">Fused</Badge>}
         </span>
-        <span className={cn("mt-0.5 block truncate text-[12px] font-semibold leading-tight", info.empty ? "text-[#9a8fb5]/50" : "text-[#f2e8c9]")}>
+        <span className={cn("mt-0.5 block truncate text-[12px] font-semibold leading-tight", info.empty ? "text-[#9E93B5]/50" : "text-[#f2e8c9]")}>
           {info.empty ? "Empty — bind here" : info.name}
         </span>
       </span>
@@ -398,7 +379,7 @@ export function SpellOfferOverlay({
         <div className="relative text-center">
           <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-36 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-[70px]" style={{ backgroundColor: "#a66bf0" }} />
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl sm:tracking-[0.14em]">Rift Upgrade</h2>
-          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9a8fb5]">The rift offers new power — bind it, or leave it to the dark.</p>
+          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9E93B5]">The rift offers new power — bind it, or leave it to the dark.</p>
         </div>
         {/* main row: the three spell cards + the preview sidebar (concept 07) */}
         <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
@@ -456,23 +437,23 @@ export function SpellOfferOverlay({
               <div className="flex flex-col gap-2">
                 {equipped.slice(0, 3).map((slot, i) => <EquipSlotPlate index={i} slot={slot} selected={target === i} onSelect={setTarget} key={i} />)}
               </div>
-              <p role="status" aria-live="polite" className="min-h-5 text-center text-[10px] font-semibold uppercase tracking-[0.14em] leading-snug text-[#9a8fb5]">
+              <p role="status" aria-live="polite" className="min-h-5 text-center text-[10px] font-semibold uppercase tracking-[0.14em] leading-snug text-[#9E93B5]">
                 {target < 0 ? "All three slots bound — choose which spell to replace" : replacing ? `Replacing ${targetInfo.name} in Slot ${target + 1}` : `Binding to Slot ${target + 1} — an empty slot`}
               </p>
             </PxPanel>
             <div className="rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-3 py-2.5">
-              <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#9a8fb5]">
+              <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-[#9E93B5]">
                 <PxDiamond small className="opacity-70" />
                 Keys — 1 · 2 · 3 pick the destination
               </div>
-              <p className="mt-1 text-[10px] leading-relaxed text-[#9a8fb5]/70">A bound spell fights beside you until the rift offers its replacement.</p>
+              <p className="mt-1 text-[10px] leading-relaxed text-[#9E93B5]/70">A bound spell fights beside you until the rift offers its replacement.</p>
             </div>
           </aside>
         </div>
         {/* bottom action bar (concept 07) */}
         <div className="flex w-full items-center justify-center gap-4">
           <PxFiligree width="w-16" />
-          <button type="button" onClick={skip} className="min-h-11 rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-5 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]/70 transition-colors hover:border-[#9a8fb5]/50 hover:text-[#d8cfe8]">
+          <button type="button" onClick={skip} className="min-h-11 rounded-lg border border-[#3a2c52] bg-[#0e0817]/80 px-5 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9E93B5]/70 transition-colors hover:border-[#9a8fb5]/50 hover:text-[#d8cfe8]">
             Leave it to the dark
           </button>
           <PxFiligree width="w-16" />
@@ -526,7 +507,7 @@ export function MergeOverlay({
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl sm:tracking-[0.14em]">Resonance</h2>
           <div className="relative mt-1.5 flex items-center justify-center gap-3">
             <PxFiligree width="w-10" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#c9b8e8]">The sacrifice merge</span>
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#E8D6FF]">The sacrifice merge</span>
             <PxFiligree width="w-10" />
           </div>
           <div className="relative mt-2 flex items-center justify-center gap-2 font-serif text-xl font-bold text-[#c9a0ff] [text-shadow:0_0_22px_rgba(166,107,240,0.5)]">
@@ -535,7 +516,7 @@ export function MergeOverlay({
               <Badge className="border-[#f0c060]/70 bg-gradient-to-b from-[#4a3410] to-[#2a1c06] text-[9px] font-black uppercase tracking-[0.18em] text-[#ffd97a]">New</Badge>
             )}
           </div>
-          <p className="relative mt-1 text-xs italic text-[#9a8fb5]">{offer.resonanceLore}</p>
+          <p className="relative mt-1 text-xs italic text-[#9E93B5]">{offer.resonanceLore}</p>
         </div>
         {/* the resonance orb — double-ringed (gold over violet) when the
          * pair weaves something the codex has never seen */}
@@ -589,13 +570,13 @@ export function MergeOverlay({
                     {info.colors.map((c, ci) => <span className="size-2.5 rotate-45" style={{ backgroundColor: c, boxShadow: `0 0 8px ${c}` }} key={ci} />)}
                   </div>
                 )}
-                <span className={cn("text-center font-serif text-xs font-bold leading-tight sm:text-sm", info.empty ? "text-[#9a8fb5]/50" : "text-[#f2e8c9]")}>{info.name}</span>
+                <span className={cn("text-center font-serif text-xs font-bold leading-tight sm:text-sm", info.empty ? "text-[#9E93B5]/50" : "text-[#f2e8c9]")}>{info.name}</span>
                 {info.fused && <Badge className="border-[#d9a441]/40 bg-[#d9a441]/10 px-1.5 text-[8px] font-bold uppercase tracking-wider text-[#f0c060]">Fused</Badge>}
               </motion.button>
             );
           })}
         </div>
-        <p className="max-w-md text-center text-[11px] leading-relaxed text-[#9a8fb5]">Both are consumed. One fused slot remains, casting each in turn.</p>
+        <p className="max-w-md text-center text-[11px] leading-relaxed text-[#9E93B5]">Both are consumed. One fused slot remains, casting each in turn.</p>
         <button
           type="button"
           disabled={!ready}
@@ -644,7 +625,7 @@ export function EvolveOverlay({
         <div className="relative text-center">
           <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-15 blur-[70px]" style={{ backgroundColor: col }} />
           <h2 className="font-display px-gold-text relative text-balance text-2xl font-black uppercase tracking-[0.1em] sm:text-4xl sm:tracking-[0.14em]">Evolution</h2>
-          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9a8fb5]">{base.name} has drunk deep of the rift — choose its final form</p>
+          <p className="relative mt-2 text-xs uppercase tracking-[0.25em] text-[#9E93B5]">{base.name} has drunk deep of the rift — choose its final form</p>
         </div>
         <HexMedallion color={col} size={56} icon={<img src={elementIconSrc(offer.element)} alt="" width={36} height={36} draggable={false} className="h-9 w-9 [image-rendering:pixelated]" style={{ filter: `drop-shadow(0 0 9px ${col}aa)` }} />} />
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
@@ -694,7 +675,7 @@ export function EvolveOverlay({
             );
           })}
         </div>
-        <button type="button" onClick={() => pick(null)} className="min-h-11 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9a8fb5]/60 transition-colors hover:text-[#d8cfe8]">
+        <button type="button" onClick={() => pick(null)} className="min-h-11 text-[11px] font-bold uppercase tracking-[0.3em] text-[#9E93B5]/60 transition-colors hover:text-[#d8cfe8]">
           Keep it as it is
         </button>
       </motion.div>
