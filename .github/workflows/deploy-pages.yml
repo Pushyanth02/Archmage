@@ -62,8 +62,11 @@ jobs:
           test -f out/assets/manifests/assets.json
           # chunk URLs must carry the repository base path
           grep -q "/${{ github.event.repository.name }}/_next/" out/index.html
-          # v2.2: the brand suite must export too (favicon ladder + one shared OG JPEG; the duplicate twitter card and unreferenced art are gone)
-          for f in favicon.ico favicon.svg apple-touch-icon.png icon-192.png icon-512.png maskable-icon.png manifest.webmanifest art/og-image.jpg art/keyart.jpg art/cover.png llms.txt robots.txt sitemap.xml 404.html; do
+          # v3.2: the brand suite must export too (favicon ladder + one shared
+          # OG JPEG + the menu cover). The HD keyart JPEG retired with the
+          # WebGL MenuScene — the pixel arena owns every backdrop now — and the
+          # duplicate twitter card is gone; og-image.jpg serves both cards.
+          for f in favicon.ico favicon.svg apple-touch-icon.png icon-192.png icon-512.png maskable-icon.png manifest.webmanifest art/og-image.jpg art/cover.png llms.txt robots.txt sitemap.xml 404.html; do
             test -f "out/$f" || { echo "::error::out/$f missing"; exit 1; }
           done
           # v2.1.1: no production source maps in the artifact. The only

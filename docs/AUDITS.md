@@ -28,17 +28,11 @@ Five audit waves (V1 design fidelity, V2 baseline + remediation, V3 repository, 
 
 ## Asset licensing
 
-`scripts/validate-assets.ts` checks every manifest row against disk (byte size, SHA-256 prefix, license): **44/46 assets valid, 8/9 packs valid**. The only failures are three permission-pending rows, unchanged since 2026-10-23:
+`scripts/validate-assets.ts` checks every manifest row against disk (byte size, license fields) and cross-checks packs against assets[]: **128/128 assets valid, 5/5 packs valid** as of v3.2.1 (the manifest is reconciled with the shipped v3.1 library).
 
-| Row | Holder | State |
-|---|---|---|
-| `model.ghost` | Augusto Faria | free PWYW download, no license text; commercial use pending author confirmation |
-| `model.plant` | Augusto Faria | same |
-| pack row `augusto-faria-monsters` | Augusto Faria | same |
+The permission-pending Augusto Faria rows are gone: the GLTF bestiary (KayKit, Quaternius, Augusto Faria packs) and the shared clip bank were retired from the deploy in v3.0, so no permission-pending rows ship at all. CI still runs the validator with `continue-on-error: true` as a tripwire for NEW regressions while provenance review of the v3.1 library continues in the source archive (`v31_assets/`).
 
-The free build ships these with attribution; commercial distribution is blocked by the validator on purpose. CI runs the step with `continue-on-error: true` so only those rows stay non-blocking, and any new asset regression still fails the build (the exit code reflects the failure count).
-
-Cleared packs: KayKit Adventurers + Skeletons (CC0; mage, staff, skeletons), Quaternius Bestiary (QAL; imp, puglin, slime), Kronbits particle pack (CC0; 11 sprites curated from 1028), dunpixel skill icons (free commercial; 30 icons at 32px), Kenney graveyard kit (CC0 dressing). Procedural fallbacks exist for every asset class, so the game stays playable with zero binary assets. Per-pack provenance (author, source URL, license, used files) lives in `public/assets/manifests/assets.json` and renders in the Codex credits.
+Cleared packs still shipping: Kenney Graveyard Kit (CC0 dressing), Kronbits particle pack (CC0; 11 sprites curated from 1028), Kenney particle pack (CC0). The dunpixel skill icons retired in v3.2 — the shipped v3.1 element icons are project-made. Procedural fallbacks exist for every asset class, so the game stays playable with zero binary assets. Per-pack provenance (author, source URL, license, used files) lives in `public/assets/manifests/assets.json` and renders in the Codex credits.
 
 
 ---
@@ -48,8 +42,10 @@ Cleared packs: KayKit Adventurers + Skeletons (CC0; mage, staff, skeletons), Qua
 The GLTF bestiary (KayKit adventurers/skeletons, Quaternius bestiary/animated
 monsters, Augusto Faria monsters) and the shared `anims.glb` clip bank are
 **retired from the deploy** — replaced by the in-engine chibi pixel sprites
-(`src/game3d/pixelsprites.ts`) and the reference-sheet player witch
-(`public/assets/sprites/player.png`, project-made, MIT). Remaining third-party
+(`src/game3d/pixelsprites.ts`) and, from v3.1, the project-made validated
+sprite-sheet library (`public/assets/v31/`, MIT). Remaining third-party
 packs, all CC0 and unchanged: Kenney Graveyard Kit (terrain decor), Kronbits +
-Kenney particle sprites, dunpixel skill icons. The v3 background vistas
-(`public/art/v3/*.jpg`, keyart, og-image) are AI-conjured key art.
+Kenney particle sprites. The share images
+(`public/art/og-image.jpg`, `public/art/cover.png`) are AI-conjured key art;
+the v3 background vistas and HD keyart JPEGs retired in v3.2 (the in-engine
+pixel arena owns every backdrop now).

@@ -85,9 +85,9 @@ const MANIFEST_URL = "/assets/manifests/assets.json"; // routed through assetPat
 const KNOWN_MODELS: readonly ModelKind[] = ["terrain-tomb", "terrain-tomb-round", "terrain-tomb-broken", "terrain-cross", "terrain-tree", "terrain-fence", "terrain-crypt", "terrain-sarcophagus", "terrain-pillar", "terrain-lantern"];
 export const FALLBACK_PACKS: PackCredits[] = [{
   id: "kronbits-particles",
-  pack: "Kronbits – 16x16 Particle Effects",
+  pack: "Kronbits – Particle Pack",
   author: "Kronbits",
-  sourceUrl: "https://kronbits.itch.io/particle-fx-16x16",
+  sourceUrl: "https://kronbits.itch.io/particle-pack",
   licenseId: "CC0",
   attributionRequired: false,
   licenseStatus: "verified"
@@ -95,7 +95,7 @@ export const FALLBACK_PACKS: PackCredits[] = [{
   id: "kenney-graveyard",
   pack: "Kenney – Graveyard Kit",
   author: "Kenney",
-  sourceUrl: "https://kenney.nl/assets/graveyard-kenney",
+  sourceUrl: "https://kenney.nl/assets/graveyard-kit",
   licenseId: "CC0",
   attributionRequired: false,
   licenseStatus: "verified"
@@ -108,11 +108,11 @@ export const FALLBACK_PACKS: PackCredits[] = [{
   attributionRequired: false,
   licenseStatus: "verified"
 }, {
-  id: "dunpixel-skill-icons",
-  pack: "dunpixel – Skill Icons 16x16",
-  author: "dunpixel",
-  sourceUrl: "https://dunpixel.itch.io/skill-icons-16x16",
-  licenseId: "CC0",
+  id: "archmage-v31-sheets",
+  pack: "ARCHMAGE originals — v3.1 validated sprite sheets",
+  author: "Archmage contributors",
+  sourceUrl: "https://github.com/Pushyanth02/Archmage",
+  licenseId: "MIT",
   attributionRequired: false,
   licenseStatus: "verified"
 }];

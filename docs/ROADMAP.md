@@ -39,4 +39,4 @@ Heart-drop gating and the swift-elite chase cap (audit V3 P1 recommendations) we
 
 ## Documented deferrals
 
-Attract-mode menu camera (judged redundant beside the ken-burns keyart backdrop) and the screens.tsx/engine.ts file splits (waiting on stable, behavior-preserving slices) are documented deferrals from v2.1.
+Attract-mode menu camera (judged redundant beside the full-bleed menu backdrop) and the screens.tsx/engine.ts file splits (waiting on stable, behavior-preserving slices) are documented deferrals from v2.1.

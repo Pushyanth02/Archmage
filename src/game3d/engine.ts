@@ -628,8 +628,9 @@ export class RiftEngine {
   lastMouseAim;
   running;
   /* v2.2 render gating: while an OPAQUE React screen (menu / game over /
-   *  credits — the keyart backdrop covers the canvas completely) is up,
-   * the frame loop skips sim/anim/vfx/render entirely. coverGraceUntil
+   *  credits — the screen's full-bleed backdrop covers the canvas
+   *  completely) is up, the frame loop skips sim/anim/vfx/render
+   *  entirely. coverGraceUntil
    * keeps rendering through phase-transition fades (a screen fading IN
    * over a live arena needs the arena behind it until it is opaque). */
   coverGraceUntil = 0;
@@ -909,8 +910,9 @@ export class RiftEngine {
     window.addEventListener("orientationchange", this.onOrientationChange);
     window.visualViewport?.addEventListener("resize", this.onViewportBoxResize);
     this.startLoop();
-    /* v2.2: boot grace — the menu's keyart backdrop fades in over ~700 ms;
-     * keep rendering the procedural scene behind it until it is opaque. */
+    /* v2.2: boot grace — the menu backdrop (v3.2: the pixel arena /
+     *  SanctumBackdrop, no HD keyart) fades in over ~700 ms; keep
+     *  rendering the procedural scene behind it until it is opaque. */
     this.coverGraceUntil = performance.now() + 1500;
     /* sync the shell with our initial phase (remount-safe) */
     this.opts.callbacks.onPhase(this.phase);
@@ -1486,7 +1488,8 @@ export class RiftEngine {
        *  stays wall-clock correct through fixed-step accumulation). */
       if (this.fpsCapMs > 0 && now - this.lastFrame < this.fpsCapMs - 1.5) return;
       /* v2.2 render gating: an opaque React screen (menu / game over /
-       *  credits — the keyart backdrop covers the canvas fully) is up and
+       *  credits — the screen's full-bleed backdrop covers the canvas
+       *  fully) is up and
        *  its entrance fade has finished → skip the entire frame body.
        * Saves 100% of GPU/CPU during every menu visit; the RAF keeps
        * ticking cheaply so a phase change resumes rendering instantly. */

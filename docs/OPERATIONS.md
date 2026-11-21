@@ -51,7 +51,7 @@ The default build is Vercel-ready as-is. Do not set `BUILD_MODE` or `BASE_PATH` 
 
 ## brand-src/ — icon and image masters
 
-Masters for every shipped icon and image, kept out of `public/` so visitors never download them: `src/keyart.png` (the menu backdrop ships as the compressed `public/art/keyart.jpg`, the share image as `public/art/og-image.jpg`), `src/cover.png`, `src/logo.png`, `src/poster.jpg`.
+Masters for every shipped icon and image, kept out of `public/` so visitors never download them: `src/keyart.png` (the retired menu-backdrop master; v3.2 no longer ships a keyart JPEG — the pixel arena owns every backdrop), `src/cover.png` (ships as `public/art/cover.png`), `src/logo.png`, `src/poster.jpg`. The live share image is `public/art/og-image.jpg`.
 
 Regenerate shipped assets by resizing and compressing from these masters; shipped JPEGs target < 300 KB each. The icon ladder (`favicon-16/32.png`, `icon-192.png`, `icon-512.png`, `maskable-icon.png`, `apple-touch-icon.png`) resizes from `src/logo.png`; `favicon.svg` and `logo.svg` are hand-authored vectors.
 

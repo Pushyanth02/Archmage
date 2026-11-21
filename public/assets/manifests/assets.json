@@ -1,5 +1,5 @@
 {
-  "generator": "ARCHMAGE: RIFT 3D asset pipeline (task 6-a; supersedes public/assets/manifest.json) (v3.2 Rift Night purge: legacy icon/player entries removed)",
+  "generator": "ARCHMAGE: RIFT 3D asset pipeline (task 6-a; supersedes public/assets/manifest.json) (v3.2.1: packs reconciled with the Rift Night purge — dunpixel pack dropped, v3.1 library provenance added)",
   "version": "1.0.0",
   "packs": [
     {
@@ -74,38 +74,8 @@
       ]
     },
     {
-      "id": "dunpixel-skill-icons",
-      "pack": "30 Free Pixel Art Skill Icons",
-      "author": "Dani Melich (dunpixel)",
-      "sourceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
-      "licenseId": "Free commercial",
-      "attributionRequired": true,
-      "commercialUseVerified": true,
-      "licenseStatus": "verified",
-      "licenseEvidenceUrl": "https://dunpixel.itch.io/pixel-art-skill-icons-30-free-magic-spell-icons",
-      "licenseEvidenceType": "item-page-terms",
-      "licenseReviewer": "main-agent (Z.ai Code)",
-      "reviewedAt": "2026-10-23",
-      "files": [
-        "icons/element-fire.png",
-        "icons/element-ice.png",
-        "icons/element-lightning.png",
-        "icons/element-earth.png",
-        "icons/element-shadow.png",
-        "icons/element-light.png",
-        "icons/element-time.png",
-        "icons/element-void.png",
-        "icons/element-arcane.png",
-        "icons/element-blood.png",
-        "icons/element-nature.png",
-        "icons/element-wind.png",
-        "icons/element-sonic.png"
-      ],
-      "note": "Live verification 2026-10-23: page grants \"Free to use in commercial projects.\" \u2014 no attribution demanded; attributionRequired kept true as the conservative choice since the credits screen lists the author."
-    },
-    {
       "id": "archmage-originals",
-      "pack": "ARCHMAGE originals \u2014 pixel sprites & backgrounds",
+      "pack": "ARCHMAGE originals — v3.1 pixel library (UI art)",
       "author": "Archmage contributors",
       "sourceUrl": "https://github.com/Pushyanth02/Archmage",
       "licenseId": "MIT",
@@ -115,10 +85,129 @@
       "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
       "licenseEvidenceType": "license-file",
       "licenseReviewer": "v3.0 refactor",
-      "reviewedAt": "2026-11-20",
+      "reviewedAt": "2026-11-21",
       "files": [
-        "sprites/player.png",
-        "sprites/player-idle.png"
+        "v31/icons/campfire.png",
+        "v31/icons/chest.png",
+        "v31/icons/coins.png",
+        "v31/icons/crystal.png",
+        "v31/icons/element-arcane.png",
+        "v31/icons/element-earth.png",
+        "v31/icons/element-ember.png",
+        "v31/icons/element-frost.png",
+        "v31/icons/element-light.png",
+        "v31/icons/element-shadow.png",
+        "v31/icons/element-time.png",
+        "v31/icons/element-vitality.png",
+        "v31/icons/element-void.png",
+        "v31/icons/element-volt.png",
+        "v31/icons/element-water.png",
+        "v31/icons/element-wind.png",
+        "v31/icons/flask.png",
+        "v31/icons/heart.png",
+        "v31/icons/school_a.png",
+        "v31/icons/school_amber.png",
+        "v31/icons/school_arcane.png",
+        "v31/icons/school_b.png",
+        "v31/icons/school_dark.png",
+        "v31/icons/school_flame.png",
+        "v31/icons/school_ice.png",
+        "v31/icons/school_magenta.png",
+        "v31/icons/school_nature.png",
+        "v31/icons/school_radiant.png",
+        "v31/icons/school_silver.png",
+        "v31/icons/school_vortex.png",
+        "v31/relics/amulet.png",
+        "v31/relics/chalice.png",
+        "v31/relics/crown.png",
+        "v31/relics/grimoire.png",
+        "v31/relics/ring.png",
+        "v31/relics/staff_aether.png",
+        "v31/relics/staff_chrono.png",
+        "v31/relics/staff_fire.png",
+        "v31/relics/staff_ice.png",
+        "v31/relics/staff_storm.png",
+        "v31/relics/staff_void.png",
+        "v31/relics/tome.png",
+        "v31/portraits/aethermancer.png",
+        "v31/portraits/blight_colossus.png",
+        "v31/portraits/bone_regent.png",
+        "v31/portraits/chronomancer.png",
+        "v31/portraits/cryomancer.png",
+        "v31/portraits/pyromancer.png",
+        "v31/portraits/rift_leviathan.png",
+        "v31/portraits/stormcaller.png",
+        "v31/portraits/tyrant_grave.png",
+        "v31/portraits/voidweaver.png",
+        "v31/preview/biome_blighted_marsh.png",
+        "v31/preview/biome_cursed_grove.png",
+        "v31/preview/biome_undead_crypt.png",
+        "v31/preview/boss_blight_colossus.png",
+        "v31/preview/boss_bone_regent.png",
+        "v31/preview/boss_rift_leviathan.png",
+        "v31/preview/enemy_bone_archer.png",
+        "v31/preview/enemy_cultist_acolyte.png",
+        "v31/preview/enemy_flesh_construct.png",
+        "v31/preview/enemy_necromancer.png",
+        "v31/preview/enemy_plaguebearer.png",
+        "v31/preview/enemy_shieldbone_knight.png",
+        "v31/preview/enemy_skeleton_warrior.png",
+        "v31/preview/enemy_wraith.png",
+        "v31/preview/mage_aethermancer.png",
+        "v31/preview/mage_chronomancer.png",
+        "v31/preview/mage_cryomancer.png",
+        "v31/preview/mage_pyromancer.png",
+        "v31/preview/mage_stormcaller.png",
+        "v31/preview/mage_voidweaver.png",
+        "v31/tilesets/tileset_blighted_marsh.png",
+        "v31/tilesets/tileset_cursed_grove.png",
+        "v31/tilesets/tileset_undead_crypt.png"
+      ]
+    },
+    {
+      "id": "archmage-v31-sheets",
+      "pack": "ARCHMAGE originals — v3.1 validated sprite sheets",
+      "author": "Archmage contributors",
+      "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+      "licenseId": "MIT",
+      "attributionRequired": false,
+      "commercialUseVerified": true,
+      "licenseStatus": "verified",
+      "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+      "licenseEvidenceType": "license-file",
+      "licenseReviewer": "v3.2.1 manifest reconciliation",
+      "reviewedAt": "2026-11-21",
+      "files": [
+        "v31/sprites/boss_blight_colossus.png",
+        "v31/sprites/boss_bone_regent.png",
+        "v31/sprites/boss_rift_leviathan.png",
+        "v31/sprites/enemy_bone_archer.png",
+        "v31/sprites/enemy_cultist_acolyte.png",
+        "v31/sprites/enemy_flesh_construct.png",
+        "v31/sprites/enemy_necromancer.png",
+        "v31/sprites/enemy_plaguebearer.png",
+        "v31/sprites/enemy_shieldbone_knight.png",
+        "v31/sprites/enemy_skeleton_warrior.png",
+        "v31/sprites/enemy_wraith.png",
+        "v31/sprites/icons_pickups_schools.png",
+        "v31/sprites/mage_aethermancer.png",
+        "v31/sprites/mage_chronomancer.png",
+        "v31/sprites/mage_cryomancer.png",
+        "v31/sprites/mage_pyromancer.png",
+        "v31/sprites/mage_stormcaller.png",
+        "v31/sprites/mage_voidweaver.png",
+        "v31/sprites/portraits_classes_tyrants.png",
+        "v31/sprites/tileset_blighted_marsh.png",
+        "v31/sprites/tileset_cursed_grove.png",
+        "v31/sprites/tileset_undead_crypt.png",
+        "v31/sprites/ui_relics_artifacts.png",
+        "v31/sprites/vfx_arcane_utility.png",
+        "v31/sprites/vfx_fire.png",
+        "v31/sprites/vfx_ice.png",
+        "v31/sprites/vfx_lightning.png",
+        "v31/sprites/vfx_resonances_arcane.png",
+        "v31/sprites/vfx_schools_extended.png",
+        "v31/sprites/vfx_thermal_shatter.png"
       ]
     }
   ],
@@ -516,6 +605,2001 @@
         "attributionRequired": false,
         "commercialUseVerified": true,
         "reviewedAt": "2026-10-24"
+      }
+    },
+    {
+      "id": "icon.v31-icons-campfire",
+      "kind": "icon",
+      "uri": "v31/icons/campfire.png",
+      "format": "png",
+      "byteSize": 983,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-chest",
+      "kind": "icon",
+      "uri": "v31/icons/chest.png",
+      "format": "png",
+      "byteSize": 926,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-coins",
+      "kind": "icon",
+      "uri": "v31/icons/coins.png",
+      "format": "png",
+      "byteSize": 687,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-crystal",
+      "kind": "icon",
+      "uri": "v31/icons/crystal.png",
+      "format": "png",
+      "byteSize": 839,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-arcane",
+      "kind": "icon",
+      "uri": "v31/icons/element-arcane.png",
+      "format": "png",
+      "byteSize": 825,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-earth",
+      "kind": "icon",
+      "uri": "v31/icons/element-earth.png",
+      "format": "png",
+      "byteSize": 901,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-ember",
+      "kind": "icon",
+      "uri": "v31/icons/element-ember.png",
+      "format": "png",
+      "byteSize": 769,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-frost",
+      "kind": "icon",
+      "uri": "v31/icons/element-frost.png",
+      "format": "png",
+      "byteSize": 1028,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-light",
+      "kind": "icon",
+      "uri": "v31/icons/element-light.png",
+      "format": "png",
+      "byteSize": 991,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-shadow",
+      "kind": "icon",
+      "uri": "v31/icons/element-shadow.png",
+      "format": "png",
+      "byteSize": 881,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-time",
+      "kind": "icon",
+      "uri": "v31/icons/element-time.png",
+      "format": "png",
+      "byteSize": 927,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-vitality",
+      "kind": "icon",
+      "uri": "v31/icons/element-vitality.png",
+      "format": "png",
+      "byteSize": 1011,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-void",
+      "kind": "icon",
+      "uri": "v31/icons/element-void.png",
+      "format": "png",
+      "byteSize": 930,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-volt",
+      "kind": "icon",
+      "uri": "v31/icons/element-volt.png",
+      "format": "png",
+      "byteSize": 928,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-water",
+      "kind": "icon",
+      "uri": "v31/icons/element-water.png",
+      "format": "png",
+      "byteSize": 957,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-element-wind",
+      "kind": "icon",
+      "uri": "v31/icons/element-wind.png",
+      "format": "png",
+      "byteSize": 1055,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-flask",
+      "kind": "icon",
+      "uri": "v31/icons/flask.png",
+      "format": "png",
+      "byteSize": 799,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-heart",
+      "kind": "icon",
+      "uri": "v31/icons/heart.png",
+      "format": "png",
+      "byteSize": 914,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_a",
+      "kind": "icon",
+      "uri": "v31/icons/school_a.png",
+      "format": "png",
+      "byteSize": 1055,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_amber",
+      "kind": "icon",
+      "uri": "v31/icons/school_amber.png",
+      "format": "png",
+      "byteSize": 927,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_arcane",
+      "kind": "icon",
+      "uri": "v31/icons/school_arcane.png",
+      "format": "png",
+      "byteSize": 928,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_b",
+      "kind": "icon",
+      "uri": "v31/icons/school_b.png",
+      "format": "png",
+      "byteSize": 957,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_dark",
+      "kind": "icon",
+      "uri": "v31/icons/school_dark.png",
+      "format": "png",
+      "byteSize": 1011,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_flame",
+      "kind": "icon",
+      "uri": "v31/icons/school_flame.png",
+      "format": "png",
+      "byteSize": 930,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_ice",
+      "kind": "icon",
+      "uri": "v31/icons/school_ice.png",
+      "format": "png",
+      "byteSize": 1028,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_magenta",
+      "kind": "icon",
+      "uri": "v31/icons/school_magenta.png",
+      "format": "png",
+      "byteSize": 881,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_nature",
+      "kind": "icon",
+      "uri": "v31/icons/school_nature.png",
+      "format": "png",
+      "byteSize": 825,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_radiant",
+      "kind": "icon",
+      "uri": "v31/icons/school_radiant.png",
+      "format": "png",
+      "byteSize": 991,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_silver",
+      "kind": "icon",
+      "uri": "v31/icons/school_silver.png",
+      "format": "png",
+      "byteSize": 901,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-icons-school_vortex",
+      "kind": "icon",
+      "uri": "v31/icons/school_vortex.png",
+      "format": "png",
+      "byteSize": 769,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-amulet",
+      "kind": "icon",
+      "uri": "v31/relics/amulet.png",
+      "format": "png",
+      "byteSize": 2430,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-chalice",
+      "kind": "icon",
+      "uri": "v31/relics/chalice.png",
+      "format": "png",
+      "byteSize": 1149,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-crown",
+      "kind": "icon",
+      "uri": "v31/relics/crown.png",
+      "format": "png",
+      "byteSize": 2367,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-grimoire",
+      "kind": "icon",
+      "uri": "v31/relics/grimoire.png",
+      "format": "png",
+      "byteSize": 2204,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-ring",
+      "kind": "icon",
+      "uri": "v31/relics/ring.png",
+      "format": "png",
+      "byteSize": 2443,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_aether",
+      "kind": "icon",
+      "uri": "v31/relics/staff_aether.png",
+      "format": "png",
+      "byteSize": 1547,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_chrono",
+      "kind": "icon",
+      "uri": "v31/relics/staff_chrono.png",
+      "format": "png",
+      "byteSize": 1487,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_fire",
+      "kind": "icon",
+      "uri": "v31/relics/staff_fire.png",
+      "format": "png",
+      "byteSize": 1679,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_ice",
+      "kind": "icon",
+      "uri": "v31/relics/staff_ice.png",
+      "format": "png",
+      "byteSize": 1330,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_storm",
+      "kind": "icon",
+      "uri": "v31/relics/staff_storm.png",
+      "format": "png",
+      "byteSize": 1462,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-staff_void",
+      "kind": "icon",
+      "uri": "v31/relics/staff_void.png",
+      "format": "png",
+      "byteSize": 1418,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-relics-tome",
+      "kind": "icon",
+      "uri": "v31/relics/tome.png",
+      "format": "png",
+      "byteSize": 1692,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-aethermancer",
+      "kind": "icon",
+      "uri": "v31/portraits/aethermancer.png",
+      "format": "png",
+      "byteSize": 2384,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-blight_colossus",
+      "kind": "icon",
+      "uri": "v31/portraits/blight_colossus.png",
+      "format": "png",
+      "byteSize": 3022,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-bone_regent",
+      "kind": "icon",
+      "uri": "v31/portraits/bone_regent.png",
+      "format": "png",
+      "byteSize": 2501,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-chronomancer",
+      "kind": "icon",
+      "uri": "v31/portraits/chronomancer.png",
+      "format": "png",
+      "byteSize": 2466,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-cryomancer",
+      "kind": "icon",
+      "uri": "v31/portraits/cryomancer.png",
+      "format": "png",
+      "byteSize": 2401,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-pyromancer",
+      "kind": "icon",
+      "uri": "v31/portraits/pyromancer.png",
+      "format": "png",
+      "byteSize": 2438,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-rift_leviathan",
+      "kind": "icon",
+      "uri": "v31/portraits/rift_leviathan.png",
+      "format": "png",
+      "byteSize": 2211,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-stormcaller",
+      "kind": "icon",
+      "uri": "v31/portraits/stormcaller.png",
+      "format": "png",
+      "byteSize": 2175,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-tyrant_grave",
+      "kind": "icon",
+      "uri": "v31/portraits/tyrant_grave.png",
+      "format": "png",
+      "byteSize": 2727,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-portraits-voidweaver",
+      "kind": "icon",
+      "uri": "v31/portraits/voidweaver.png",
+      "format": "png",
+      "byteSize": 2425,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-biome_blighted_marsh",
+      "kind": "icon",
+      "uri": "v31/preview/biome_blighted_marsh.png",
+      "format": "png",
+      "byteSize": 3232,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-biome_cursed_grove",
+      "kind": "icon",
+      "uri": "v31/preview/biome_cursed_grove.png",
+      "format": "png",
+      "byteSize": 3748,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-biome_undead_crypt",
+      "kind": "icon",
+      "uri": "v31/preview/biome_undead_crypt.png",
+      "format": "png",
+      "byteSize": 3657,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-boss_blight_colossus",
+      "kind": "icon",
+      "uri": "v31/preview/boss_blight_colossus.png",
+      "format": "png",
+      "byteSize": 7975,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-boss_bone_regent",
+      "kind": "icon",
+      "uri": "v31/preview/boss_bone_regent.png",
+      "format": "png",
+      "byteSize": 5110,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-boss_rift_leviathan",
+      "kind": "icon",
+      "uri": "v31/preview/boss_rift_leviathan.png",
+      "format": "png",
+      "byteSize": 9181,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_bone_archer",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_bone_archer.png",
+      "format": "png",
+      "byteSize": 2066,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_cultist_acolyte",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_cultist_acolyte.png",
+      "format": "png",
+      "byteSize": 1809,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_flesh_construct",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_flesh_construct.png",
+      "format": "png",
+      "byteSize": 1960,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_necromancer",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_necromancer.png",
+      "format": "png",
+      "byteSize": 1233,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_plaguebearer",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_plaguebearer.png",
+      "format": "png",
+      "byteSize": 2062,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_shieldbone_knight",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_shieldbone_knight.png",
+      "format": "png",
+      "byteSize": 2284,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_skeleton_warrior",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_skeleton_warrior.png",
+      "format": "png",
+      "byteSize": 2076,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-enemy_wraith",
+      "kind": "icon",
+      "uri": "v31/preview/enemy_wraith.png",
+      "format": "png",
+      "byteSize": 1672,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_aethermancer",
+      "kind": "icon",
+      "uri": "v31/preview/mage_aethermancer.png",
+      "format": "png",
+      "byteSize": 1953,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_chronomancer",
+      "kind": "icon",
+      "uri": "v31/preview/mage_chronomancer.png",
+      "format": "png",
+      "byteSize": 1764,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_cryomancer",
+      "kind": "icon",
+      "uri": "v31/preview/mage_cryomancer.png",
+      "format": "png",
+      "byteSize": 1799,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_pyromancer",
+      "kind": "icon",
+      "uri": "v31/preview/mage_pyromancer.png",
+      "format": "png",
+      "byteSize": 1815,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_stormcaller",
+      "kind": "icon",
+      "uri": "v31/preview/mage_stormcaller.png",
+      "format": "png",
+      "byteSize": 1794,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-preview-mage_voidweaver",
+      "kind": "icon",
+      "uri": "v31/preview/mage_voidweaver.png",
+      "format": "png",
+      "byteSize": 1725,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-tilesets-tileset_blighted_marsh",
+      "kind": "icon",
+      "uri": "v31/tilesets/tileset_blighted_marsh.png",
+      "format": "png",
+      "byteSize": 35095,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-tilesets-tileset_cursed_grove",
+      "kind": "icon",
+      "uri": "v31/tilesets/tileset_cursed_grove.png",
+      "format": "png",
+      "byteSize": 39422,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-tilesets-tileset_undead_crypt",
+      "kind": "icon",
+      "uri": "v31/tilesets/tileset_undead_crypt.png",
+      "format": "png",
+      "byteSize": 39299,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-boss_blight_colossus",
+      "kind": "icon",
+      "uri": "v31/sprites/boss_blight_colossus.png",
+      "format": "png",
+      "byteSize": 406340,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-boss_bone_regent",
+      "kind": "icon",
+      "uri": "v31/sprites/boss_bone_regent.png",
+      "format": "png",
+      "byteSize": 507696,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-boss_rift_leviathan",
+      "kind": "icon",
+      "uri": "v31/sprites/boss_rift_leviathan.png",
+      "format": "png",
+      "byteSize": 488343,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_bone_archer",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_bone_archer.png",
+      "format": "png",
+      "byteSize": 94566,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_cultist_acolyte",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_cultist_acolyte.png",
+      "format": "png",
+      "byteSize": 87857,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_flesh_construct",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_flesh_construct.png",
+      "format": "png",
+      "byteSize": 99362,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_necromancer",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_necromancer.png",
+      "format": "png",
+      "byteSize": 94563,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_plaguebearer",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_plaguebearer.png",
+      "format": "png",
+      "byteSize": 111295,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_shieldbone_knight",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_shieldbone_knight.png",
+      "format": "png",
+      "byteSize": 115555,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_skeleton_warrior",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_skeleton_warrior.png",
+      "format": "png",
+      "byteSize": 101981,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-enemy_wraith",
+      "kind": "icon",
+      "uri": "v31/sprites/enemy_wraith.png",
+      "format": "png",
+      "byteSize": 64746,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-icons_pickups_schools",
+      "kind": "icon",
+      "uri": "v31/sprites/icons_pickups_schools.png",
+      "format": "png",
+      "byteSize": 8802,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_aethermancer",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_aethermancer.png",
+      "format": "png",
+      "byteSize": 156727,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_chronomancer",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_chronomancer.png",
+      "format": "png",
+      "byteSize": 136461,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_cryomancer",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_cryomancer.png",
+      "format": "png",
+      "byteSize": 142100,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_pyromancer",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_pyromancer.png",
+      "format": "png",
+      "byteSize": 143021,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_stormcaller",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_stormcaller.png",
+      "format": "png",
+      "byteSize": 140251,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-mage_voidweaver",
+      "kind": "icon",
+      "uri": "v31/sprites/mage_voidweaver.png",
+      "format": "png",
+      "byteSize": 133612,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-portraits_classes_tyrants",
+      "kind": "icon",
+      "uri": "v31/sprites/portraits_classes_tyrants.png",
+      "format": "png",
+      "byteSize": 14667,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-tileset_blighted_marsh",
+      "kind": "icon",
+      "uri": "v31/sprites/tileset_blighted_marsh.png",
+      "format": "png",
+      "byteSize": 35095,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-tileset_cursed_grove",
+      "kind": "icon",
+      "uri": "v31/sprites/tileset_cursed_grove.png",
+      "format": "png",
+      "byteSize": 39422,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-tileset_undead_crypt",
+      "kind": "icon",
+      "uri": "v31/sprites/tileset_undead_crypt.png",
+      "format": "png",
+      "byteSize": 39299,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-ui_relics_artifacts",
+      "kind": "icon",
+      "uri": "v31/sprites/ui_relics_artifacts.png",
+      "format": "png",
+      "byteSize": 12251,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_arcane_utility",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_arcane_utility.png",
+      "format": "png",
+      "byteSize": 28559,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_fire",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_fire.png",
+      "format": "png",
+      "byteSize": 24608,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_ice",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_ice.png",
+      "format": "png",
+      "byteSize": 22610,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_lightning",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_lightning.png",
+      "format": "png",
+      "byteSize": 22746,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_resonances_arcane",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_resonances_arcane.png",
+      "format": "png",
+      "byteSize": 65526,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_schools_extended",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_schools_extended.png",
+      "format": "png",
+      "byteSize": 57196,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
+      }
+    },
+    {
+      "id": "icon.v31-sheets-vfx_thermal_shatter",
+      "kind": "icon",
+      "uri": "v31/sprites/vfx_thermal_shatter.png",
+      "format": "png",
+      "byteSize": 13511,
+      "license": {
+        "author": "Archmage contributors",
+        "sourceUrl": "https://github.com/Pushyanth02/Archmage",
+        "licenseId": "MIT",
+        "attributionRequired": false,
+        "commercialUseVerified": true,
+        "licenseStatus": "verified",
+        "licenseEvidenceUrl": "https://github.com/Pushyanth02/Archmage/blob/main/LICENSE",
+        "licenseEvidenceType": "license-file",
+        "licenseReviewer": "v3.2.1 manifest reconciliation",
+        "reviewedAt": "2026-11-21"
       }
     }
   ]

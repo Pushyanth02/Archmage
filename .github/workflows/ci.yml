@@ -71,11 +71,10 @@ jobs:
 
       - name: Asset/license validator
         run: bun scripts/validate-assets.ts
-        # Known intentional failures: 3 rows (ghost + plant + the Augusto
-        # Faria pack) are permission-pending commercial-use gates tracked in
-        # docs/AUDITS.md. CI stays non-blocking on those rows only;
-        # any NEW asset regression still fails this step (exit code reflects
-        # the failure count).
+        # v3.2.1: the manifest reconciles with the shipped v3.1 library and
+        # the validator passes clean (128/128 assets, 5/5 packs). Kept
+        # continue-on-error as a tripwire for NEW asset regressions while
+        # the v3.1 library provenance review continues in v31_assets/.
         continue-on-error: true
 
       - name: Production build (normal / Vercel mode)

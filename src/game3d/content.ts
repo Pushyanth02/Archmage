@@ -2148,8 +2148,13 @@ export function hexNum(css) {
 /** Canonical game version (crash snapshots, save diagnostics, README sync).
     Keep in lockstep with src/lib/site.ts SITE_VERSION and the llms.txt
     copy — machine-checked on every CI run by scripts/validate-web.ts. */
-export const GAME_VERSION = "3.0.0";
+export const GAME_VERSION = "3.2.0";
 export const CHANGELOG = [{
+  version: "3.2.0",
+  name: "Rift Night",
+  date: "2026-11-21",
+  notes: ["One art direction, everywhere: the master Rift Night palette (void #171321, ink #140E1D, gold #D9BA72, violet #A991F7, teal #58D6C2, crimson #E96578) governs the arena, the HUD and every menu; panels flattened to a single elevation with crisp 1px gold and violet borders", "One boot, one title: a single loading gate (RiftBootGate) and a single Title & Loadout Hub over the live PixelArenaBackdrop — the old WebGL title stack is retired", "Pixel-icon parity by construction: one registry (palette.ts) feeds every element, currency, portrait, relic and preview icon across HUD, hub, Vault, Runes, Codex and overlays", "The shared RiftScreen shell: header, tab strip, scroll body and currency rail with identical geometry across Vault, Runes, Codex and Settings", "Codex rebuilt: search plus nine tabs (Classes, Spells, Resonances, Bestiary, Tyrants, Biomes, Controls, Changelog, Credits) with a discovery progress bar", "The deploy sheds the retired keyart JPEGs, legacy icon set and player sheets; the asset manifest is reconciled and validates clean (128/128)"]
+}, {
   version: "3.0.0",
   name: "The Pixel Reforging",
   date: "2026-11-20",

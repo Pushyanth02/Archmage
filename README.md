@@ -40,22 +40,21 @@ docs/                  DESIGN, AUDITS, OPERATIONS, ROADMAP
 brand-src/             icon and image masters, kept out of the deploy
 ```
 
-## Version 3.0.0 — The Pixel Reforging
+## Version 3.2.0 — Rift Night
 
-Current release (2026-11-20):
+Current release (2026-11-21):
 
-- The complete art overhaul to the v3 concept boards: enchanted purple-and-gold panels, hex plaques, keycaps and diamond filigree on every screen — menu, HUD, overlays, results and settings.
-- The GLTF bestiary is retired. Every foe, tyrant and the player is a chibi pixel sprite drawn in-engine; the five tyrants are the Bone Regent, Pyre Behemoth, Void Seraph, Rift Colossus and Frost Leviathan.
-- The arena floor is a generated pixel-cobblestone plaza with a breathing gold summoning circle; the HUD gains a live minimap, rift objectives and the keycapped ability bar.
-
-Full history: [CHANGELOG.md](./CHANGELOG.md).
-
-### Previous — 2.2.0, The Reforged Update (2026-10-28)
-
-Loading veils with byte-accurate progress, the 3D loop parked behind opaque screens, a 9 MB lighter deploy, self-hosted brand typefaces, truthful numbers everywhere, and landscape-phone menu fixes. Details in the changelog.
+- One art direction, everywhere: the Rift Night master palette governs the arena, the HUD and every menu, with flattened panels and crisp gold and violet borders.
+- One boot, one title: a single loading gate and a single Title & Loadout Hub over the live pixel arena backdrop; the old WebGL title stack is retired.
+- Pixel-icon parity by construction: one registry feeds every element, currency, portrait, relic and preview icon across every screen.
+- The shared RiftScreen shell carries Vault, Runes, Codex (nine tabs, search, discovery progress) and Settings; the deploy sheds the retired keyart and legacy icon assets.
 
 Full history: [CHANGELOG.md](./CHANGELOG.md).
+
+### Previous — 3.0.0, The Pixel Reforging (2026-11-20)
+
+The complete art overhaul to the v3 concept boards: enchanted purple-and-gold panels, hex plaques, keycaps and diamond filigree on every screen — menu, HUD, overlays, results and settings. The GLTF bestiary retired; every foe, tyrant and the player a chibi pixel sprite drawn in-engine; the five tyrants are the Bone Regent, Pyre Behemoth, Void Seraph, Rift Colossus and Frost Leviathan. The arena floor a generated pixel-cobblestone plaza with a breathing gold summoning circle. Details in the changelog.
 
 ## Credits and licenses
 
-Code and design: the Archmage contributors, [MIT](./LICENSE). Art from open-source packs: KayKit, Quaternius, Kronbits, Kenney and dunpixel (CC0 / QAL / free-commercial); the Augusto Faria monster pack ships in the free build with attribution pending author confirmation for commercial use. Per-pack status lives in [docs/AUDITS.md](./docs/AUDITS.md) and renders live in the Codex credits. Key art conjured by AI. Everything else, music, sound and engine, is synthesized in code.
+Code, design and pixel art: the Archmage contributors, [MIT](./LICENSE). Third-party art still shipping: Kenney (Graveyard Kit terrain decor, CC0; particle pack, CC0) and Kronbits (particles, CC0). The v3.1 sprite-sheet library (mages, bestiary, tyrants, icons, relics, portraits, tilesets) is project-made. The GLTF bestiary and dunpixel icon packs are retired from the deploy. Per-pack status lives in [docs/AUDITS.md](./docs/AUDITS.md) and renders live in the Codex credits. Key art conjured by AI. Everything else, music, sound and engine, is synthesized in code.

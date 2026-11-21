@@ -2,6 +2,15 @@
 
 Source of truth: the `CHANGELOG` array in `src/game3d/content.ts`; this file mirrors it, and the in-game Codex renders the same notes.
 
+## Version 3.2.0 — Rift Night (2026-11-21)
+
+- One art direction, everywhere: the master Rift Night palette (void `#171321`, ink `#140E1D`, gold `#D9BA72`, violet `#A991F7`, teal `#58D6C2`, crimson `#E96578`) governs the arena, the HUD and every menu; panels flattened to a single elevation with crisp 1px gold and violet borders.
+- One boot, one title: a single loading gate (RiftBootGate) and a single Title & Loadout Hub over the live PixelArenaBackdrop — the old WebGL title stack (TitleScreen, MenuScene, UIManager) is retired.
+- Pixel-icon parity by construction: one registry (`palette.ts`) feeds every element, currency, portrait, relic and preview icon across HUD, hub, Vault, Runes, Codex and overlays; the Lucide vector set is gone from game surfaces.
+- The shared RiftScreen shell: header, tab strip, scroll body and currency rail with identical geometry across Vault, Runes, Codex and Settings, with Esc-to-close and keyboard focus states.
+- Codex rebuilt: search plus nine tabs (Classes, Spells, Resonances, Bestiary, Tyrants, Biomes, Controls, Changelog, Credits) with a discovery progress bar.
+- The deploy sheds the retired keyart JPEGs, legacy icon set and player sheets; the asset manifest is reconciled with the shipped v3.1 library and validates clean (128/128).
+
 ## Version 3.0.0 — The Pixel Reforging (2026-11-20)
 
 - The whole game is re-skinned to the v3 concept boards: enchanted dark-purple panels with gold filigree corners, diamond ornaments, notched hex plaques, keycap chips and gem finials across every screen.
